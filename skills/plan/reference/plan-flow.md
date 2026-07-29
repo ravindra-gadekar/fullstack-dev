@@ -875,8 +875,6 @@ and offer to transition to implementation.
          Implement it when an implement command is available."
 ```
 
-### GitHub Issue Reminder
-
-If the plan was generated from a GitHub issue, append:
-"This plan was generated from issue #N. The final phase includes
-PR creation and issue closure."
+<!-- Future: GitHub issue reminder — when issue-to-spec pipeline exists,
+detect issue number from spec metadata and append PR/issue closure
+reminder here. -->
