@@ -10,7 +10,7 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 
 ### v2 — Brainstorm & Tools
 
-- **`/brainstorm <feature> [--auto]`** — Brainstorm a feature into a design spec. Explores project context, dispatches parallel research agents, asks clarifying questions, proposes approaches, writes and optionally grills the spec.
+- **`/brainstorm [--auto] <feature>`** — Brainstorm a feature into a design spec. Explores project context, dispatches parallel research agents, asks clarifying questions, proposes approaches, writes and optionally grills the spec.
 - **Grill Agent** — Built-in spec stress-tester that challenges designs across 8 dimensions (edge cases, contradictions, scope creep, security blind spots, etc.). Dispatched from `/brainstorm` or usable independently.
 - **code-review-graph support** — Optional MCP tool for structural codebase understanding. Configured during `/project --init` or manually via `reference/tools-setup.md`.
 - **Agentation support** — Optional MCP tool for visual UI feedback during development. Configured during init for frontend projects.
@@ -85,7 +85,7 @@ After installation, run `/project --init` in your workspace root and follow the 
 | `/project` | `--init` | Initialize project (first run) or health check (subsequent runs) |
 | `/project` | `--add-repo` | Add a new repo to a multi-repo project |
 | `/project` | `--refresh` | Manually refresh all documentation |
-| `/brainstorm` | `<feature> [--auto]` | Brainstorm a feature into a design spec |
+| `/brainstorm` | `[--auto] <feature>` | Brainstorm a feature into a design spec |
 
 ## How Auto-Refresh Works
 
