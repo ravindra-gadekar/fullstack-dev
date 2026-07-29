@@ -492,8 +492,405 @@ How many repos does the spec touch?
 
 ---
 
+## Naming Collision Check (once per session)
+
+On the first `/plan` invocation in a session, check for other plan-related
+skills before proceeding to Step 6.
+
+```
+collision_check_done flag set?
++-- YES --> skip, proceed to Step 6
++-- NO
+    +-- Scan available skills for: /write-plan, writing-plans,
+    |   superpowers:writing-plans, or any skill with "plan" in its
+    |   name that is not this skill
+    +-- Found?
+    |   +-- YES --> one-time message:
+    |   |   "Note: Existing plan skill detected: <skill-name>.
+    |   |    /plan (fullstack-dev) produces multi-folder plans with
+    |   |    graph-enhanced file mapping. <other-skill> produces
+    |   |    single-file plans. Both coexist."
+    |   +-- NO --> proceed silently
+    +-- Set collision_check_done = true
+```
+
+Do not rename, disable, or override the other skill. If both write to
+`docs/plans/`, this skill's `<timestamp>-<slug>/` directories with
+multiple phase files are distinct from single-file plans.
+
+---
+
+## Step 6: Phase Decomposition
+
+Group work from the spec into ordered, independently verifiable phases.
+
+### Decomposition Heuristic
+
+```
+1. List all deliverables from the spec
+2. Group by repo (backend first, then frontend)
+3. Within each repo, order by dependency:
+   a. Data models / schemas first
+   b. Business logic / services second
+   c. API endpoints / routes third
+   d. UI components / pages fourth
+   e. Integration / E2E tests last
+4. Each group becomes a phase
+5. If a group has > 8 tasks, split into sub-phases
+6. If a group has < 2 tasks, merge with adjacent phase
+```
+
+### Phase Rules
+
+- Target 2-6 phases per plan.
+- Each phase targets exactly one repo.
+- Each phase produces independently verifiable output (tests pass after completion).
+- Phase dependency is always sequential (Phase N depends on Phase N-1).
+
+### Phase Table Template
+
+Present to the user for approval:
+
+```markdown
+| Phase | Repo | Name | Tasks (est.) | Delivers |
+|-------|------|------|--------------|----------|
+| 1 | <repo> | <name> | <count> | <what it produces> |
+```
+
+### User Approval Flow
+
+Present the phase table via AskUserQuestion with options:
+(a) Approve as-is, (b) Request changes, (c) Add a phase, (d) Remove a phase.
+
+Iterate until approved, max 3 revision rounds. After 3 rounds, offer:
+proceed with current plan or restart decomposition from scratch.
+
+---
+
+## Step 7: Task Decomposition
+
+Break each phase into tasks. Each task is a single commit touching 1-2 files.
+
+### Task Sizing
+
+- 1-2 files per task, one commit each, max 6 steps.
+- Each task has its own test cycle.
+
+### Step Patterns by Task Type
+
+| Type | Pattern | Steps |
+|------|---------|-------|
+| Code (logic, components, endpoints) | TDD | Write failing test -> Verify fail -> Implement -> Verify pass -> Commit |
+| Config (env, build, tooling) | Create-and-verify | Create config -> Run verification -> Commit |
+| Schema (DB migrations, types) | Write-and-validate | Write schema -> Validate syntax -> Commit |
+| Documentation | Write-and-review | Write content -> Verify references -> Commit |
+
+### Task Metadata Template
+
+Every task must include this metadata block:
+
+```markdown
+### Task N: <Title>
+
+**Files:**
+- Create: `<repo>/path/to/new-file.ts`
+- Modify: `<repo>/path/to/existing-file.ts`
+- Test: `<repo>/tests/path/to/test-file.test.ts`
+
+**Interfaces:**
+- Consumes: <signatures from earlier tasks or codebase>
+- Produces: <signatures for later tasks>
+
+**Acceptance Criteria:** <which spec criteria this addresses>
+```
+
+### Interface Declaration Rules
+
+- Every "Consumes" must exist in the codebase OR in an earlier task's "Produces".
+- Every "Produces" should be consumed by a later task or be a final deliverable.
+- Use exact TypeScript signatures:
+  `function createProject(data: CreateProjectInput): Promise<Project>`
+  not "a function to create projects".
+
+### Code Content Rules
+
+- Every step includes structurally accurate code with correct file paths,
+  function signatures, and framework idioms.
+- No placeholder text: "TBD", "TODO", "implement later", "similar to
+  Task N" are plan failures. Every step must be concrete and actionable.
+
+---
+
+## Step 8: Write Plan Files
+
+Build all plan files in memory, validate them via self-review (Step 9),
+then write them to disk atomically.
+
+### Atomic Write Protocol
+
+Plan files are never written incrementally:
+
+```
+1. Compose all files in memory (README.md + phase-1..N.md)
+2. Run self-review (Step 9) against in-memory content
+3. Self-review passes?
+   +-- YES --> write all files to disk:
+   |   a. Create directory: docs/plans/<timestamp>-<slug>/
+   |   b. Write README.md, then phase-1.md through phase-N.md
+   |   c. Verify all files exist and are non-empty
+   |   d. If any write fails --> delete plan directory, report error
+   +-- NO --> do not create any files
+       --> report failures, attempt auto-fix (Step 9), re-run
+```
+
+### Timestamp and Naming Rules
+
+- Use current UTC time: `YYYY-MM-DDTHH-MM-SS`
+- Dashes instead of colons (Windows-safe file paths).
+- Plan directory name: `<timestamp>-<plan-slug>`
+- Plan slug derived from spec slug (strip `-design` suffix):
+  - Spec: `2026-07-30T01-00-00-auth-system-design.md`
+  - Spec slug: `auth-system-design` -> strip `-design` -> `auth-system`
+  - Plan directory: `2026-07-30T02-15-00-auth-system/`
+
+### README.md Template
+
+```markdown
+# <Feature Name> — Implementation Plan
+
+> **For agentic workers:** Use /implement-plan <path> or
+> superpowers:subagent-driven-development to execute this plan
+> phase-by-phase, task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** <1-2 sentence goal>
+**Architecture:** <2-3 sentence summary>
+**Tech Stack:** <comma-separated technologies>
+**Repo:** <repo(s) with phase mapping>
+**Spec:** `docs/specs/<timestamp>-<name>-design.md`
+
+## Global Constraints
+<Project-wide requirements from spec, one line each>
+
+## Phases
+| Phase | Repo | Name | Tasks | Delivers |
+|-------|------|------|-------|----------|
+| 1 | <repo> | <Name> | N | <deliverable> |
+
+## Execution Order
+Phases MUST be executed in order. Each phase depends on the previous phase.
+Start with: `docs/plans/<timestamp>-<name>/phase-1.md`
+```
+
+### phase-N.md Template
+
+```markdown
+# Phase N: <Phase Name>
+
+**Repo:** <target repo>
+**Depends on:** <"None" or "Phase N-1 (description)">
+**Delivers:** <what this phase produces when complete>
+
+## File Structure
+<ASCII tree with create/modify annotations>
+
+### Task 1: <Title>
+<task metadata + steps per task type pattern>
+
+## Phase N Complete
+<Summary of what exists after this phase>
+**Next:** `phase-N+1.md` or "Plan complete"
+```
+
+### Commit Behavior
+
+```
+--auto flag set?
++-- YES --> commit with message: "plan: <feature-name> implementation plan"
++-- NO  --> ask user to confirm before committing
+```
+
+---
+
+## Step 9: Plan Self-Review
+
+Run six automated checks against the in-memory plan content before writing
+any files to disk. All checks operate on the composed plan, not on disk.
+
+### Checks
+
+| # | Check | How | What it catches |
+|---|-------|-----|-----------------|
+| 1 | Spec coverage | Compare spec acceptance criteria against task "Acceptance Criteria" fields | Criteria not addressed by any task |
+| 2 | Placeholder scan | Regex for `TBD`, `TODO`, `FIXME`, `implement later`, `similar to Task`, empty fenced code blocks (triple-backtick with only whitespace inside) | Incomplete plan content |
+| 3 | Path validation | For each "Modify" file path, check existence via Glob or graph `semantic_search_nodes` | References to files that do not exist |
+| 4 | Consumes validation | For each "Consumes" interface, check it exists in the codebase (graph or Grep) OR appears in an earlier task's "Produces" | Broken dependency chains |
+| 5 | Type consistency | Compare "Produces" signatures with matching "Consumes" declarations across tasks | Mismatched function signatures or types |
+| 6 | Phase dependencies | Verify no task "Consumes" something "Produced" in a later phase | Impossible execution order |
+
+### Issue Handling
+
+```
+Self-review passes?
++-- YES (0 issues) --> proceed to Step 10 (Grill Gate)
++-- NO (issues found)
+    +-- For each issue, attempt auto-fix:
+    |   +-- Placeholder text --> replace with concrete content from research
+    |   +-- Missing criteria mapping --> add to most relevant task
+    |   +-- Wrong file path --> search research for correct path
+    |   +-- Broken Consumes chain --> reorder tasks or add Produces
+    |   +-- Impossible execution order --> move task to correct phase
+    |   +-- Empty code block --> fill from research or step pattern
+    +-- Re-run only affected checks on fixed content
+    +-- Still issues?
+        +-- Fixable --> apply fix, re-check
+        +-- Unfixable --> report to user:
+            "<check>: <item>: <why unfixable>. Proceed or provide guidance?"
+```
+
+---
+
+## Step 10: Grill Gate
+
+Offer the user an optional deep review of the plan before finalizing.
+
+```
+Ask user: "Want to grill this plan to find gaps?"
++-- YES --> dispatch plan-reviewer-agent (see below)
++-- NO  --> skip to Step 11
+```
+
+### Dispatching the Plan Reviewer
+
+```
+Agent(
+  subagent_type: "claude",
+  description: "Grill the implementation plan",
+  prompt: """
+    You are plan-reviewer-agent. Read your full instructions from:
+    <plugin-path>/agents/plan-reviewer-agent.md
+
+    Plan to review: <plan-README-path>
+    Working directory: <workspace-root>
+
+    Execute the full 8-dimension analysis from your instructions.
+  """
+)
+```
+
+Replace `<plugin-path>`, `<plan-README-path>`, and `<workspace-root>`
+with the actual fullstack-dev plugin root, plan README path, and
+project working directory respectively.
+
+### Processing Findings
+
+After the plan-reviewer-agent returns its structured output, process
+each finding by severity:
+
+```
+For each finding in plan-reviewer-agent output:
++-- Severity: Critical
+|   --> Apply fix immediately
+|   --> Mark as resolved in the finding log
+|   --> Re-run the self-review checks affected by the fix
+|   --> If fix introduces new issues, resolve those first
++-- Severity: Important
+|   --> If fix is straightforward (single field change, reorder, rename)
+|   |   --> Apply fix, mark as resolved
+|   +-- If fix is ambiguous (multiple valid approaches, scope change)
+|       --> Present to user: "The reviewer flagged: <finding>.
+|           Suggested fix: <suggestion>. Apply this change?"
++-- Severity: Minor
+    --> Do not modify the plan
+    --> Note the finding in the commit message when plan files are written
+```
+
+### Post-Review Actions
+
+- Apply all Critical and accepted Important fixes to the in-memory plan.
+- Re-run affected self-review checks (Step 9) on modified content.
+- Write plan files to disk (Step 8 atomic write protocol).
+- Commit message: `plan: <feature-name> implementation plan`
+  If fixes were applied, append a list of resolved findings to the body.
+
+---
+
+## Step 11: User Reviews Plan
+
+Present the completed plan to the user for final review.
+
+### Presentation Order
+
+1. README.md summary (goal, architecture, phases table).
+2. Each phase file in order (phase-1.md through phase-N.md).
+3. Any self-review issues that were auto-fixed.
+4. Any grill-gate findings noted but not fixed (Minor severity).
+
+### Feedback Loop
+
+Accept feedback as free text. For each round:
+1. Parse feedback into specific changes.
+2. Apply changes to the plan files on disk.
+3. Re-present only the affected sections.
+4. Re-run self-review (Step 9) if changes touch file paths (check 3),
+   interfaces (checks 4-5), task ordering (check 6), or acceptance
+   criteria mapping (check 1).
+5. Re-commit if changes were made.
+
+Iterate until the user approves. Then proceed to Step 12.
+
+---
+
+## Step 12: Next Steps
+
+Present the finalized plan location and implementation options. Do not
+auto-start implementation.
+
+### Implementation Path Detection
+
+```
+Check available commands/skills:
++-- /implement-plan exists
+|   --> primary recommendation
++-- superpowers:subagent-driven-development available
+|   --> secondary recommendation (parallel execution)
++-- superpowers:executing-plans available
+|   --> tertiary recommendation (inline execution)
++-- None of the above available
+    --> generic guidance
+```
+
+### Output Format
+
+Always present this structure:
+
+```
+Your plan is ready at:
+  docs/plans/<timestamp>-<slug>/
+
+To implement it:
+  /implement-plan docs/plans/<timestamp>-<slug>/
+
+The plan has <N> phases and <M> total tasks.
+Phase 1 (<phase-name>) is the starting point.
+```
+
+Conditional additions:
+- If `superpowers:subagent-driven-development` or `superpowers:executing-plans`
+  are available, append an "Alternative execution methods" block listing them.
+- If no implementation command exists, replace the "To implement it" line with:
+  "No implementation command is currently available. Use the plan as a
+  reference when an implementation skill is installed."
+- If the plan was generated from a GitHub issue, append:
+  "This plan was generated from issue #N. The final phase includes
+  PR creation and issue closure."
+
+Do not automatically start implementation. Do not ask "shall I implement
+now?" -- just present the path. The user decides when and how to implement.
+
+---
+
 ## Reference Documents
 
 | File | Purpose |
 |------|---------|
-| `reference/plan-flow.md` | Detailed decision trees, templates, parallel agent prompts, output formats, error handling |
+| `reference/plan-flow.md` | Detailed decision trees, decomposition rules, templates, error handling |
