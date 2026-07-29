@@ -644,3 +644,284 @@ Files created/modified in this phase:
   - Spec: `2026-07-30T01-00-00-auth-system-design.md`
   - Spec slug: `auth-system-design` -> strip `-design` -> `auth-system`
   - Plan directory: `2026-07-30T02-15-00-auth-system/`
+
+---
+
+## Section 10: Plan Self-Review
+
+Six automated checks run after plan generation, before writing files to disk.
+All checks operate on the in-memory plan content.
+
+### Checks
+
+| # | Check | How | What it catches |
+|---|-------|-----|-----------------|
+| 1 | Spec coverage | Compare spec acceptance criteria against task "Acceptance Criteria" fields | Criteria not addressed by any task |
+| 2 | Placeholder scan | Regex for `TBD`, `TODO`, `FIXME`, `implement later`, `similar to Task`, empty fenced code blocks (triple-backtick with only whitespace inside) | Incomplete plan content |
+| 3 | Path validation | For each "Modify" file path, check existence via Glob or graph `semantic_search_nodes` | References to files that do not exist |
+| 4 | Consumes validation | For each "Consumes" interface, check it exists in the codebase (graph or Grep) OR appears in an earlier task's "Produces" | Broken dependency chains |
+| 5 | Type consistency | Compare "Produces" signatures with matching "Consumes" declarations across tasks | Mismatched function signatures or types |
+| 6 | Phase dependencies | Verify no task "Consumes" something "Produced" in a later phase | Impossible execution order |
+
+### Issue Handling
+
+```
+Self-review passes?
++-- YES (0 issues) --> proceed to grill gate
++-- NO (issues found)
+    +-- For each issue, attempt auto-fix (see strategies below)
+    +-- Re-run only the affected checks on the fixed content
+    +-- Still issues?
+        +-- Fixable --> apply fix, re-check
+        +-- Unfixable --> report to user with explanation
+            --> ask: "These issues could not be auto-fixed. Proceed anyway,
+                 or provide guidance?"
+```
+
+### Auto-Fix Strategies
+
+| Issue Type | Auto-Fix Strategy |
+|---|---|
+| Placeholder text (`TBD`, `TODO`, etc.) | Replace with concrete content derived from the research results. If no research covers the placeholder, flag as unfixable. |
+| Missing acceptance criteria mapping | Identify the most relevant task by comparing the unmatched criterion against task descriptions. Suggest adding the criterion to that task's "Acceptance Criteria" field. |
+| Wrong file path (Modify target does not exist) | Search research results for the correct path. If a close match exists (same filename, different directory), correct the path. If no match, flag as unfixable. |
+| Broken Consumes chain (interface not found) | Check if a task later in the plan produces it. If so, reorder the tasks so the producer comes first. If no task produces it, add a "Produces" declaration to the most relevant earlier task. |
+| Impossible execution order (cross-phase Consumes) | Move the producing task to an earlier phase, or move the consuming task to a later phase, whichever causes fewer cascading changes. |
+| Empty fenced code block | Fill with the concrete implementation pattern from research results or the step pattern for the task type (Section 8). |
+| Unfixable issue | Present to user with: the check that failed, the specific item that failed, and why auto-fix could not resolve it. |
+
+---
+
+## Section 11: Plan-Reviewer Agent Dispatch
+
+Decision tree for the grill gate, offered after self-review passes.
+
+```
+Offer grill gate to user?
++-- YES (user accepts)
+|   --> Dispatch plan-reviewer-agent:
+|     Agent(
+|       subagent_type: "claude",
+|       description: "Grill the implementation plan",
+|       prompt: """
+|         You are plan-reviewer-agent. Read your full instructions from:
+|         <plugin-path>/agents/plan-reviewer-agent.md
+|
+|         Plan to review: <plan-README-path>
+|         Working directory: <workspace-root>
+|
+|         Execute the full 8-dimension analysis from your instructions.
+|       """
+|     )
+|   --> Process findings (see below)
+|   --> Apply fixes to in-memory plan content
+|   --> Re-run affected self-review checks
+|   --> Write final plan files to disk
++-- NO (user skips)
+    --> Write plan files to disk as-is
+    --> Proceed to user review
+```
+
+### Processing Findings
+
+After the plan-reviewer-agent returns its structured output, process each
+finding by severity:
+
+```
+For each finding in plan-reviewer-agent output:
++-- Severity: Critical
+|   --> Apply fix immediately
+|   --> Mark as resolved in the finding log
+|   --> Re-run the self-review checks affected by the fix
+|   --> If fix introduces new issues, resolve those first
++-- Severity: Important
+|   --> If fix is straightforward (single field change, reorder, rename)
+|   |   --> Apply fix, mark as resolved
+|   +-- If fix is ambiguous (multiple valid approaches, scope change)
+|       --> Present to user: "The reviewer flagged: <finding>.
+|           Suggested fix: <suggestion>. Apply this change?"
++-- Severity: Minor
+    --> Do not modify the plan
+    --> Note the finding in the commit message when plan files are written
+```
+
+### Post-Review Commit
+
+After all findings are processed and fixes applied, write the plan files.
+If any fixes were applied, the initial commit message should note:
+
+```
+plan: <feature-name> implementation plan
+
+Addresses review findings:
+- <list of Critical/Important findings that were fixed>
+```
+
+---
+
+## Section 12: Error Handling
+
+Recovery strategies for each failure mode during plan generation.
+
+### Failure Recovery Table
+
+| Failure | Recovery |
+|---------|----------|
+| Graph tools configured but query fails | Fall back to Grep/Glob/Read for that specific query. Log: "Graph query failed for `<query>`, using filesystem fallback." Continue with results from the fallback. |
+| Graph tools return empty results (new feature, no existing code) | All tasks use "Create" operations. No "Modify" or "Consumes" from codebase. Skip path validation check for Create files. |
+| Spec missing expected sections | Best-effort parsing per Section 3 rules. If minimum viable structure (overview + acceptance criteria) is missing, ask user before proceeding. |
+| Git commit fails | Report the error to the user. Offer to retry. Do not attempt to auto-fix git state (no `git reset`, no `git clean`). |
+| Partial generation fails (error mid-plan) | Atomic write: all files are composed in memory first, written only when all pass self-review. No partial plan directories on disk. |
+| Parallel agent hangs (no response) | 2-minute timeout per agent. Use partial results from agents that completed. Run inline fallback (Section 4 strategy) for the failed agent's scope. |
+| Plan directory already exists | Per Section 2 rules: offer to view, regenerate (archive old), or pick different spec. Never silently overwrite. |
+| File write permission error | Report the error with the exact path. Do not retry. Suggest the user check directory permissions. |
+
+### Atomic Write Protocol
+
+Plan files are never written incrementally. The full write sequence is:
+
+```
+1. Compose all plan files in memory:
+   - README.md
+   - phase-1.md through phase-N.md
+
+2. Run self-review (Section 10) against in-memory content
+
+3. Self-review passes?
+   +-- YES --> write all files to disk in sequence:
+   |   a. Create plan directory: docs/plans/<timestamp>-<slug>/
+   |   b. Write README.md
+   |   c. Write phase-1.md through phase-N.md
+   |   d. Verify all files exist and are non-empty
+   |   e. If any write fails:
+   |      --> delete the plan directory and all contents
+   |      --> report error to user
+   +-- NO --> do not create any files
+       --> report self-review failures
+       --> attempt auto-fix (Section 10)
+       --> re-run self-review
+```
+
+This guarantees the plan directory is either complete or absent. An
+implementer will never encounter a half-written plan.
+
+---
+
+## Section 13: Naming Collision
+
+Detection and handling when other plan-related skills exist in the
+environment.
+
+### Detection Flow
+
+```
+On first /plan invocation in a session:
++-- Scan available skills for: /plan, /write-plan, writing-plans,
+|   superpowers:writing-plans, or any skill with "plan" in its name
+|   that is not this skill
++-- Found existing plan skill(s)?
+|   +-- YES --> inform user (one time only):
+|   |   "Note: Existing plan skill detected: <skill-name>.
+|   |    /plan (fullstack-dev) produces multi-folder plans with graph-enhanced
+|   |    file mapping and per-task interface declarations.
+|   |    <other-skill> produces single-file plans.
+|   |    Both coexist -- they write to different directories."
+|   +-- NO --> proceed silently
++-- Set session flag: collision_check_done = true
+    (do not repeat on subsequent /plan calls in this session)
+```
+
+### Coexistence Rules
+
+- Do not rename, disable, or override the other skill.
+- Do not modify the other skill's configuration or output directory.
+- If the user explicitly asks to replace the other skill, explain:
+  "You can remove it from your plugin config (`.claude/settings.json`
+  or the plugin's skill directory). This skill does not manage other
+  skills' lifecycle."
+- If both skills write to `docs/plans/`, differentiate by directory
+  naming convention: this skill uses `<timestamp>-<slug>/` directories
+  with multiple phase files; single-file plans use flat markdown files.
+
+---
+
+## Section 14: Plan Transition (Next Steps)
+
+After the plan is finalized and written to disk, present the next steps
+to the user.
+
+### Implementation Path Detection
+
+```
+Check available commands/skills:
++-- /implement-plan exists
+|   --> primary recommendation
++-- superpowers:subagent-driven-development available
+|   --> secondary recommendation (parallel execution)
++-- superpowers:executing-plans available
+|   --> tertiary recommendation (inline execution)
++-- None of the above available
+    --> generic guidance
+```
+
+### Output Format
+
+Present exactly this structure after the plan is written:
+
+```markdown
+## Next Steps
+
+Your plan is ready at:
+  docs/plans/<timestamp>-<slug>/
+
+To implement it:
+  /implement-plan docs/plans/<timestamp>-<slug>/
+
+The plan has <N> phases and <M> total tasks.
+Phase 1 (<phase-name>) is the starting point.
+```
+
+When multiple implementation options are available, list alternatives:
+
+```markdown
+## Next Steps
+
+Your plan is ready at:
+  docs/plans/<timestamp>-<slug>/
+
+To implement it:
+  /implement-plan docs/plans/<timestamp>-<slug>/
+
+Alternative execution methods:
+  - Subagent-driven: invoke superpowers:subagent-driven-development
+    with docs/plans/<timestamp>-<slug>/
+  - Inline: invoke superpowers:executing-plans
+    with docs/plans/<timestamp>-<slug>/
+
+The plan has <N> phases and <M> total tasks.
+Phase 1 (<phase-name>) is the starting point.
+```
+
+When no implementation command is available:
+
+```markdown
+## Next Steps
+
+Your plan is ready at:
+  docs/plans/<timestamp>-<slug>/
+
+No implementation command is currently available.
+Use the plan as a reference when an implementation skill is installed.
+
+The plan has <N> phases and <M> total tasks.
+Phase 1 (<phase-name>) is the starting point.
+```
+
+### Transition Behavior
+
+- Do not automatically start implementation.
+- Do not ask "shall I implement now?" -- just present the path.
+- The user decides when and how to implement.
+- If the plan was generated from a GitHub issue, remind the user:
+  "This plan was generated from issue #N. The final phase includes
+  PR creation and issue closure."
