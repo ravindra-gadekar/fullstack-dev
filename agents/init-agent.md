@@ -64,12 +64,26 @@ Validate each answer per the rules in the reference doc before moving to the nex
 
 ### Phase 3: Git Platform Detection
 
-Before generating MCP configuration, detect the git platform per `reference/context7-setup.md` Section "Git Platform MCP Configuration":
+Before generating MCP configuration, detect the git platform per `reference/tools-setup.md` Section "Git Platform MCP Configuration":
 
 1. Read git remotes from each repo (`git remote -v`).
 2. Match URLs against known platforms: `github.com`, `bitbucket.org`, `gitlab.com`, `dev.azure.com`.
 3. If multiple platforms are detected across repos, configure MCP servers for all of them.
 4. If no remotes are found, ask the user which platform they will use (GitHub, GitLab, Bitbucket, Azure DevOps, or none/skip).
+
+### Phase 3a: Optional Developer Tools
+
+After MCP configuration (context7, git platform), offer optional developer tools:
+
+1. Read `reference/tools-setup.md` for setup instructions.
+2. Present the optional tools prompt:
+   - **code-review-graph** — Structural codebase understanding (Recommended). Configure now / Skip
+   - **Agentation** — Visual UI feedback tool (only offer for projects with frontend, i.e. `projectType` is `fullstack` or `frontend`). Configure now / Skip
+3. For each tool the user selects "Configure now":
+   - Configure per `reference/tools-setup.md` merge rules.
+   - **code-review-graph**: add `.mcp.json` entry + `.claude/settings.json` PostToolUse hook for `code-review-graph update` command (merge alongside existing fullstack-dev hooks).
+   - **Agentation**: add `.mcp.json` entry + npm dev dependency in frontend repos.
+4. Store selections in `config.json`: `optionalTools.codeReviewGraph` (boolean), `optionalTools.agentation` (boolean).
 
 ### Phase 4: Code Scanning
 
@@ -125,7 +139,7 @@ Generate last, because it references other generated files. Follow `reference/do
 
 #### 5.11 `.mcp.json`
 
-Follow `reference/context7-setup.md`:
+Follow `reference/tools-setup.md`:
 - Always include the `context7` server entry.
 - Add git platform MCP server based on detection results.
 - If `.mcp.json` already exists, MERGE new servers into the existing `mcpServers` object. Never remove existing servers.
@@ -230,6 +244,7 @@ Run every check from the table in `reference/init-flow.md` Section 10.2:
 | **Git** | Root has git initialized; .gitignore has plugin marker block; all sub-repos listed in .gitignore; no new .git/ directories missing from config |
 | **Claude Config** | .claude/settings.json exists; PostToolUse hooks configured; skills installed; commands installed |
 | **MCP** | .mcp.json exists; context7 configured; git platform MCP configured |
+| **Optional Tools** | code-review-graph: `.mcp.json` entry exists, `.claude/settings.json` has PostToolUse hook with `code-review-graph update` command; Agentation: `.mcp.json` entry exists (only check if `projectType` is `fullstack` or `frontend`). Status: Configured / Not configured. Auto-fix: offer to configure if not present, following `reference/tools-setup.md` |
 | **Workspace** | .code-workspace file exists (if multi-repo); all repos listed in workspace folders |
 
 Report each check as PASS or FAIL.
@@ -292,7 +307,7 @@ This agent relies on these reference docs. Read them before executing any flow:
 | Init Flow | `skills/fullstack-dev/reference/init-flow.md` | Complete wizard decision tree, questions, configuration phase steps, health check table, version migration, team onboarding |
 | Document Templates | `skills/fullstack-dev/reference/doc-templates.md` | Templates for all generated files (CONTEXT.md, architecture.md, tech-stack.md, brand.md, ARCHITECTURE.md, CLAUDE.md, config.json, .env.example), population rules, creation order, mono/multi-repo differences |
 | Gitignore Rules | `skills/fullstack-dev/reference/gitignore-rules.md` | Marker block format, merge rules, add/remove repo procedures, mono vs multi-repo handling |
-| context7 Setup | `skills/fullstack-dev/reference/context7-setup.md` | MCP server configuration (context7, GitHub, GitLab, Bitbucket, Azure DevOps), merge rules for .mcp.json, secrets handling, project-level safety |
+| Tools Setup | `skills/fullstack-dev/reference/tools-setup.md` | MCP tools configuration (context7, git platform, code-review-graph, Agentation), merge rules for .mcp.json, hooks merge rules, secrets handling, project-level safety |
 
 **Read the relevant reference doc before executing each phase.** The reference docs contain exact formats, validation rules, and edge cases not repeated in this agent definition.
 

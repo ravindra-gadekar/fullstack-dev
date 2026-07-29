@@ -6,7 +6,16 @@
 
 Fullstack Dev manages project structure, documentation, and tooling configuration across mono-repo and multi-repo projects of any tech stack. It generates a living knowledge layer (CONTEXT.md, ARCHITECTURE.md, CLAUDE.md) that keeps Claude Code grounded in your project's domain model, conventions, and decisions — and auto-refreshes it as code changes.
 
-## Features (v1)
+## Features
+
+### v2 — Brainstorm & Tools
+
+- **`/brainstorm <feature> [--auto]`** — Brainstorm a feature into a design spec. Explores project context, dispatches parallel research agents, asks clarifying questions, proposes approaches, writes and optionally grills the spec.
+- **Grill Agent** — Built-in spec stress-tester that challenges designs across 8 dimensions (edge cases, contradictions, scope creep, security blind spots, etc.). Dispatched from `/brainstorm` or usable independently.
+- **code-review-graph support** — Optional MCP tool for structural codebase understanding. Configured during `/project --init` or manually via `reference/tools-setup.md`.
+- **Agentation support** — Optional MCP tool for visual UI feedback during development. Configured during init for frontend projects.
+
+### v1 — Project Management
 
 - **`/project --init`** — Interactive wizard that scaffolds project-level docs, config files, and tooling settings from scratch.
 - **`/project --add-repo`** — Adds a new repository to a multi-repo project via an interactive wizard.
@@ -14,9 +23,29 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 
 ## Installation
 
+Install all skills (recommended):
+
+```bash
+npx skills add https://github.com/ravindra-gadekar/fullstack-dev.git --skill '*'
+```
+
+Or install individual skills:
+
 ```bash
 npx skills add https://github.com/ravindra-gadekar/fullstack-dev.git --skill fullstack-dev
+npx skills add https://github.com/ravindra-gadekar/fullstack-dev.git --skill brainstorm
 ```
+
+### Naming Collision Warning
+
+If you have an existing `/brainstorm` command (e.g., from Superpowers or local overrides), remove it before installing v2:
+
+```bash
+rm .claude/commands/brainstorm.md
+rm -rf .claude/skills/brainstorming/
+```
+
+Alternatively, the init agent will detect the conflict and offer to remove the old skill automatically.
 
 ## Update
 
@@ -56,6 +85,7 @@ After installation, run `/project --init` in your workspace root and follow the 
 | `/project` | `--init` | Initialize project (first run) or health check (subsequent runs) |
 | `/project` | `--add-repo` | Add a new repo to a multi-repo project |
 | `/project` | `--refresh` | Manually refresh all documentation |
+| `/brainstorm` | `<feature> [--auto]` | Brainstorm a feature into a design spec |
 
 ## How Auto-Refresh Works
 
@@ -65,9 +95,9 @@ A **PostToolUse hook** echoes a reminder after every `Edit|Write` operation, pro
 
 Tech stack inputs are free-text — type whatever you use (Next.js, Django, Rails, Spring Boot, etc.). When framework-specific knowledge is needed, the plugin queries context7 for up-to-date documentation rather than relying on baked-in assumptions.
 
-## Future (v2+)
+## Future (v3+)
 
-Workflow skills (TDD, debugging, code review, deployment) will be added as composable skill modules in v2.
+Workflow skills (`/plan`, `/implement`, `/debug`, `/refactor`) will be added as composable skill modules in future versions.
 
 ## License
 
