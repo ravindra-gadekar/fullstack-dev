@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'FULLSTACK_DEV: Files changed. Update relevant docs (architecture, brand, tech-stack) if the changes warrant it.'",
+            "timeout": 1000
+          }
+        ]
+      }
+    ]
+  }
+}
