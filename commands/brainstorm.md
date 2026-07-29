@@ -1,7 +1,7 @@
 ---
 name: brainstorm
 description: "Brainstorm a feature into a design spec. Explores context, asks questions, proposes approaches, writes spec. Use before building anything."
-argument-hint: "<feature description> [--auto]"
+argument-hint: "[--auto] <feature description>"
 ---
 
 EXECUTE IMMEDIATELY — invoke the brainstorm skill.
