@@ -137,6 +137,7 @@ are not required.
 | Acceptance criteria | Section with `- [ ]` checkboxes, or section titled "Acceptance Criteria" |
 | Repo scope | `**Repo:**` metadata field, or section titled "Repo" |
 | Out of scope | Section titled "Out of Scope" |
+| GitHub issue | `**Issue:** #N` or `**GitHub Issue:** #N` metadata field, or `Closes #N` / `Fixes #N` anywhere in the spec |
 
 ### Presenting Extraction Results
 
@@ -875,6 +876,16 @@ and offer to transition to implementation.
          Implement it when an implement command is available."
 ```
 
-<!-- Future: GitHub issue reminder — when issue-to-spec pipeline exists,
-detect issue number from spec metadata and append PR/issue closure
-reminder here. -->
+### GitHub Issue Reminder
+
+If Section 3 (Spec Analysis) extracted a GitHub issue number from the
+spec, append to the plan summary above:
+
+```
+This plan was generated from issue #N. The final phase includes
+PR creation (with "Closes #N" in the body) and issue closure.
+```
+
+Detection: look for the issue number extracted during spec analysis
+(from `**Issue:** #N`, `**GitHub Issue:** #N`, or `Closes #N` / `Fixes #N`
+patterns in the spec). If no issue number was found, skip this reminder.

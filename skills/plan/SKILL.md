@@ -194,6 +194,7 @@ they are not required.
 | Acceptance criteria | Section with `- [ ]` checkboxes, or section titled "Acceptance Criteria" |
 | Repo scope | `**Repo:**` metadata field, or section titled "Repo" |
 | Out of scope | Section titled "Out of Scope" |
+| GitHub issue | `**Issue:** #N` or `**GitHub Issue:** #N` metadata field, or `Closes #N` / `Fixes #N` anywhere in the spec |
 
 ### Presenting Extraction Results
 
@@ -867,8 +868,18 @@ Present the finalized plan location and offer to transition to implementation.
          Implement it when an implement command is available."
 ```
 
-<!-- Future: when issue-to-spec pipeline exists, detect issue number
-from spec metadata and append PR/issue closure reminder here. -->
+### GitHub Issue Reminder
+
+If Step 3 extracted a GitHub issue number from the spec, append to the
+plan summary above:
+
+```
+This plan was generated from issue #N. The final phase includes
+PR creation (with "Closes #N" in the body) and issue closure.
+```
+
+This ensures the implementer knows to close the loop on the originating
+issue when the plan is fully executed.
 
 ---
 
