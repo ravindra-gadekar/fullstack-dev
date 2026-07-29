@@ -9,8 +9,8 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 ## Features (v1)
 
 - **`/project --init`** — Interactive wizard that scaffolds project-level docs, config files, and tooling settings from scratch.
-- **`/project --add-repo <path>`** — Registers an existing repository into the project, generates its ARCHITECTURE.md, and wires up refresh hooks.
-- **`/project --refresh`** — Regenerates all architecture docs and the cross-repo CONTEXT.md from current source code.
+- **`/project --add-repo`** — Adds a new repository to a multi-repo project via an interactive wizard.
+- **`/project --refresh`** — Manually refreshes all documentation across all repos.
 
 ## Installation
 
@@ -26,28 +26,28 @@ After installation, run `/project --init` in your workspace root and follow the 
 
 | File | Location | Purpose |
 |------|----------|---------|
-| `CONTEXT.md` | Workspace root | Cross-repo domain model, data flow, conventions |
-| `docs/project/decisions.md` | Workspace root | Architecture Decision Records |
-| `docs/project/scope.md` | Workspace root | Feature scope and boundaries |
+| `CONTEXT.md` | Workspace root | Domain model, glossary, data flow, conventions |
+| `docs/project/architecture.md` | Workspace root | Unified system architecture |
+| `docs/project/tech-stack.md` | Workspace root | Languages, frameworks, databases |
+| `docs/project/brand.md` | Workspace root | Design tokens, colors, fonts (if frontend) |
 | `CLAUDE.md` | Workspace root | Top-level instructions for Claude Code |
 | `ARCHITECTURE.md` | Each repo | Repo-specific structure, catalogs, patterns |
-| `.gitignore` | Workspace root | Sensible defaults for the detected stack |
-| `.mcp.json` | Workspace root | MCP server configuration |
-| `.claude/settings.json` | Workspace root | Claude Code permissions and hooks |
-| `.fullstack-dev/config.json` | Workspace root | Plugin state and per-repo metadata |
+| `.gitignore` | Workspace root | Plugin marker block + user entries |
+| `.mcp.json` | Workspace root | MCP server configuration (context7, git platform) |
+| `.claude/settings.json` | Workspace root | Claude Code hooks (PostToolUse refresh reminder) |
+| `.fullstack-dev/config.json` | Workspace root | Plugin state, repo list, project metadata |
 
 ## Commands Reference
 
 | Command | Flags | Description |
 |---------|-------|-------------|
-| `/project` | `--init` | Run the setup wizard for a new or existing workspace |
-| `/project` | `--add-repo <path>` | Add a repo to the project and generate its docs |
-| `/project` | `--refresh` | Regenerate all docs from current source code |
-| `/project` | `--refresh --repo <name>` | Regenerate docs for a single repo only |
+| `/project` | `--init` | Initialize project (first run) or health check (subsequent runs) |
+| `/project` | `--add-repo` | Add a new repo to a multi-repo project |
+| `/project` | `--refresh` | Manually refresh all documentation |
 
 ## How Auto-Refresh Works
 
-A **PostToolUse hook** watches for file edits during Claude Code sessions and triggers incremental doc regeneration. A **pre-commit hook** runs a full refresh before each commit, so docs never drift from code. The two layers complement each other: the PostToolUse hook keeps docs current in real time, while the pre-commit hook catches anything that slipped through.
+A **PostToolUse hook** echoes a reminder after every `Edit|Write` operation, prompting Claude to update relevant docs. A **pre-commit hook** stages any already-refreshed doc files into the current commit so they're never left as orphaned changes. The two layers complement each other: the hook keeps docs current during Claude sessions, while the pre-commit ensures they ship with the code.
 
 ## Technology Agnostic
 
