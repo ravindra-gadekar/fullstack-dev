@@ -23,22 +23,13 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 
 ## Installation
 
-Install all skills (recommended):
-
 ```bash
 npx skills add https://github.com/ravindra-gadekar/fullstack-dev.git --skill '*'
 ```
 
-Or install individual skills:
-
-```bash
-npx skills add https://github.com/ravindra-gadekar/fullstack-dev.git --skill fullstack-dev
-npx skills add https://github.com/ravindra-gadekar/fullstack-dev.git --skill brainstorm
-```
-
 ### Naming Collision Warning
 
-If you have an existing `/brainstorm` command (e.g., from Superpowers or local overrides), remove it before installing v2:
+If you have an existing `/brainstorm` command (e.g., from Superpowers or local overrides), remove it before installing:
 
 ```bash
 rm .claude/commands/brainstorm.md
@@ -50,13 +41,13 @@ Alternatively, the init agent will detect the conflict and offer to remove the o
 ## Update
 
 ```bash
-npx skills update fullstack-dev
+npx skills update fullstack-dev --skill '*'
 ```
 
 ## Remove
 
 ```bash
-npx skills remove fullstack-dev
+npx skills remove fullstack-dev --skill '*'
 ```
 
 ## Quick Start
