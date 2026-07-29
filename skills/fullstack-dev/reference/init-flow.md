@@ -373,7 +373,48 @@ Add git platform MCP based on auto-detection (Section 11):
 If no platform detected, ask the user (Section 11) and configure
 accordingly. If the user says "none / skip", only include context7.
 
-### 9.6 `.claude/settings.json`
+### 9.6 Optional Developer Tools
+
+After configuring MCP servers (context7, git platform), offer optional
+developer tools that improve AI agent capabilities. Present the
+following prompt:
+
+```
+? Optional developer tools (improve AI agent capabilities):
+
+  code-review-graph — Structural codebase understanding (Recommended)
+    Helps AI read your codebase faster and saves tokens.
+    ○ Configure now (Recommended)
+    ○ Skip
+
+  Agentation — Visual UI feedback tool
+    Click elements in your browser to report UI issues to the AI agent.
+    (Only available for projects with a frontend)
+    ○ Configure now
+    ○ Skip
+```
+
+**Branching:**
+- Agentation option is only shown when `projectType` includes frontend
+  (`fullstack` or `frontend`).
+- If "Configure now" for code-review-graph: follow
+  `reference/tools-setup.md` Section "code-review-graph MCP
+  Configuration" for `.mcp.json` entry AND hooks in
+  `.claude/settings.json`.
+- If "Configure now" for Agentation: follow `reference/tools-setup.md`
+  Section "Agentation" for `.mcp.json` entry AND npm dev dependency.
+- If "Skip" for either: no action, continue to next step.
+
+**Store:**
+- `optionalTools.codeReviewGraph` (boolean) -- whether code-review-graph
+  was configured
+- `optionalTools.agentation` (boolean) -- whether Agentation was
+  configured
+
+> **Note:** code-review-graph hooks should be merged alongside existing
+> hooks per the Hooks Merge Note in `reference/tools-setup.md`.
+
+### 9.7 `.claude/settings.json`
 
 Create at workspace root:
 
@@ -398,7 +439,7 @@ Create at workspace root:
 If the file already exists, merge the hooks — do not overwrite existing
 user-configured hooks.
 
-### 9.7 Pre-commit hook
+### 9.8 Pre-commit hook
 
 Install a git pre-commit hook at `.git/hooks/pre-commit` (in the root
 repo). The hook auto-stages documentation files that were already
@@ -423,7 +464,7 @@ done
 If a pre-commit hook already exists, append the plugin section inside
 a marker block (same pattern as `.gitignore`).
 
-### 9.8 `*.code-workspace` (multi-repo only)
+### 9.9 `*.code-workspace` (multi-repo only)
 
 Create `<project-name>.code-workspace` at workspace root:
 
@@ -441,7 +482,7 @@ Create `<project-name>.code-workspace` at workspace root:
 Only generated for multi-repo setups. The root folder (`.`) is always
 first so project-level files are accessible.
 
-### 9.9 Clone repos (multi-repo, if URLs provided)
+### 9.10 Clone repos (multi-repo, if URLs provided)
 
 For each repo in the repos list with `source: "clone"`:
 
@@ -452,7 +493,7 @@ git clone <url> <repo-name>
 Clone into the workspace root. After cloning, generate the per-repo
 `ARCHITECTURE.md` for each cloned repo.
 
-### 9.10 Set meta-repo remote (if local-remote)
+### 9.11 Set meta-repo remote (if local-remote)
 
 If `metaRepo.mode` is `local-remote`:
 
@@ -463,7 +504,7 @@ git remote add origin <metaRepo.remoteUrl>
 If the root directory does not have git initialized, run `git init`
 first.
 
-### 9.11 Initial commit
+### 9.12 Initial commit
 
 Stage all generated files and create an initial commit:
 
@@ -478,7 +519,7 @@ If meta-repo has a remote, do NOT push automatically. Inform the user:
 Ready. Run `git push -u origin main` when you want to push.
 ```
 
-### 9.12 Completion report
+### 9.13 Completion report
 
 Print a summary:
 
@@ -552,6 +593,9 @@ Claude Config     | .claude/settings.json exists                     | Yes (crea
 MCP               | .mcp.json exists                                 | Yes (create)
                   | context7 configured                              | Yes (add entry)
                   | Git platform MCP configured                      | Yes (add entry)
+Developer Tools   | code-review-graph in .mcp.json                   | Yes (add entry)
+                  | code-review-graph hooks in settings.json         | Yes (merge hooks)
+                  | Agentation in .mcp.json (if frontend)            | Yes (add entry)
 Workspace         | .code-workspace file exists (if multi-repo)      | Yes (create)
                   | All repos listed in workspace folders            | Yes (add missing)
 ```

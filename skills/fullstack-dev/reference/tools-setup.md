@@ -1,6 +1,6 @@
-# context7 and MCP Setup Reference
+# Tools and MCP Setup Reference
 
-Reference for the init-agent when configuring MCP servers in a target project.
+Reference for the init-agent when configuring MCP servers and developer tools in a target project. This is the single reference for all optional MCP tools and integrations.
 
 ---
 
@@ -35,11 +35,13 @@ No API keys or environment variables required.
 
 **NEVER overwrite existing MCP configuration. Always merge.**
 
+These merge rules apply to ALL tools configured via `.mcp.json` — context7, git platform servers, code-review-graph, Agentation, and any future additions.
+
 If `.mcp.json` already exists in the project root, follow this procedure:
 
 1. Read the existing `.mcp.json` file
 2. Parse it as JSON
-3. Add new servers (e.g., `context7`, `github`) to the `mcpServers` object — only if they are not already present
+3. Add new servers (e.g., `context7`, `github`, `code-review-graph`, `agentation`) to the `mcpServers` object — only if they are not already present
 4. Preserve ALL existing servers and their configuration unchanged
 5. Write the merged result back to `.mcp.json`
 6. Validate that the output is syntactically correct JSON
@@ -56,6 +58,14 @@ if (!existing.mcpServers["context7"]) {
 
 if (!existing.mcpServers["github"]) {
   existing.mcpServers["github"] = { ... }
+}
+
+if (!existing.mcpServers["code-review-graph"]) {
+  existing.mcpServers["code-review-graph"] = { ... }
+}
+
+if (!existing.mcpServers["agentation"]) {
+  existing.mcpServers["agentation"] = { ... }
 }
 
 // Repeat for any other servers being added
@@ -188,6 +198,99 @@ If no git remotes are found:
 
 ---
 
+## code-review-graph MCP Configuration
+
+code-review-graph is an MCP server that builds a persistent, incremental knowledge graph of the codebase using Tree-sitter. It enables token-efficient, context-aware code reviews and structural impact analysis. It requires no API keys and runs via uvx.
+
+### MCP Server
+
+Add the following to `.mcp.json` in the project root:
+
+```json
+{
+  "mcpServers": {
+    "code-review-graph": {
+      "command": "uvx",
+      "args": ["code-review-graph", "mcp", "--repo", "."]
+    }
+  }
+}
+```
+
+No API keys or environment variables required.
+
+### Hooks
+
+Add the following hooks to `.claude/settings.json` in the project root:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "Edit|Write|Bash|PowerShell",
+      "hooks": [{
+        "type": "command",
+        "command": "uvx code-review-graph update --skip-flows --repo .",
+        "timeout": 30000
+      }]
+    }],
+    "SessionStart": [{
+      "hooks": [{
+        "type": "command",
+        "command": "uvx code-review-graph status --repo .",
+        "timeout": 10000
+      }]
+    }]
+  }
+}
+```
+
+### Hooks Merge Note
+
+When code-review-graph hooks are added, they merge alongside the existing fullstack-dev PostToolUse hook. The result is two PostToolUse entries:
+
+1. **Fullstack-dev hook** — matcher `Edit|Write`, echo reminder (1s timeout)
+2. **code-review-graph hook** — matcher `Edit|Write|Bash|PowerShell`, graph update (30s timeout)
+
+The code-review-graph hook has a broader matcher (includes Bash/PowerShell). Both fire on `Edit|Write` operations — this is intentional. The echo hook is instant, and the graph update runs in parallel.
+
+---
+
+## Agentation
+
+Agentation provides agent orchestration and monitoring capabilities. It integrates via an MCP server and an optional frontend component for development-time visibility.
+
+### MCP Server
+
+Add the following to `.mcp.json` in the project root:
+
+```json
+{
+  "mcpServers": {
+    "agentation": {
+      "command": "npx",
+      "args": ["-y", "agentation-mcp@latest"]
+    }
+  }
+}
+```
+
+> **Note:** The exact MCP server package name must be verified at implementation time. If Agentation does not provide an MCP server, use its webhook/endpoint integration instead and document the alternative configuration.
+
+### npm Dependency (frontend repos)
+
+In frontend repositories, install Agentation as a dev dependency:
+
+```bash
+npm install agentation -D
+```
+
+### Frontend Component
+
+Add the `<Agentation />` component to the app's dev-only wrapper. This component provides development-time agent visibility and should only be included in development — exclude it from production builds.
+
+---
+
 ## Secrets Handling
 
 ### Principles
@@ -250,6 +353,7 @@ GITHUB_TOKEN=
 | File | Scope | Plugin may modify? |
 |------|-------|--------------------|
 | `.mcp.json` (project root) | Project | Yes |
+| `.claude/settings.json` (project root) | Project | Yes |
 | `~/.claude/.mcp.json` | User | No |
 | `~/.claude/settings.json` | User | No |
 | `~/.claude/settings.local.json` | User | No |

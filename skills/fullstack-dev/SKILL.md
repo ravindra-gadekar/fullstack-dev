@@ -180,4 +180,4 @@ These reference documents are used by the skill and its agents. They live in the
 | `reference/add-repo-flow.md` | Add-repo wizard steps and configuration updates |
 | `reference/gitignore-rules.md` | .gitignore marker block management rules |
 | `reference/doc-templates.md` | Templates for all generated documentation files |
-| `reference/context7-setup.md` | context7 and MCP server configuration steps |
+| `reference/tools-setup.md` | MCP tools configuration — context7, git platform, code-review-graph, Agentation |
