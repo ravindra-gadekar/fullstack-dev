@@ -401,3 +401,246 @@ the research output structure defined in Section 4:
 
 Deduplicate entries that appear in multiple agents' results (same file path).
 Prefer the more detailed description when merging duplicates.
+
+---
+
+## Section 6: Multi-Repo Detection
+
+Decision tree for determining which repos a plan touches and how to assign
+phases across them.
+
+```
+How many repos does the spec touch?
++-- Spec has explicit **Repo:** field
+|   --> parse repo list from field
+|   --> cross-reference with config.json repos[]
+|   +-- All repos found in config --> use them
+|   +-- Unknown repo name --> warn: "Repo '<name>' not found in config.json"
+|       --> ask user to clarify
++-- No explicit repo field
+|   --> infer from file paths in spec:
+|       +-- API endpoints, route handlers --> api repo
+|       +-- UI components, pages, layouts --> app repo
+|       +-- Mongoose models, schemas --> api repo
+|       +-- Shared types referenced by both --> api repo (source of truth)
+|   --> if ambiguous or no file paths in spec
+|       --> ask user: "Which repo(s) does this feature touch?"
++-- Single repo --> all phases target that repo
++-- Multiple repos --> assign phases by dependency order:
+    1. Shared types/models (database layer)
+    2. Backend API (produces endpoints)
+    3. Frontend (consumes endpoints)
+    4. Integration/testing (cross-repo)
+```
+
+### Phase-to-Repo Assignment Rules
+
+- Each phase targets exactly one repo.
+- Backend phases come before frontend phases.
+- If a phase needs files from 2+ repos, split it into separate phases --
+  one per repo, ordered by dependency (producer before consumer).
+- The README.md Phases table includes a Repo column so the implementer
+  knows which repo to work in for each phase.
+- When a frontend phase consumes an API endpoint created in a backend phase,
+  the frontend phase must list the backend phase as a dependency.
+
+---
+
+## Section 7: Phase Decomposition
+
+Rules for grouping work into phases.
+
+### Phase Properties
+
+- Each phase is a cohesive unit within a single repo.
+- Target 2-6 phases per plan.
+- Each phase produces independently verifiable output (tests pass after
+  completion).
+- Phase dependency is always sequential (Phase N depends on Phase N-1).
+
+### Decomposition Heuristic
+
+```
+1. List all deliverables from the spec
+2. Group by repo (backend first, then frontend)
+3. Within each repo, order by dependency:
+   a. Data models / schemas first
+   b. Business logic / services second
+   c. API endpoints / routes third
+   d. UI components / pages fourth
+   e. Integration / E2E tests last
+4. Each group becomes a phase
+5. If a group has > 8 tasks, split into sub-phases
+6. If a group has < 2 tasks, merge with adjacent phase
+```
+
+### Phase Table Template
+
+Present to user for approval:
+
+```markdown
+| Phase | Repo | Name | Tasks (est.) | Delivers |
+|-------|------|------|--------------|----------|
+| 1 | <repo> | <name> | <count> | <what it produces> |
+```
+
+### User Approval Flow
+
+Present the phase table via AskUserQuestion with these options:
+
+```
+(a) Approve as-is
+(b) Request changes (provide as text)
+(c) Add a phase
+(d) Remove a phase
+```
+
+Iterate until approved. Track revision count:
+
+```
+revision_count < 3?
++-- YES --> apply changes, re-present table
++-- NO --> ask: "We've iterated 3 times. Should we proceed with the
+            current plan, or would you like to start the decomposition over?"
+    +-- Proceed --> lock the phase table and continue
+    +-- Start over --> reset revision_count, re-run decomposition heuristic
+```
+
+---
+
+## Section 8: Task Decomposition
+
+Rules for breaking phases into tasks.
+
+### Task Sizing
+
+- 1-2 files created/modified per task.
+- Each task completable in one commit.
+- If a task has > 6 steps, split it.
+- Each task has its own test cycle.
+
+### Step Patterns by Task Type
+
+| Type | Pattern | Steps |
+| --- | --- | --- |
+| Code (logic, components, endpoints) | TDD | 1. Write failing test -> 2. Verify fail -> 3. Implement -> 4. Verify pass -> 5. Commit |
+| Config (env, build, tooling) | Create-and-verify | 1. Create config -> 2. Run verification -> 3. Commit |
+| Schema (DB migrations, types) | Write-and-validate | 1. Write schema -> 2. Validate syntax -> 3. Commit |
+| Documentation | Write-and-review | 1. Write content -> 2. Verify references -> 3. Commit |
+
+### Task Metadata Template
+
+```markdown
+### Task N: <Title>
+
+**Files:**
+- Create: `<repo>/path/to/new-file.ts`
+- Modify: `<repo>/path/to/existing-file.ts`
+- Test: `<repo>/tests/path/to/test-file.test.ts`
+
+**Interfaces:**
+- Consumes: <signatures from earlier tasks or codebase>
+- Produces: <signatures for later tasks>
+
+**Acceptance Criteria:** <which spec criteria this addresses>
+```
+
+### Interface Declaration Rules
+
+- Every "Consumes" must either exist in the codebase OR appear in a
+  "Produces" of an earlier task.
+- Every "Produces" should be consumed by a later task or be a final
+  deliverable.
+- Use exact TypeScript signatures when possible:
+  `function createProject(data: CreateProjectInput): Promise<Project>`
+  rather than "a function to create projects".
+
+### Code Content Rules
+
+- Every step includes structurally accurate code with correct file paths,
+  function signatures, and framework idioms.
+- Generated code demonstrates the pattern to follow; implementers adapt
+  to exact runtime details.
+- No placeholder text: "TBD", "TODO", "implement later", "similar to
+  Task N" are plan failures. Every step must contain concrete, actionable
+  instructions.
+
+---
+
+## Section 9: Plan Output Templates
+
+### README.md Template
+
+```markdown
+# <Feature Name> — Implementation Plan
+
+> **For agentic workers:** Use /implement-plan <path> or
+> superpowers:subagent-driven-development to execute this plan
+> phase-by-phase, task-by-task. Steps use checkbox (`- [ ]`) syntax
+> for tracking.
+
+**Goal:** <1-2 sentence goal description>
+
+**Architecture:** <2-3 sentence architecture summary>
+
+**Tech Stack:** <comma-separated technologies>
+
+**Repo:** <repo(s) with phase mapping>
+**Spec:** `docs/specs/<timestamp>-<name>-design.md`
+
+---
+
+## Global Constraints
+
+<Project-wide requirements from spec, one line each>
+
+## Phases
+
+| Phase | Repo | Name | Tasks | Delivers |
+|-------|------|------|-------|----------|
+| 1 | <repo> | <Name> | N | <deliverable> |
+
+## Execution Order
+
+Phases MUST be executed in order. Each phase depends on the previous phase being complete.
+Start with: `docs/plans/<timestamp>-<name>/phase-1.md`
+```
+
+### phase-N.md Template
+
+```markdown
+# Phase N: <Phase Name>
+
+**Repo:** <target repo>
+**Depends on:** <"None" or "Phase N-1 (description)">
+**Delivers:** <what this phase produces when complete>
+
+---
+
+## File Structure
+
+Files created/modified in this phase:
+
+<ASCII tree with create/modify annotations>
+
+### Task 1: <Title>
+
+<task metadata + steps per task type pattern>
+
+---
+
+## Phase N Complete
+
+<Summary of what exists after this phase>
+**Next:** `phase-N+1.md` or "Plan complete"
+```
+
+### Timestamp Format Rules
+
+- Use current UTC time: `YYYY-MM-DDTHH-MM-SS`
+- Dashes instead of colons (Windows-safe file paths).
+- Plan directory name: `<timestamp>-<plan-slug>`
+- Plan slug derived from spec slug (strip `-design` suffix):
+  - Spec: `2026-07-30T01-00-00-auth-system-design.md`
+  - Spec slug: `auth-system-design` -> strip `-design` -> `auth-system`
+  - Plan directory: `2026-07-30T02-15-00-auth-system/`
