@@ -348,7 +348,7 @@ Placeholder text in angle brackets (`<...>`) is replaced with real content. Sect
 
 | Dependency | How |
 |---|---|
-| <repo name> | <communication method — e.g., HTTP calls to api.rankme.top> |
+| <repo name> | <communication method — e.g., HTTP calls to backend-api> |
 
 ### External
 
@@ -553,7 +553,7 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 |---|---|---|---|
 | `version` | string | yes | Config schema version. Currently `"1.0.0"`. |
 | `plugin` | string | yes | Git URL of the plugin repo. Always `"https://github.com/ravindra-gadekar/fullstack-dev.git"`. |
-| `projectName` | string | yes | Human-readable project name (e.g., `"RANK ME TOP"`). |
+| `projectName` | string | yes | Human-readable project name (e.g., `"My Project"`). |
 | `description` | string | yes | One-line project description. |
 | `projectType` | enum | yes | One of: `"full-stack"`, `"api"`, `"frontend"`, `"cli"`, `"microservices"`. |
 | `repoStructure` | enum | yes | One of: `"mono-repo"`, `"multi-repo"`. |
@@ -561,7 +561,7 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 | `metaRepo.remote` | boolean | -- | Whether the meta-repo has a remote origin. |
 | `metaRepo.url` | string | -- | Remote URL of the meta-repo. Empty if `remote: false`. |
 | `repos` | array | yes | List of repositories/packages in the workspace. |
-| `repos[].name` | string | yes | Directory name of the repo (e.g., `"app.rankme.top"`). |
+| `repos[].name` | string | yes | Directory name of the repo (e.g., `"frontend-app"`). |
 | `repos[].type` | enum | yes | One of: `"frontend"`, `"backend"`, `"service"`, `"library"`. |
 | `repos[].stack` | string[] | yes | Technologies used (e.g., `["next.js", "typescript", "tailwind"]`). |
 | `hasFrontend` | boolean | yes | Whether any repo has type `"frontend"`. Controls brand.md generation. |

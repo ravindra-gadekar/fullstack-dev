@@ -287,8 +287,8 @@ Analyze feature scope against repos
 |
 +-- Spans multiple repos
 |   --> Identify which repos and why
-|   --> Example: "This feature needs changes in app.rankme.top (UI)
-|       and api.rankme.top (API endpoints)."
+|   --> Example: "This feature needs changes in frontend-app (UI)
+|       and backend-api (API endpoints)."
 |   --> Spec will include a "Per-Repo Changes" section
 |   --> Continue to Step 4
 |
@@ -691,7 +691,7 @@ The final spec is written to `docs/specs/YYYY-MM-DDTHH-MM-SS-<topic>-design.md`.
 # [Feature Name] — Design Spec
 
 **Project:** [project name from config.json]
-**Repo(s):** [target repo(s) — e.g., `app.rankme.top`, `api.rankme.top`]
+**Repo(s):** [target repo(s) — e.g., `frontend-app`, `backend-api`]
 **Scope:** [one-line scope description]
 **Approach:** [chosen approach name from Step 6]
 
