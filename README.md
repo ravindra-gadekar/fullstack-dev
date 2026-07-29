@@ -18,6 +18,18 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 npx skills add https://github.com/ravindra-gadekar/fullstack-dev.git --skill fullstack-dev
 ```
 
+## Update
+
+```bash
+npx skills update fullstack-dev
+```
+
+## Remove
+
+```bash
+npx skills remove fullstack-dev
+```
+
 ## Quick Start
 
 After installation, run `/project --init` in your workspace root and follow the interactive wizard. It will ask about your repos, tech stack, domain concepts, and conventions, then generate everything in one pass.
