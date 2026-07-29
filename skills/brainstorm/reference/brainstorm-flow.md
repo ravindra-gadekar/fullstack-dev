@@ -941,36 +941,20 @@ grill), offer to transition to planning.
 ### Detection Logic
 
 ```
-Check for available plan commands:
-|
-+-- Check 1: Does a skill named "plan" exist in the plugin?
-|   (Future fullstack-dev v2 — look for skills/plan/SKILL.md)
-|   +-- Found
-|   |   --> Recommend: /plan <spec-path> --auto
-|   +-- Not found --> Check 2
-|
-+-- Check 2: Does a command named "write-plan" exist in the workspace?
-|   (From existing workspace skills — e.g., Superpowers)
-|   +-- Found
-|   |   --> Recommend: /write-plan <spec-path> --auto --parallel
-|   +-- Not found --> Check 3
-|
-+-- Check 3: Neither found
-    --> Print:
-        "Spec is ready at <path>.
-         Create an implementation plan when a plan command is available."
-```
-
-### Transition Message
-
-When a plan command is found:
-
-```
-Spec finalized at docs/specs/<filename>.
-
-Ready to create an implementation plan?
-  * Yes — run [recommended command]
-  * No — I'll plan later
+/plan command available? (check commands/plan.md exists in the plugin directory)
++-- YES
+|   --> Tell the user:
+|       "Spec is ready! To create an implementation plan, run:
+|        /plan --auto <spec-path>"
+|   --> Then offer a choice via AskUserQuestion:
+|       (a) Invoke /plan now — auto-run /plan --auto <spec-path>
+|       (b) I'll do it manually later
+|   +-- User picks (a) --> invoke the plan skill via Skill tool,
+|       passing --auto and the spec path
+|   +-- User picks (b) --> done, end the brainstorm session
++-- NO
+    --> "Spec is ready at <spec-path>. Create an implementation plan
+         when a plan command is available."
 ```
 
 When no plan command is found:
