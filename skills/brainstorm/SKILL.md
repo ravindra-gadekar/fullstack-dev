@@ -497,20 +497,21 @@ Agent(
 After the spec is finalized (grilled or skipped), recommend the next step.
 
 ```
-Check available commands:
-+-- /plan exists
-|   --> "Spec is ready! To create an implementation plan, run:
-|        /plan <spec-path> --auto"
-+-- /write-plan exists
-|   --> "Spec is ready! To create an implementation plan, run:
-|        /write-plan <spec-path> --auto --parallel"
-+-- Neither exists
+/plan command available? (check commands/plan.md exists in the plugin directory)
++-- YES
+|   --> Tell the user:
+|       "Spec is ready! To create an implementation plan, run:
+|        /plan --auto <spec-path>"
+|   --> Then offer a choice via AskUserQuestion:
+|       (a) Invoke /plan now — auto-run /plan --auto <spec-path>
+|       (b) I'll do it manually later
+|   +-- User picks (a) --> invoke the plan skill via Skill tool,
+|       passing --auto and the spec path
+|   +-- User picks (b) --> done, end the brainstorm session
++-- NO
     --> "Spec is ready at <spec-path>. Create an implementation plan
          when a plan command is available."
 ```
-
-To check availability, look for command definitions in the plugin's
-`commands/` directory (e.g., `commands/plan.md`, `commands/write-plan.md`).
 
 ---
 

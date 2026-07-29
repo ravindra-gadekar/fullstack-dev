@@ -1,7 +1,7 @@
 ---
 name: plan
 description: "Convert a design spec into a multi-phase implementation plan. Uses code-review-graph for accurate file paths. Produces plans in docs/plans/."
-argument-hint: "[--auto] [--parallel] [<spec-path>]"
+argument-hint: "[--auto] [--parallel] <spec-path>"
 ---
 
 EXECUTE IMMEDIATELY — invoke the plan skill.
