@@ -8,6 +8,11 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 
 ## Features
 
+### v3 — Plan
+
+- **`/plan [--auto] [--parallel] <spec-path>`** — Convert a design spec into a multi-phase implementation plan. Uses code-review-graph (with filesystem fallback) for accurate file paths, cross-task interfaces, and spec traceability. Produces plans in `docs/plans/` with checkbox tracking.
+- **Plan-Reviewer Agent** — Built-in plan stress-tester that challenges plans across 8 dimensions (dependency chains, file path accuracy, spec coverage, interface consistency, etc.). Dispatched from `/plan` or usable independently.
+
 ### v2 — Brainstorm & Tools
 
 - **`/brainstorm [--auto] <feature>`** — Brainstorm a feature into a design spec. Explores project context, dispatches parallel research agents, asks clarifying questions, proposes approaches, writes and optionally grills the spec.
@@ -77,6 +82,7 @@ After installation, run `/project --init` in your workspace root and follow the 
 | `/project` | `--add-repo` | Add a new repo to a multi-repo project |
 | `/project` | `--refresh` | Manually refresh all documentation |
 | `/brainstorm` | `[--auto] <feature>` | Brainstorm a feature into a design spec |
+| `/plan` | `[--auto] [--parallel] <spec-path>` | Convert a design spec into a multi-phase implementation plan |
 
 ## How Auto-Refresh Works
 
@@ -86,9 +92,9 @@ A **PostToolUse hook** echoes a reminder after every `Edit|Write` operation, pro
 
 Tech stack inputs are free-text — type whatever you use (Next.js, Django, Rails, Spring Boot, etc.). When framework-specific knowledge is needed, the plugin queries context7 for up-to-date documentation rather than relying on baked-in assumptions.
 
-## Future (v3+)
+## Future (v4+)
 
-Workflow skills (`/plan`, `/implement`, `/debug`, `/refactor`) will be added as composable skill modules in future versions.
+Workflow skills (`/implement`, `/debug`, `/refactor`) will be added as composable skill modules in future versions.
 
 ## License
 
