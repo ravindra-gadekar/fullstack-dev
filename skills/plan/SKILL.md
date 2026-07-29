@@ -842,50 +842,34 @@ Iterate until the user approves. Then proceed to Step 12.
 
 ## Step 12: Next Steps
 
-Present the finalized plan location and implementation options. Do not
-auto-start implementation.
-
-### Implementation Path Detection
+Present the finalized plan location and offer to transition to implementation.
 
 ```
-Check available commands/skills:
-+-- /implement-plan exists
-|   --> primary recommendation
-+-- superpowers:subagent-driven-development available
-|   --> secondary recommendation (parallel execution)
-+-- superpowers:executing-plans available
-|   --> tertiary recommendation (inline execution)
-+-- None of the above available
-    --> generic guidance
+/implement command available? (check commands/implement.md exists in the plugin directory)
++-- YES
+|   --> Tell the user:
+|       "Plan is ready at docs/plans/<timestamp>-<slug>/
+|        The plan has <N> phases and <M> total tasks.
+|        Phase 1 (<phase-name>) is the starting point.
+|
+|        To implement it, run:
+|        /implement --auto docs/plans/<timestamp>-<slug>/"
+|   --> Then offer a choice via AskUserQuestion:
+|       (a) Invoke /implement now — auto-run /implement --auto <plan-path>
+|       (b) I'll do it manually later
+|   +-- User picks (a) --> invoke the implement skill via Skill tool,
+|       passing --auto and the plan path
+|   +-- User picks (b) --> done, end the plan session
++-- NO
+    --> "Plan is ready at docs/plans/<timestamp>-<slug>/
+         The plan has <N> phases and <M> total tasks.
+         Phase 1 (<phase-name>) is the starting point.
+         Implement it when an implement command is available."
 ```
 
-### Output Format
-
-Always present this structure:
-
-```
-Your plan is ready at:
-  docs/plans/<timestamp>-<slug>/
-
-To implement it:
-  /implement-plan docs/plans/<timestamp>-<slug>/
-
-The plan has <N> phases and <M> total tasks.
-Phase 1 (<phase-name>) is the starting point.
-```
-
-Conditional additions:
-- If `superpowers:subagent-driven-development` or `superpowers:executing-plans`
-  are available, append an "Alternative execution methods" block listing them.
-- If no implementation command exists, replace the "To implement it" line with:
-  "No implementation command is currently available. Use the plan as a
-  reference when an implementation skill is installed."
-- If the plan was generated from a GitHub issue, append:
-  "This plan was generated from issue #N. The final phase includes
-  PR creation and issue closure."
-
-Do not automatically start implementation. Do not ask "shall I implement
-now?" -- just present the path. The user decides when and how to implement.
+If the plan was generated from a GitHub issue, append:
+"This plan was generated from issue #N. The final phase includes
+PR creation and issue closure."
 
 ---
 

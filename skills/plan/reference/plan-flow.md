@@ -848,80 +848,35 @@ On first /plan invocation in a session:
 ## Section 14: Plan Transition (Next Steps)
 
 After the plan is finalized and written to disk, present the next steps
-to the user.
+and offer to transition to implementation.
 
-### Implementation Path Detection
+### Detection and Offer
 
 ```
-Check available commands/skills:
-+-- /implement-plan exists
-|   --> primary recommendation
-+-- superpowers:subagent-driven-development available
-|   --> secondary recommendation (parallel execution)
-+-- superpowers:executing-plans available
-|   --> tertiary recommendation (inline execution)
-+-- None of the above available
-    --> generic guidance
+/implement command available? (check commands/implement.md exists in the plugin directory)
++-- YES
+|   --> Tell the user:
+|       "Plan is ready at docs/plans/<timestamp>-<slug>/
+|        The plan has <N> phases and <M> total tasks.
+|        Phase 1 (<phase-name>) is the starting point.
+|
+|        To implement it, run:
+|        /implement --auto docs/plans/<timestamp>-<slug>/"
+|   --> Then offer a choice via AskUserQuestion:
+|       (a) Invoke /implement now -- auto-run /implement --auto <plan-path>
+|       (b) I'll do it manually later
+|   +-- User picks (a) --> invoke the implement skill via Skill tool,
+|       passing --auto and the plan path
+|   +-- User picks (b) --> done, end the plan session
++-- NO
+    --> "Plan is ready at docs/plans/<timestamp>-<slug>/
+         The plan has <N> phases and <M> total tasks.
+         Phase 1 (<phase-name>) is the starting point.
+         Implement it when an implement command is available."
 ```
 
-### Output Format
+### GitHub Issue Reminder
 
-Present exactly this structure after the plan is written:
-
-```markdown
-## Next Steps
-
-Your plan is ready at:
-  docs/plans/<timestamp>-<slug>/
-
-To implement it:
-  /implement-plan docs/plans/<timestamp>-<slug>/
-
-The plan has <N> phases and <M> total tasks.
-Phase 1 (<phase-name>) is the starting point.
-```
-
-When multiple implementation options are available, list alternatives:
-
-```markdown
-## Next Steps
-
-Your plan is ready at:
-  docs/plans/<timestamp>-<slug>/
-
-To implement it:
-  /implement-plan docs/plans/<timestamp>-<slug>/
-
-Alternative execution methods:
-  - Subagent-driven: invoke superpowers:subagent-driven-development
-    with docs/plans/<timestamp>-<slug>/
-  - Inline: invoke superpowers:executing-plans
-    with docs/plans/<timestamp>-<slug>/
-
-The plan has <N> phases and <M> total tasks.
-Phase 1 (<phase-name>) is the starting point.
-```
-
-When no implementation command is available:
-
-```markdown
-## Next Steps
-
-Your plan is ready at:
-  docs/plans/<timestamp>-<slug>/
-
-No implementation command is currently available.
-Use the plan as a reference when an implementation skill is installed.
-
-The plan has <N> phases and <M> total tasks.
-Phase 1 (<phase-name>) is the starting point.
-```
-
-### Transition Behavior
-
-- Do not automatically start implementation.
-- Do not ask "shall I implement now?" -- just present the path.
-- The user decides when and how to implement.
-- If the plan was generated from a GitHub issue, remind the user:
-  "This plan was generated from issue #N. The final phase includes
-  PR creation and issue closure."
+If the plan was generated from a GitHub issue, append:
+"This plan was generated from issue #N. The final phase includes
+PR creation and issue closure."
