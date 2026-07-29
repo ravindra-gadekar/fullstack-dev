@@ -575,10 +575,8 @@ Rules for breaking phases into tasks.
 ```markdown
 # <Feature Name> — Implementation Plan
 
-> **For agentic workers:** Use /implement-plan <path> or
-> superpowers:subagent-driven-development to execute this plan
-> phase-by-phase, task-by-task. Steps use checkbox (`- [ ]`) syntax
-> for tracking.
+> **For agentic workers:** Use `/implement --auto <path>` to execute this plan
+> phase-by-phase, task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** <1-2 sentence goal description>
 
@@ -818,7 +816,7 @@ environment.
 ```
 On first /plan invocation in a session:
 +-- Scan available skills for: /plan, /write-plan, writing-plans,
-|   superpowers:writing-plans, or any skill with "plan" in its name
+|   or any skill with "plan" in its name
 |   that is not this skill
 +-- Found existing plan skill(s)?
 |   +-- YES --> inform user (one time only):

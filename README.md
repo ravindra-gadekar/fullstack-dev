@@ -8,6 +8,13 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 
 ## Features
 
+### v4 — Implement
+
+- **`/implement [--auto] [--status] [plan-path]`** — Execute implementation plans produced by `/plan`. Dispatches implementer agents per task with auto smoke testing (typecheck, build, test, lint), auto security testing (9 OWASP categories), and 3-tier auto-fix escalation. Built-in resume detection and progress tracking.
+- **Implementer Agent** — Implements plan tasks with TDD workflow, supports normal mode and fix mode.
+- **Task-Reviewer Agent** — Reviews completed tasks across 4 dimensions: spec compliance, code quality, test quality, interface contract. Read-only.
+- **Security-Reviewer Agent** — Reviews code changes for 9 OWASP-aligned vulnerability categories. Auto-triggered on security-sensitive files. Read-only.
+
 ### v3 — Plan
 
 - **`/plan [--auto] [--parallel] <spec-path>`** — Convert a design spec into a multi-phase implementation plan. Uses code-review-graph (with filesystem fallback) for accurate file paths, cross-task interfaces, and spec traceability. Produces plans in `docs/plans/` with checkbox tracking.
@@ -83,6 +90,7 @@ After installation, run `/project --init` in your workspace root and follow the 
 | `/project` | `--refresh` | Manually refresh all documentation |
 | `/brainstorm` | `[--auto] <feature>` | Brainstorm a feature into a design spec |
 | `/plan` | `[--auto] [--parallel] <spec-path>` | Convert a design spec into a multi-phase implementation plan |
+| `/implement` | `[--auto] [--status] [plan-path]` | Execute implementation plans with auto smoke testing, security testing, and 3-tier auto-fix |
 
 ## How Auto-Refresh Works
 
@@ -92,9 +100,9 @@ A **PostToolUse hook** echoes a reminder after every `Edit|Write` operation, pro
 
 Tech stack inputs are free-text — type whatever you use (Next.js, Django, Rails, Spring Boot, etc.). When framework-specific knowledge is needed, the plugin queries context7 for up-to-date documentation rather than relying on baked-in assumptions.
 
-## Future (v4+)
+## Future (v5+)
 
-Workflow skills (`/implement`, `/debug`, `/refactor`) will be added as composable skill modules in future versions.
+Workflow skills (`/debug`, `/refactor`) will be added as composable skill modules in future versions.
 
 ## License
 

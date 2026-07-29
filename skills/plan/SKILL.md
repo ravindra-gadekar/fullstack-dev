@@ -503,7 +503,7 @@ collision_check_done flag set?
 +-- YES --> skip, proceed to Step 6
 +-- NO
     +-- Scan available skills for: /write-plan, writing-plans,
-    |   superpowers:writing-plans, or any skill with "plan" in its
+    |   or any skill with "plan" in its
     |   name that is not this skill
     +-- Found?
     |   +-- YES --> one-time message:
@@ -659,8 +659,7 @@ Plan files are never written incrementally:
 ```markdown
 # <Feature Name> — Implementation Plan
 
-> **For agentic workers:** Use /implement-plan <path> or
-> superpowers:subagent-driven-development to execute this plan
+> **For agentic workers:** Use `/implement --auto <path>` to execute this plan
 > phase-by-phase, task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** <1-2 sentence goal>

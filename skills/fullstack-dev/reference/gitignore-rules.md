@@ -15,9 +15,9 @@ The managed block uses exact start/end markers. Copy this template verbatim (inc
 # ============================================
 
 # Sub-repositories (each has its own git)
-app.rankme.top/
-api.rankme.top/
-autopilot.rankme.top/
+frontend-app/
+backend-api/
+worker-service/
 
 # Plugin internals
 .fullstack-dev/*.local.*
@@ -45,7 +45,7 @@ The sub-repository list is project-specific. The example above shows three repos
 
 | Category | Pattern(s) | Why |
 |---|---|---|
-| Sub-repository directories | `app.rankme.top/`, `api.rankme.top/`, etc. | Each sub-repo has its own `.git`; the parent repo must not track them |
+| Sub-repository directories | `frontend-app/`, `backend-api/`, etc. | Each sub-repo has its own `.git`; the parent repo must not track them |
 | Plugin internals | `.fullstack-dev/*.local.*` | Local config/state files that should never be committed |
 | Generated / rebuilt files | `node_modules/` | Rebuilt on `npm install`; never committed |
 | Secrets | `.env`, `.env.local`, `.env.*.local` | Environment secrets must never be committed |
@@ -109,8 +109,8 @@ After (marker block inserted):
 # ============================================
 
 # Sub-repositories (each has its own git)
-app.rankme.top/
-api.rankme.top/
+frontend-app/
+backend-api/
 
 # Plugin internals
 .fullstack-dev/*.local.*
