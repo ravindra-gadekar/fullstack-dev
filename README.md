@@ -8,7 +8,21 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 
 ## Features
 
-### v7: Git Workflow
+### v8 — Auto Gitignore
+
+**Command:** `/gitignore <scan|rebuild|cleanup> [--all] [--dry-run] [repo-name]`
+
+- Built-in pattern catalog with 16 categories (OS, IDE, framework, tooling, MCP, deployment)
+- Tech-stack-aware `.gitignore` generation from `config.json`
+- Pre-commit hook auto-enforces gitignore rules on every commit
+- `/gitignore scan` — check tracked files for violations
+- `/gitignore rebuild` — regenerate `.gitignore` and hook from catalog
+- `/gitignore cleanup` — find and untrack already-committed violations (`--dry-run` to preview)
+- Standardized marker block format (`fullstack-dev:gitignore`)
+- Init integration: generates `.gitignore` + installs hook during `/project --init`
+- Health check: verifies coverage and hook installation
+
+### v7 — Git Workflow
 
 - **`/git <setup|sync|status|publish> [--all] [repo-name]`** — Unified Git workflow management. Sets up `local-dev` as the persistent working branch, auto-detects target branches from CI/CD config, syncs with rebase (merge fallback), and publishes to remote with auto-generated PRs.
 - **Universal Git Guard** — Every command (`/implement`, `/fix`, `/debug`, `/refactor`, `/brainstorm`, `/plan`) now gets a Step 0 guard that verifies the `local-dev` branch, stashes uncommitted work, and pops on exit. Replaces inconsistent per-command stash logic.
@@ -118,6 +132,8 @@ After installation, run `/project --init` in your workspace root and follow the 
 | `/refactor` | `[--auto] [--parallel] [--verbose] [--scope <path>] [<target> [-- <reason>]]` | Refactor code with graph-powered discovery, atomic changes, and before/after metrics |
 | `/fix` | `[--auto] [--verbose] <directive>` | Apply a known fix directly with verification |
 | `/debug` | `[--auto] [--parallel] [--verbose] <symptoms>` | Investigate and fix unknown bugs — systematic root-cause analysis |
+| `/gitignore` | `<scan\|rebuild\|cleanup> [--all] [--dry-run] [repo-name]` | Auto-manage .gitignore — scan violations, rebuild from tech stack, cleanup tracked files |
+| `/git` | `<setup\|sync\|status\|publish> [--all] [repo-name]` | Git workflow — local-dev branch, sync, status, publish with PR |
 
 ## How Auto-Refresh Works
 
@@ -127,7 +143,7 @@ A **PostToolUse hook** echoes a reminder after every `Edit|Write` operation, pro
 
 Tech stack inputs are free-text — type whatever you use (Next.js, Django, Rails, Spring Boot, etc.). When framework-specific knowledge is needed, the plugin queries context7 for up-to-date documentation rather than relying on baked-in assumptions.
 
-## Future (v6+)
+## Future
 
 Additional workflow skills will be added as composable skill modules in future versions.
 

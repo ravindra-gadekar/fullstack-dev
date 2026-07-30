@@ -123,10 +123,10 @@ Run `git init` inside the new directory to make it its own repository.
 
 ### Step 3: Update `.gitignore`
 
-Add the new repo directory to the meta-repo `.gitignore` marker block. Follow the rules in `skills/fullstack-dev/reference/gitignore-rules.md`:
+Add the new repo directory to the meta-repo `.gitignore` marker block. Follow the patterns in `skills/gitignore/reference/gitignore-catalog.md` and the marker format and merge rules in `skills/gitignore/reference/gitignore-flow.md`:
 
 1. Read `.gitignore` with the Read tool.
-2. Find the marker block: `# Fullstack Dev Plugin — auto-generated entries` ... `# End Fullstack Dev Plugin block`.
+2. Find the marker block: `# >>> fullstack-dev:gitignore (do not edit this block) >>>` ... `# <<< fullstack-dev:gitignore <<<`.
 3. Find the `# Sub-repositories (each has its own git)` section inside the marker block.
 4. Add the new directory on its own line with a trailing `/` (e.g., `new-service/`).
 5. Keep the list alphabetically sorted.
@@ -296,5 +296,5 @@ Adjust the summary to reflect what was actually done -- omit lines for skipped s
 ## Reference Documents
 
 - `skills/fullstack-dev/reference/add-repo-flow.md` -- wizard questions, configuration steps, and MCP repo creation details
-- `skills/fullstack-dev/reference/gitignore-rules.md` -- marker block format, placement rules, and editing instructions
+- `skills/fullstack-dev/reference/gitignore-rules.md` -- Routing reference — points to `skills/gitignore/reference/gitignore-catalog.md` (pattern database) and `skills/gitignore/reference/gitignore-flow.md` (marker format, merge rules, hook template)
 - `skills/fullstack-dev/reference/doc-templates.md` -- templates for ARCHITECTURE.md, architecture.md, tech-stack.md, CONTEXT.md, and config.json schema

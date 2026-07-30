@@ -313,23 +313,63 @@ This step runs BEFORE config is finalized so detection results feed into the con
 
 ### 9.2 `.gitignore`
 
-Create or update at workspace root. If the file already exists, append
-the plugin marker block. If it does not exist, create it with the block.
+Create or update at workspace root. Generate comprehensive `.gitignore` from the pattern catalog based on the project's tech stack.
+
+1. Read `skills/gitignore/reference/gitignore-catalog.md` for available patterns.
+2. Determine active categories from detected tech stack (`repos[].stack` from config):
+   - Always include: `universal`, `secrets`, `build`, `cache`, `ide`
+   - Always include all OS categories: `macos`, `windows`, `linux`
+   - Per-repo tech stack: map `repos[].stack` entries to catalog category keys
+   - File detection fallback: check for marker files (`package.json` → node, `tsconfig.json` → typescript, etc.)
+   - MCP tooling: read `.mcp.json` server entries, activate `mcp-tooling` if servers found
+   - Deployment: check for config files (`vercel.json`, `serverless.yml`, etc.)
+3. Generate marker block content grouped by category, sorted per catalog order:
+   `universal → secrets → node → framework-specific → build → cache → ide → OS → mcp-tooling → deployment → sub-repositories`
+4. For multi-repo: include sub-repo directories as `# Sub-repositories` category inside the block.
+5. Write `.gitignore` following merge rules from `skills/gitignore/reference/gitignore-flow.md` Section 2:
+   - No `.gitignore` exists → create with full marker block
+   - `.gitignore` exists, no marker block → prepend marker block, preserve all existing content below
+   - Marker block exists → replace everything between markers only
+   - Old marker format detected → migrate per `gitignore-flow.md` Section 5
+6. Store active categories in `config.json` `gitIgnore.activeCategories`.
 
 The marker block format:
 
 ```gitignore
-# >>> fullstack-dev (do not edit this block) >>>
-<repo-name-1>/
-<repo-name-2>/
-# <<< fullstack-dev <<<
+# >>> fullstack-dev:gitignore (do not edit this block) >>>
+
+# Universal
+node_modules/
+*.log
+...
+
+# Sub-repositories
+frontend-app/
+backend-api/
+
+# <<< fullstack-dev:gitignore <<<
+
+# --- User entries below ---
 ```
 
-Each sub-repo directory is listed so the meta-repo does not track
-sub-repo contents. Only applicable for multi-repo setups.
+Never remove lines outside the marker block. On subsequent runs, replace only the content between the markers.
 
-Never remove lines outside the marker block. On subsequent runs,
-replace only the lines between the markers.
+See `skills/gitignore/reference/gitignore-catalog.md` for the full pattern catalog and `skills/gitignore/reference/gitignore-flow.md` for marker block format and merge rules.
+
+### 9.2a Pre-commit gitignore hook
+
+Install a gitignore enforcement hook at `.git/hooks/pre-commit`. This hook catches accidentally staged files that match essential ignore patterns before they enter the repository.
+
+1. Read hook script template from `skills/gitignore/reference/gitignore-flow.md` Section 3.
+2. Check if `.git/hooks/pre-commit` exists:
+   - **File exists** — check for existing `fullstack-dev:gitignore` marker block:
+     - Found → replace content within markers
+     - Not found → append marker block (preserves existing hook content, including the `fullstack-dev` doc-staging block from Section 9.8)
+   - **File does not exist** — create file with `#!/bin/bash` shebang + marker block
+3. Ensure file is executable (`chmod +x` on Unix, warn on Windows).
+4. Store `gitIgnore.hookInstalled: true` in `config.json`.
+
+The hook uses its own marker block (`fullstack-dev:gitignore`) distinct from the doc-staging hook marker (`fullstack-dev`), so both coexist independently.
 
 ### 9.3 Documentation files
 
@@ -617,8 +657,12 @@ Docs              | CONTEXT.md exists at root                        | Yes (rege
                   | docs/specs/ directory exists                     | Yes (create)
                   | docs/plans/ directory exists                     | Yes (create)
 Git               | Root has git initialized                         | No (warn)
-                  | .gitignore exists with plugin marker block       | Yes (regenerate block)
-                  | All sub-repos listed in .gitignore               | Yes (add missing)
+                  | .gitignore has fullstack-dev:gitignore markers    | Yes (regenerate from catalog)
+                  | All sub-repos listed in .gitignore marker block   | Yes (add missing to Sub-repositories category)
+                  | Pre-commit hook has fullstack-dev:gitignore block  | Yes (append hook script)
+                  | gitIgnore field exists in config.json             | Yes (populate from detection)
+                  | No tracked files matching active ignore patterns  | Yes (offer /gitignore cleanup)
+                  | Old gitignore marker format migrated              | Yes (migrate to fullstack-dev:gitignore)
                   | No new .git/ directories missing from config     | Yes (prompt to add)
                   | local-dev branch exists in each repo             | Yes (run /git setup)
                   | targetBranch set in each repo config entry       | Yes (run /git setup)

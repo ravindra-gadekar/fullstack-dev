@@ -135,9 +135,27 @@ Generate per `reference/doc-templates.md` Section 8. Include environment variabl
 
 #### 5.3 `.gitignore`
 
-Follow `reference/gitignore-rules.md` exactly:
-- **Multi-repo**: Insert the marker block at the top of the file with sub-repo directories listed alphabetically. If a `.gitignore` already exists, prepend the marker block and preserve all existing entries below the `# --- User entries below ---` line.
-- **Mono-repo**: No marker block needed. If no `.gitignore` exists, create a minimal one with standard ignores (node_modules/, .env, etc.).
+Generate a comprehensive `.gitignore` from the pattern catalog based on the project's tech stack:
+
+1. Read `skills/gitignore/reference/gitignore-catalog.md` for available categories and patterns.
+2. Determine active categories from `config.json repos[].stack` + OS detection + always-active categories.
+3. Apply pattern selection logic per catalog (always-active → OS → tech stack → file detection fallback → MCP → deployment).
+4. Generate `.gitignore` with `# >>> fullstack-dev:gitignore (do not edit this block) >>>` marker block.
+5. Follow merge rules from `skills/gitignore/reference/gitignore-flow.md` Section 2.
+6. For multi-repo: include sub-repo directories as `# Sub-repositories` category inside marker block.
+7. For mono-repo: same marker block format with tech-stack patterns, but no sub-repository category.
+8. Store active categories in `config.json` `gitIgnore.activeCategories`.
+
+See `skills/gitignore/reference/gitignore-flow.md` for marker block format and merge rules.
+
+#### 5.3a Pre-commit gitignore hook
+
+Install the gitignore enforcement hook alongside the doc-staging hook (Section 5.13):
+
+1. Read hook template from `skills/gitignore/reference/gitignore-flow.md` Section 3.
+2. Install to `.git/hooks/pre-commit` using `fullstack-dev:gitignore` marker block.
+3. Coexists with existing `fullstack-dev` doc-staging marker block — each has its own markers.
+4. Set `config.json gitIgnore.hookInstalled = true`.
 
 #### 5.4 `*.code-workspace` (multi-repo only)
 
@@ -275,7 +293,7 @@ Run every check from the table in `reference/init-flow.md` Section 10.2:
 |----------|--------|
 | **Config** | config.json exists and valid; version matches plugin version |
 | **Docs** | CONTEXT.md exists; docs/project/architecture.md exists; docs/project/tech-stack.md exists; docs/project/brand.md exists (if frontend); per-repo ARCHITECTURE.md for each sub-repo; docs/specs/ directory exists; docs/plans/ directory exists |
-| **Git** | Root has git initialized; .gitignore has plugin marker block; all sub-repos listed in .gitignore; no new .git/ directories missing from config; local-dev branch exists in each repo; targetBranch set in each repo config entry |
+| **Git** | Root has git initialized; .gitignore has fullstack-dev:gitignore markers; all sub-repos listed in .gitignore; no new .git/ directories missing from config; local-dev branch exists in each repo; targetBranch set in each repo config entry; pre-commit hook has fullstack-dev:gitignore block; gitIgnore config field exists |
 | **Claude Config** | .claude/settings.json exists; PostToolUse hooks configured; skills installed; commands installed |
 | **MCP** | .mcp.json exists; context7 configured; git platform MCP configured |
 | **Optional Tools** | code-review-graph: `.mcp.json` entry exists, `.claude/settings.json` has PostToolUse hook with `code-review-graph update` command; Agentation: `.mcp.json` entry exists (only check if `projectType` is `fullstack` or `frontend`). Status: Configured / Not configured. Auto-fix: offer to configure if not present, following `reference/tools-setup.md` |
@@ -314,8 +332,8 @@ These rules apply to every file the init-agent touches:
 | `.claude/settings.json` | Parse existing JSON. Add plugin hooks alongside existing hooks in the `PostToolUse` array. Never remove or modify existing hook entries. |
 | `.mcp.json` | Parse existing JSON. Add new server entries to `mcpServers` only if not already present. Never remove or modify existing server entries. |
 | `CLAUDE.md` | If file exists, find `<!-- fullstack-dev:start -->` and `<!-- fullstack-dev:end -->` markers. Replace content between markers. If markers do not exist, append the marker block at the end. NEVER modify content outside markers. If file does not exist, generate the full file. |
-| `.gitignore` | If marker block exists, replace content within markers only. If no marker block, prepend the block and preserve all existing entries. Never remove entries outside the marker block. |
-| Pre-commit hook | If hook file exists, append plugin section within `# >>> fullstack-dev >>>` / `# <<< fullstack-dev <<<` markers. Never modify content outside the markers. |
+| `.gitignore` | Uses `fullstack-dev:gitignore` markers (distinct from the old generic `fullstack-dev` markers). If current markers exist, replace within markers. If old markers detected, migrate per `gitignore-flow.md` Section 5. If no markers, prepend block and preserve existing entries. Never remove entries outside the marker block. |
+| Pre-commit hook | Two marker blocks coexist: `fullstack-dev` (doc-staging) and `fullstack-dev:gitignore` (gitignore enforcement). Each is appended or replaced independently. Never modify content outside either marker block. |
 
 When merging JSON files (`.claude/settings.json`, `.mcp.json`):
 1. Read the existing file.
@@ -340,7 +358,7 @@ This agent relies on these reference docs. Read them before executing any flow:
 |----------|------|---------|
 | Init Flow | `skills/fullstack-dev/reference/init-flow.md` | Complete wizard decision tree, questions, configuration phase steps, health check table, version migration, team onboarding |
 | Document Templates | `skills/fullstack-dev/reference/doc-templates.md` | Templates for all generated files (CONTEXT.md, architecture.md, tech-stack.md, brand.md, ARCHITECTURE.md, CLAUDE.md, config.json, .env.example), population rules, creation order, mono/multi-repo differences |
-| Gitignore Rules | `skills/fullstack-dev/reference/gitignore-rules.md` | Marker block format, merge rules, add/remove repo procedures, mono vs multi-repo handling |
+| Gitignore Rules | `skills/fullstack-dev/reference/gitignore-rules.md` | Routing doc — points to `skills/gitignore/reference/gitignore-catalog.md` (pattern database) and `skills/gitignore/reference/gitignore-flow.md` (marker format, merge rules, hook template, detection heuristics) |
 | Tools Setup | `skills/fullstack-dev/reference/tools-setup.md` | MCP tools configuration (context7, git platform, code-review-graph, Agentation), merge rules for .mcp.json, hooks merge rules, secrets handling, project-level safety |
 | Git Workflow Flow | `skills/git-workflow/reference/git-workflow-flow.md` | CI/CD target branch detection (Section 1), local-dev branch setup (Section 5), used by Phases 3b and 3c |
 

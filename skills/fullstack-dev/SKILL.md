@@ -178,6 +178,6 @@ These reference documents are used by the skill and its agents. They live in the
 | `reference/init-flow.md` | Init wizard questions, decision tree, and generation order |
 | `reference/refresh-flow.md` | Auto-refresh rules, two-layer system (PostToolUse + pre-commit) |
 | `reference/add-repo-flow.md` | Add-repo wizard steps and configuration updates |
-| `reference/gitignore-rules.md` | .gitignore marker block management rules |
+| `reference/gitignore-rules.md` | Routing reference — points to gitignore catalog and flow docs |
 | `reference/doc-templates.md` | Templates for all generated documentation files |
 | `reference/tools-setup.md` | MCP tools configuration — context7, git platform, code-review-graph, Agentation |
