@@ -268,6 +268,15 @@ TIER 3: Revert + Block
 
 Reference: `reference/implement-flow.md` section 9 for full escalation rules.
 
+### Integration with /fix and /debug
+
+The escalation ladder can optionally dispatch the `/fix` and `/debug` skills:
+- **Tier 1** can use `/fix` for targeted fixes when the error message clearly indicates what to change
+- **Tier 2** can use `/debug` for systematic investigation when the root cause is unknown
+
+This integration is available but not required — the existing inline fix and
+implementer-agent re-dispatch remain the default behavior.
+
 ---
 
 ## Step 8: Task Review

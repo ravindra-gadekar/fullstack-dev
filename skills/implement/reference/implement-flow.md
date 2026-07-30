@@ -531,6 +531,15 @@ TIER 3: Revert + Block (terminal)
 | Tier 2 fix succeeds | Proceed to Task Review | Proceed to Task Review |
 | Tier 3 (all tiers fail) | Revert, mark [B], escalate to user | Revert, mark [B], escalate to user |
 
+### Integration with /fix and /debug
+
+The escalation ladder can optionally dispatch the `/fix` and `/debug` skills:
+- **Tier 1** can use `/fix` for targeted fixes when the error message clearly indicates what to change
+- **Tier 2** can use `/debug` for systematic investigation when the root cause is unknown
+
+This integration is available but not required — the existing inline fix and
+implementer-agent re-dispatch remain the default behavior.
+
 ---
 
 ## 10. Task Review
