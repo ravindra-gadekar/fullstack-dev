@@ -300,6 +300,18 @@ Handle findings:
 
 Reference: `reference/implement-flow.md` section 10 for review criteria.
 
+### Integration with /refactor
+
+The task review can optionally suggest `/refactor` when code quality findings indicate
+structural issues rather than correctness problems:
+- **Code Quality** dimension findings (DRY violations, separation of concerns, dead code,
+  overly complex functions) may benefit from `/refactor` rather than inline fixes
+- When the reviewer identifies god classes, long functions, or tightly coupled modules,
+  suggest `/refactor <target>` as a follow-up after the current implementation completes
+
+This integration is available but not required — the existing implementer-agent
+re-dispatch remains the default behavior for fixing review findings.
+
 ---
 
 ## Step 8a: Security Review
