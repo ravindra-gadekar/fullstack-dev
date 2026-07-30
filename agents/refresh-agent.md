@@ -19,7 +19,7 @@ You receive:
 
 1. **Changed files** -- from the PostToolUse hook context (incremental) or from scanning all repos (full refresh via `/project --refresh`).
 2. **Project config** -- read from `.fullstack-dev/config.json` to determine which repos are in the workspace, their paths, and their types.
-3. **Smart refresh rules** -- defined in `skills/fullstack-dev/reference/refresh-flow.md` and summarized in the mapping table below.
+3. **Smart refresh rules** -- defined in `skills/project/reference/refresh-flow.md` and summarized in the mapping table below.
 
 ---
 
@@ -118,4 +118,4 @@ Keep the summary concise -- a few bullet points, not a narrative.
 
 ## Reference
 
-- `skills/fullstack-dev/reference/refresh-flow.md` -- smart refresh rules, two-layer system, and the full explanation of how PostToolUse and pre-commit hooks work together.
+- `skills/project/reference/refresh-flow.md` -- smart refresh rules, two-layer system, and the full explanation of how PostToolUse and pre-commit hooks work together.

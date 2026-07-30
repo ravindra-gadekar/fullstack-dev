@@ -19,7 +19,7 @@ rules, and escalation logic.
 
 ## Step 0: Git Workflow Guard + Auto-Init
 
-Reference → `skills/git-workflow/SKILL.md`, Guard section
+Reference → `skills/git/SKILL.md`, Guard section
 - Verify `local-dev` branch
 - Universal stash (guard handles all stash/pop)
 
@@ -92,7 +92,7 @@ Result:
 Verification passed?
 +-- YES → Commit with descriptive message:
 |   "fix(<scope>): <what was changed and why>"
-|   Scope: derived from changed files (per git-workflow-flow.md Section 2)
+|   Scope: derived from changed files (per git-flow.md Section 2)
 |   Include: what the issue was, what was changed, why it works
 +-- NO → Mode check:
     +-- Standalone mode → AskUserQuestion:

@@ -4,7 +4,7 @@ description: "Git workflow management — setup local-dev, sync with target bran
 argument-hint: "<setup|sync|status|publish> [--all] [repo-name]"
 ---
 
-EXECUTE IMMEDIATELY — invoke the git-workflow skill.
+EXECUTE IMMEDIATELY — invoke the git skill.
 
 ## Argument Parsing
 
@@ -23,11 +23,11 @@ $ARGUMENTS parsed?
 |   /git sync [--all] [repo]    Pull latest from target branch into local-dev
 |   /git status [--all] [repo]  Show branch state, changes, ahead/behind
 |   /git publish [repo]         Push changes and create PR
-+-- Valid subcommand → Invoke git-workflow skill via Skill tool
++-- Valid subcommand → Invoke git skill via Skill tool
 +-- Invalid subcommand → Error:
     "Unknown subcommand '<cmd>'. Available: setup, sync, status, publish."
 ```
 
 1. Parse `$ARGUMENTS` to extract subcommand, flags, and repo name
-2. Invoke the `git-workflow` skill via the Skill tool
+2. Invoke the `git` skill via the Skill tool
 3. Pass the parsed subcommand, flags, and repo name to the skill

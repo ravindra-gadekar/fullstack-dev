@@ -4,7 +4,7 @@ description: "Manage project structure, docs, and config. Flags: --init (initial
 argument-hint: "--init | --add-repo | --refresh"
 ---
 
-EXECUTE IMMEDIATELY — invoke the fullstack-dev skill.
+EXECUTE IMMEDIATELY — invoke the project skill.
 
 ## Argument Parsing
 
@@ -17,6 +17,6 @@ Extract from $ARGUMENTS:
 
 ## Execution
 
-1. Invoke the `fullstack-dev` skill via the Skill tool
+1. Invoke the `project` skill via the Skill tool
 2. Pass the parsed flag to guide behavior
 3. The skill handles auto-init guard, dispatch, and reporting

@@ -31,7 +31,7 @@ methods, hypothesis templates, and anti-rationalization rules.
 
 ## Step 0: Git Workflow Guard + Auto-Init
 
-Reference → `skills/git-workflow/SKILL.md`, Guard section
+Reference → `skills/git/SKILL.md`, Guard section
 - Verify `local-dev` branch
 - Universal stash (guard handles all stash/pop)
 
@@ -163,7 +163,7 @@ Root cause confirmed. Prepare to fix:
 1. Remove ALL [DEBUG-<tag>] instrumentation
    grep -r "[DEBUG-<tag>]" and remove matching lines
 2. Compose fix directive from confirmed hypothesis:
-   Commit format: `fix(scope): <root cause description>` (per git-workflow-flow.md Section 2)
+   Commit format: `fix(scope): <root cause description>` (per git-flow.md Section 2)
    "[dispatched-by-debug] <what to change, where, why (root cause)>"
 3. Invoke fix skill with the directive
 4. Check result:

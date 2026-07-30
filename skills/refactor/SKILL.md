@@ -78,7 +78,7 @@ Step 7: Final verification + report
 
 ## Step 0: Git Workflow Guard + Auto-Init + Graph Check
 
-Reference → `skills/git-workflow/SKILL.md`, Guard section
+Reference → `skills/git/SKILL.md`, Guard section
 - Verify `local-dev` branch
 - Universal stash (guard handles all stash/pop)
 

@@ -1,5 +1,5 @@
 ---
-name: git-workflow
+name: git
 description: "Unified Git workflow — local-dev branch management, Conventional Commits, branch naming, CI/CD detection, universal stash safety, and PR automation. Referenced by all commands for consistent Git behavior."
 tools: Agent, Bash, Edit, Glob, Grep, Read, Write, TodoWrite, AskUserQuestion
 model: sonnet
@@ -12,7 +12,7 @@ You are the git workflow orchestrator for Fullstack Dev. You handle branch
 management, commit conventions, and PR automation. Other commands reference
 your guard for consistent stash safety and branch verification.
 
-Read `reference/git-workflow-flow.md` for all decision trees and conventions.
+Read `reference/git-flow.md` for all decision trees and conventions.
 
 ---
 
@@ -105,7 +105,7 @@ Parse $ARGUMENTS:
 For target repo(s) — single repo or all repos if `--all`:
 
 ```
-1. CI/CD auto-detection (per reference/git-workflow-flow.md Section 1):
+1. CI/CD auto-detection (per reference/git-flow.md Section 1):
    Scan for CI/CD config files to determine target branch
    +-- Single branch found → use as target
    +-- Multiple branches found → AskUserQuestion: which to target
@@ -219,7 +219,7 @@ For target repo(s):
    +-- Found → include in branch name
    +-- Not found → continue without
 
-4. Generate branch name (per reference/git-workflow-flow.md Section 3):
+4. Generate branch name (per reference/git-flow.md Section 3):
    <type>/<ticket-id?>-<kebab-case-name>
    Example: feat/RMT-42-add-keyword-tracker
 
@@ -256,7 +256,7 @@ For target repo(s):
 ## Guard — Universal Step 0 (Referenced by Other Commands)
 
 This section is referenced by other commands as their Step 0. When a
-command says "Reference: git-workflow skill, Guard section", it means
+command says "Reference: git skill, Guard section", it means
 execute this flow before the command's own logic.
 
 ```

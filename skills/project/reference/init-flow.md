@@ -306,7 +306,7 @@ Create at workspace root. This is the plugin's state file.
 
 For each repo in the config, detect the CI/CD target branch:
 
-1. Run CI/CD auto-detection per `skills/git-workflow/reference/git-workflow-flow.md` Section 1
+1. Run CI/CD auto-detection per `skills/git/reference/git-flow.md` Section 1
 2. Store detected/chosen branch as `repos[i].targetBranch` in config
 
 This step runs BEFORE config is finalized so detection results feed into the config file.
@@ -393,7 +393,7 @@ Also ensure these directories exist (create if missing):
 
 For each repo that exists locally, create the `local-dev` branch:
 
-1. Reference: `skills/git-workflow/reference/git-workflow-flow.md` Section 5 (Setup Flow)
+1. Reference: `skills/git/reference/git-flow.md` Section 5 (Setup Flow)
 2. For each repo:
    - `git -C <repo-path> checkout <targetBranch>`
    - `git -C <repo-path> pull origin <targetBranch>`
