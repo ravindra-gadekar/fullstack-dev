@@ -8,6 +8,14 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 
 ## Features
 
+### v5: Debug & Fix
+
+- **`/debug [--auto] [--parallel] [--verbose] <symptoms>`** — Systematic root-cause investigation with mandatory feedback loop, 3-5 ranked hypotheses, tagged instrumentation, and auto-verified fix
+- **`/fix [--auto] [--verbose] <directive>`** — Apply a known fix directly with verification, multi-file support, and `/debug` escalation
+- **Debugger Agent** — Parallel investigation with `--parallel` spawning 5 evidence-gathering agents (stack trace, git blame, tests, patterns, dependencies)
+- Safety: stash uncommitted work before debugging, auto-revert on failure
+- Anti-rationalization system preventing guess-and-check debugging
+
 ### v4 — Implement
 
 - **`/implement [--auto] [--status] [plan-path]`** — Execute implementation plans produced by `/plan`. Dispatches implementer agents per task with auto smoke testing (typecheck, build, test, lint), auto security testing (9 OWASP categories), and 3-tier auto-fix escalation. Built-in resume detection and progress tracking.
@@ -91,6 +99,8 @@ After installation, run `/project --init` in your workspace root and follow the 
 | `/brainstorm` | `[--auto] <feature>` | Brainstorm a feature into a design spec |
 | `/plan` | `[--auto] [--parallel] <spec-path>` | Convert a design spec into a multi-phase implementation plan |
 | `/implement` | `[--auto] [--status] [plan-path]` | Execute implementation plans with auto smoke testing, security testing, and 3-tier auto-fix |
+| `/fix` | `[--auto] [--verbose] <directive>` | Apply a known fix directly with verification |
+| `/debug` | `[--auto] [--parallel] [--verbose] <symptoms>` | Investigate and fix unknown bugs — systematic root-cause analysis |
 
 ## How Auto-Refresh Works
 
@@ -100,9 +110,9 @@ A **PostToolUse hook** echoes a reminder after every `Edit|Write` operation, pro
 
 Tech stack inputs are free-text — type whatever you use (Next.js, Django, Rails, Spring Boot, etc.). When framework-specific knowledge is needed, the plugin queries context7 for up-to-date documentation rather than relying on baked-in assumptions.
 
-## Future (v5+)
+## Future (v6+)
 
-Workflow skills (`/debug`, `/refactor`) will be added as composable skill modules in future versions.
+Workflow skills (`/refactor`) will be added as composable skill modules in future versions.
 
 ## License
 
