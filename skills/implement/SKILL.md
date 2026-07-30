@@ -18,22 +18,17 @@ orchestration flow; the reference doc provides the implementation details.
 
 ---
 
-## Step 0: Auto-Init Guard
+## Step 0: Git Workflow Guard + Auto-Init
 
-Verify project config and git state before doing anything else.
+Reference → `skills/git-workflow/SKILL.md`, Guard section
+- Verify `local-dev` branch
+- Universal stash (guard handles all stash/pop)
 
+Then:
 ```
 .fullstack-dev/config.json exists?
 +-- NO  → "Cannot implement without project config. Run /project --init first." → EXIT
 +-- YES → load config
-
-For each repo in config.repos:
-  Check git state (see reference/implement-flow.md section 1):
-  +-- Clean → continue
-  +-- Uncommitted changes →
-  |   +-- --auto → git stash -u → continue
-  |   +-- interactive → offer stash or commit
-  +-- Not a git repo → EXIT with error
 ```
 
 Reference: `reference/implement-flow.md` section 1 for full decision tree.
@@ -346,7 +341,10 @@ Checkpoint progress and advance to the next task.
 ```
 1. Update plan file: all "- [ ]" under this task → "- [x]"
 2. Update README.md progress table
-3. Log: "✓ Task T complete (Phase P)"
+3. Commit format: Conventional Commits (per skills/git-workflow/reference/git-workflow-flow.md Section 2)
+   Default type: `feat` (can be `fix`, `refactor`, `test` based on task content)
+   Body includes: `Plan: Phase P Task T` for traceability
+4. Log: "✓ Task T complete (Phase P)"
 
 Advance:
 +-- Next pending task in phase? → loop to Step 5
@@ -385,29 +383,24 @@ Reference: `reference/implement-flow.md` section 13 for final audit rules.
 
 ## Step 11: Branch Finishing
 
-Offer push and PR options to the user.
+Reference → `skills/git-workflow/SKILL.md`, Publish section (Step 4)
 
-```
 Show implementation summary:
+```
   - Tasks: N completed, M blocked
   - Files changed by repo
   - Test results per repo
   - Security findings (severity counts)
-
-Detect git workflow:
-  1. Check CLAUDE.md for git workflow instructions
-  2. Check .fullstack-dev/config.json for gitWorkflow config
-  3. Fallback: feature branch + PR
-
-AskUserQuestion:
-  (a) Push branch and create PR
-      → Follow detected git workflow
-      → If plan linked to issue: include "Closes #N" in PR body
-  (b) Just commit locally
-  (c) Review the diff first → show diff, re-offer (a) and (b)
 ```
 
-Reference: `reference/implement-flow.md` section 14 for branch finishing flow.
+Then invoke the publish flow from git-workflow skill:
+- Determines type from commits (default `feat` for implement)
+- Generates branch name per git-workflow-flow.md Section 3
+- Pushes to remote
+- Creates PR (with "Closes #N" if plan linked to issue)
+- Offers local-dev reset
+
+Reference: `reference/implement-flow.md` section 14 for implementation summary format.
 
 ---
 

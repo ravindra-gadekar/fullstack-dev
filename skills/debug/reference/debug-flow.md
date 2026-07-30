@@ -240,7 +240,7 @@ All hypotheses tested and refuted:
      - Why it was refuted
    - Conclusion: why the bug likely indicates a structural/architectural problem
 4. Flag as "needs human"
-5. Pop pre-debug stash (if created)
+5. Guard pops stash on exit
 6. Present post-mortem to user
 ```
 
@@ -248,18 +248,15 @@ All hypotheses tested and refuted:
 
 ## 9. Stash/Pop Safety Protocol
 
+Stash/pop is handled by the universal git guard (see
+`skills/git-workflow/SKILL.md`, Guard section). The debug skill does NOT
+manage its own stash — the guard stashes before the command runs and pops
+on all exit paths (success, failure, error, abort).
+
 ```
-Before debugging (Step 0):
-  git stash push -u -m "pre-debug-stash"
-  Record: stash_created = true/false
-
-After debugging (Step 7, or on any exit path):
-  +-- stash_created == true → git stash pop
-  +-- stash_created == false → skip
-
 On error/crash:
   The stash persists in git. User can recover with:
-  git stash list    (find the "pre-debug-stash" entry)
+  git stash list    (find the "pre-<command>-stash" entry)
   git stash pop     (restore their work)
 ```
 

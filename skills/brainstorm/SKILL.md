@@ -18,10 +18,13 @@ lists, agent prompts, and the spec template.
 
 ---
 
-## Step 0: Auto-Init Guard
+## Step 0: Git Workflow Guard + Auto-Init
 
-Check whether the project is initialized before doing anything else.
+Reference → `skills/git-workflow/SKILL.md`, Guard section
+- Verify `local-dev` branch
+- Universal stash (guard handles all stash/pop)
 
+Then:
 ```
 Read .fullstack-dev/config.json
 +-- Exists and valid JSON
@@ -359,7 +362,7 @@ After all sections are approved, write the spec file.
 - `<topic>` is a kebab-case slug derived from the feature name
 - Example: `docs/specs/2026-07-30T14-22-05-keyword-tracking-design.md`
 
-**Commit:** `docs: add <topic> design spec`
+**Commit:** `docs(specs): add <topic> design spec`
 
 The spec file should contain all approved sections from Step 7, prefixed
 with a metadata header:

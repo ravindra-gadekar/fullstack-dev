@@ -29,7 +29,11 @@ methods, hypothesis templates, and anti-rationalization rules.
 
 ---
 
-## Step 0: Safety Setup + Auto-Init Guard
+## Step 0: Git Workflow Guard + Auto-Init
+
+Reference → `skills/git-workflow/SKILL.md`, Guard section
+- Verify `local-dev` branch
+- Universal stash (guard handles all stash/pop)
 
 ```
 Auto-Init Guard:
@@ -37,12 +41,8 @@ Read .fullstack-dev/config.json
 +-- Exists and valid JSON → proceed
 +-- Does not exist or invalid → offer /project --init or degraded mode
 
-Safety Setup:
-1. Stash uncommitted changes:
-   git stash push -u -m "pre-debug-stash"
-   +-- Changes stashed → note stash created (will pop in Step 7)
-   +-- Nothing to stash → note no stash needed
-2. Generate session tag:
+Safety Setup (post-guard):
+1. Generate session tag:
    4-character random hex string (e.g., a3f1)
    All instrumentation uses [DEBUG-a3f1] prefix
 ```
@@ -163,6 +163,7 @@ Root cause confirmed. Prepare to fix:
 1. Remove ALL [DEBUG-<tag>] instrumentation
    grep -r "[DEBUG-<tag>]" and remove matching lines
 2. Compose fix directive from confirmed hypothesis:
+   Commit format: `fix(scope): <root cause description>` (per git-workflow-flow.md Section 2)
    "[dispatched-by-debug] <what to change, where, why (root cause)>"
 3. Invoke fix skill with the directive
 4. Check result:
@@ -182,9 +183,7 @@ Root cause confirmed. Prepare to fix:
    - Symptom (what the bug looked like)
    - Root cause (what actually caused it)
    - Why the fix works (winning hypothesis)
-2. Pop stash:
-   +-- Stash was created → git stash pop
-   +-- No stash → skip
+2. Guard handles stash pop on exit (all exit paths).
 3. Report to user:
    - Symptom
    - Root cause
