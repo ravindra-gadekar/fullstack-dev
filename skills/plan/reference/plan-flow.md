@@ -821,7 +821,7 @@ On first /plan invocation in a session:
 +-- Found existing plan skill(s)?
 |   +-- YES --> inform user (one time only):
 |   |   "Note: Existing plan skill detected: <skill-name>.
-|   |    /plan (fullstack-dev) produces multi-folder plans with graph-enhanced
+|   |    /plan (project) produces multi-folder plans with graph-enhanced
 |   |    file mapping and per-task interface declarations.
 |   |    <other-skill> produces single-file plans.
 |   |    Both coexist -- they write to different directories."

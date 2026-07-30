@@ -249,7 +249,7 @@ All hypotheses tested and refuted:
 ## 9. Stash/Pop Safety Protocol
 
 Stash/pop is handled by the universal git guard (see
-`skills/git-workflow/SKILL.md`, Guard section). The debug skill does NOT
+`skills/git/SKILL.md`, Guard section). The debug skill does NOT
 manage its own stash — the guard stashes before the command runs and pops
 on all exit paths (success, failure, error, abort).
 

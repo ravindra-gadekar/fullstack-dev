@@ -20,7 +20,7 @@ and behavioral rules.
 
 ## Step 0: Git Workflow Guard + Auto-Init
 
-Reference → `skills/git-workflow/SKILL.md`, Guard section
+Reference → `skills/git/SKILL.md`, Guard section
 - Verify `local-dev` branch
 - Universal stash (guard handles all stash/pop)
 
@@ -38,7 +38,7 @@ Read .fullstack-dev/config.json
 |           (b) Proceed in degraded mode
 +-- Does not exist
     --> Ask: "Project not initialized. Run /project --init first?"
-        +-- Yes --> Invoke the fullstack-dev skill with --init.
+        +-- Yes --> Invoke the project skill with --init.
         |          After init completes, restart from Step 1.
         +-- No  --> Proceed in degraded mode:
                     - Skip Step 2 (context loading).
@@ -511,7 +511,7 @@ collision_check_done flag set?
     +-- Found?
     |   +-- YES --> one-time message:
     |   |   "Note: Existing plan skill detected: <skill-name>.
-    |   |    /plan (fullstack-dev) produces multi-folder plans with
+    |   |    /plan (project) produces multi-folder plans with
     |   |    graph-enhanced file mapping. <other-skill> produces
     |   |    single-file plans. Both coexist."
     |   +-- NO --> proceed silently

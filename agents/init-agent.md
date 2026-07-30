@@ -28,7 +28,7 @@ You receive two values from the SKILL.md orchestrator:
 
 ## First-Run Flow
 
-Follow the complete decision tree and wizard defined in `skills/fullstack-dev/reference/init-flow.md`. The sections below summarize the sequence; the reference doc is authoritative for exact prompts, validation rules, and branching logic.
+Follow the complete decision tree and wizard defined in `skills/project/reference/init-flow.md`. The sections below summarize the sequence; the reference doc is authoritative for exact prompts, validation rules, and branching logic.
 
 ### Phase 1: Detect Directory State
 
@@ -89,7 +89,7 @@ After MCP configuration (context7, git platform), offer optional developer tools
 
 For each repo in the config, detect the CI/CD target branch:
 
-1. Run CI/CD auto-detection per `skills/git-workflow/reference/git-workflow-flow.md` Section 1:
+1. Run CI/CD auto-detection per `skills/git/reference/git-flow.md` Section 1:
    - Scan for CI/CD config files (`.github/workflows/*.yml`, `.gitlab-ci.yml`, etc.)
    - Extract literal branch names from push/PR triggers
    - Single branch found → auto-set as `targetBranch`
@@ -101,7 +101,7 @@ For each repo in the config, detect the CI/CD target branch:
 
 For each repo that exists locally, create the `local-dev` branch:
 
-1. Reference: `skills/git-workflow/reference/git-workflow-flow.md` Section 5
+1. Reference: `skills/git/reference/git-flow.md` Section 5
 2. For each repo:
    - Check if `local-dev` already exists (handle exists-with-commits, exists-clean, doesn't-exist)
    - Create: `git -C <repo-path> checkout <targetBranch> && git pull origin <targetBranch> && git checkout -b local-dev`
@@ -356,11 +356,11 @@ This agent relies on these reference docs. Read them before executing any flow:
 
 | Document | Path | Purpose |
 |----------|------|---------|
-| Init Flow | `skills/fullstack-dev/reference/init-flow.md` | Complete wizard decision tree, questions, configuration phase steps, health check table, version migration, team onboarding |
-| Document Templates | `skills/fullstack-dev/reference/doc-templates.md` | Templates for all generated files (CONTEXT.md, architecture.md, tech-stack.md, brand.md, ARCHITECTURE.md, CLAUDE.md, config.json, .env.example), population rules, creation order, mono/multi-repo differences |
-| Gitignore Rules | `skills/fullstack-dev/reference/gitignore-rules.md` | Routing doc — points to `skills/gitignore/reference/gitignore-catalog.md` (pattern database) and `skills/gitignore/reference/gitignore-flow.md` (marker format, merge rules, hook template, detection heuristics) |
-| Tools Setup | `skills/fullstack-dev/reference/tools-setup.md` | MCP tools configuration (context7, git platform, code-review-graph, Agentation), merge rules for .mcp.json, hooks merge rules, secrets handling, project-level safety |
-| Git Workflow Flow | `skills/git-workflow/reference/git-workflow-flow.md` | CI/CD target branch detection (Section 1), local-dev branch setup (Section 5), used by Phases 3b and 3c |
+| Init Flow | `skills/project/reference/init-flow.md` | Complete wizard decision tree, questions, configuration phase steps, health check table, version migration, team onboarding |
+| Document Templates | `skills/project/reference/doc-templates.md` | Templates for all generated files (CONTEXT.md, architecture.md, tech-stack.md, brand.md, ARCHITECTURE.md, CLAUDE.md, config.json, .env.example), population rules, creation order, mono/multi-repo differences |
+| Gitignore Rules | `skills/project/reference/gitignore-rules.md` | Routing doc — points to `skills/gitignore/reference/gitignore-catalog.md` (pattern database) and `skills/gitignore/reference/gitignore-flow.md` (marker format, merge rules, hook template, detection heuristics) |
+| Tools Setup | `skills/project/reference/tools-setup.md` | MCP tools configuration (context7, git platform, code-review-graph, Agentation), merge rules for .mcp.json, hooks merge rules, secrets handling, project-level safety |
+| Git Workflow Flow | `skills/git/reference/git-flow.md` | CI/CD target branch detection (Section 1), local-dev branch setup (Section 5), used by Phases 3b and 3c |
 
 **Read the relevant reference doc before executing each phase.** The reference docs contain exact formats, validation rules, and edge cases not repeated in this agent definition.
 

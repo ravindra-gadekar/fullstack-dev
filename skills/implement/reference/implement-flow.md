@@ -43,7 +43,7 @@ For each repo in config.repos:
   +-- NO  -> "Repo directory <path> not found." -> EXIT
   +-- YES -> check git state
 
-  Git workflow guard (Reference -> skills/git-workflow/SKILL.md, Guard section):
+  Git workflow guard (Reference -> skills/git/SKILL.md, Guard section):
   +-- Verifies local-dev branch
   +-- Universal stash (guard handles all stash/pop)
   +-- Not a git repo -> "Repo <name> is not a git repository." -> EXIT

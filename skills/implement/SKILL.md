@@ -20,7 +20,7 @@ orchestration flow; the reference doc provides the implementation details.
 
 ## Step 0: Git Workflow Guard + Auto-Init
 
-Reference → `skills/git-workflow/SKILL.md`, Guard section
+Reference → `skills/git/SKILL.md`, Guard section
 - Verify `local-dev` branch
 - Universal stash (guard handles all stash/pop)
 
@@ -341,7 +341,7 @@ Checkpoint progress and advance to the next task.
 ```
 1. Update plan file: all "- [ ]" under this task → "- [x]"
 2. Update README.md progress table
-3. Commit format: Conventional Commits (per skills/git-workflow/reference/git-workflow-flow.md Section 2)
+3. Commit format: Conventional Commits (per skills/git/reference/git-flow.md Section 2)
    Default type: `feat` (can be `fix`, `refactor`, `test` based on task content)
    Body includes: `Plan: Phase P Task T` for traceability
 4. Log: "✓ Task T complete (Phase P)"
@@ -383,7 +383,7 @@ Reference: `reference/implement-flow.md` section 13 for final audit rules.
 
 ## Step 11: Branch Finishing
 
-Reference → `skills/git-workflow/SKILL.md`, Publish section (Step 4)
+Reference → `skills/git/SKILL.md`, Publish section (Step 4)
 
 Show implementation summary:
 ```
@@ -393,9 +393,9 @@ Show implementation summary:
   - Security findings (severity counts)
 ```
 
-Then invoke the publish flow from git-workflow skill:
+Then invoke the publish flow from git skill:
 - Determines type from commits (default `feat` for implement)
-- Generates branch name per git-workflow-flow.md Section 3
+- Generates branch name per git-flow.md Section 3
 - Pushes to remote
 - Creates PR (with "Closes #N" if plan linked to issue)
 - Offers local-dev reset

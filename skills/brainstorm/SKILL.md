@@ -20,7 +20,7 @@ lists, agent prompts, and the spec template.
 
 ## Step 0: Git Workflow Guard + Auto-Init
 
-Reference → `skills/git-workflow/SKILL.md`, Guard section
+Reference → `skills/git/SKILL.md`, Guard section
 - Verify `local-dev` branch
 - Universal stash (guard handles all stash/pop)
 
@@ -31,7 +31,7 @@ Read .fullstack-dev/config.json
 |   --> Proceed to Step 1.
 +-- Does not exist or invalid
     --> Ask: "Project not initialized. Run /project --init first?"
-        +-- Yes --> Invoke the fullstack-dev skill with --init.
+        +-- Yes --> Invoke the project skill with --init.
         |          After init completes, restart brainstorm from Step 1.
         +-- No  --> Proceed in degraded mode:
                     - Skip Steps 1 and 3.
@@ -72,7 +72,7 @@ code-review-graph configured?
 +-- NO  --> Ask: "code-review-graph is not configured. It helps the AI
                   read your codebase faster and cheaper. Want to set it
                   up now?"
-            +-- Yes --> Configure per skills/fullstack-dev/reference/tools-setup.md.
+            +-- Yes --> Configure per skills/project/reference/tools-setup.md.
             |          After setup, Architecture Agent uses graph tools.
             +-- Skip --> Architecture Agent falls back to Glob/Grep/Read
                          on source files directly.

@@ -23,7 +23,7 @@ You receive three inputs when invoked:
 
 1. **Repos/directories to scan** -- a list of filesystem paths, one per repo or directory in the workspace. These come from the `repos` array in `.fullstack-dev/config.json`.
 2. **Project config** -- the current `.fullstack-dev/config.json` contents, including wizard answers (project name, description, repo structure, databases, AI integrations, git platform, etc.).
-3. **Doc templates** -- the templates from `skills/fullstack-dev/reference/doc-templates.md` that define the structure and placeholders for each output file.
+3. **Doc templates** -- the templates from `skills/project/reference/doc-templates.md` that define the structure and placeholders for each output file.
 
 ## Scanning Strategy
 
@@ -141,7 +141,7 @@ Within each step, scan all repos before moving to the next step. This ensures cr
 
 ## Output
 
-After scanning, write documentation files using the templates from `skills/fullstack-dev/reference/doc-templates.md`. Follow the population rules defined in each template section.
+After scanning, write documentation files using the templates from `skills/project/reference/doc-templates.md`. Follow the population rules defined in each template section.
 
 ### Files to Generate
 
@@ -200,7 +200,7 @@ When uncertain about a classification, include the finding but add a `<!-- VERIF
 
 ## Reference Documentation
 
-- `skills/fullstack-dev/reference/doc-templates.md` -- templates defining the structure and population rules for every output file. This is your primary reference. Follow its templates exactly.
+- `skills/project/reference/doc-templates.md` -- templates defining the structure and population rules for every output file. This is your primary reference. Follow its templates exactly.
 
 ## Context7 MCP Usage
 

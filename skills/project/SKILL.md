@@ -1,5 +1,5 @@
 ---
-name: fullstack-dev
+name: project
 description: "Master orchestrator for the Fullstack Dev plugin. Manages project structure, documentation, and tooling configuration across mono-repo and multi-repo projects. Dispatches to specialized agents for init, refresh, and add-repo workflows. Use when user runs /project."
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
@@ -164,7 +164,7 @@ Agent(
 ### Important notes on agent dispatch
 
 - **Wait for completion** — always wait for the agent to finish before reporting results or proceeding with the next step.
-- **Pass the plugin path** — agents need the path to the `fullstack-dev` skill directory to read their own instructions and reference docs. Determine this from the skill's own location.
+- **Pass the plugin path** — agents need the path to the `project` skill directory to read their own instructions and reference docs. Determine this from the skill's own location.
 - **Report results** — after the agent completes, relay its summary to the user. If the agent reports errors, present them clearly.
 
 ---

@@ -17,13 +17,13 @@ Read .fullstack-dev/config.json
 +-- Does not exist
     --> Ask: "Project not initialized. Run /project --init first?"
     +-- Yes
-    |   --> Invoke fullstack-dev skill with --init
+    |   --> Invoke project skill with --init
     |   --> After init completes, restart brainstorm from Step 1
     +-- No
         --> Degraded mode
             - Skip Steps 1 and 3 (no config.json to read)
             - Research agents read files directly (no project doc awareness)
-            - Spec still gets written but without fullstack-dev context
+            - Spec still gets written but without project context
 ```
 
 ### Degraded Mode Behavior

@@ -34,7 +34,7 @@ Do not proceed with any further steps for mono-repo projects.
 
 ## Wizard Questions
 
-Reference: `skills/fullstack-dev/reference/add-repo-flow.md`
+Reference: `skills/project/reference/add-repo-flow.md`
 
 Present each question in sequence using AskUserQuestion. Collect all answers before executing configuration steps.
 
@@ -107,7 +107,7 @@ If "Yes" -- the remote repo is created immediately after local setup (see MCP Re
 
 ## Configuration Steps
 
-After all wizard answers are collected, execute these steps in order. Reference: `skills/fullstack-dev/reference/add-repo-flow.md`
+After all wizard answers are collected, execute these steps in order. Reference: `skills/project/reference/add-repo-flow.md`
 
 ### Step 1: Create directory
 
@@ -134,7 +134,7 @@ Add the new repo directory to the meta-repo `.gitignore` marker block. Follow th
 
 ### Step 4: Generate `ARCHITECTURE.md`
 
-Generate an `ARCHITECTURE.md` inside the new repo directory using the per-repo template from `skills/fullstack-dev/reference/doc-templates.md` (Section 5). Populate with:
+Generate an `ARCHITECTURE.md` inside the new repo directory using the per-repo template from `skills/project/reference/doc-templates.md` (Section 5). Populate with:
 
 - Service type (from Question 1)
 - Framework/runtime (from Question 3)
@@ -295,6 +295,6 @@ Adjust the summary to reflect what was actually done -- omit lines for skipped s
 
 ## Reference Documents
 
-- `skills/fullstack-dev/reference/add-repo-flow.md` -- wizard questions, configuration steps, and MCP repo creation details
-- `skills/fullstack-dev/reference/gitignore-rules.md` -- Routing reference — points to `skills/gitignore/reference/gitignore-catalog.md` (pattern database) and `skills/gitignore/reference/gitignore-flow.md` (marker format, merge rules, hook template)
-- `skills/fullstack-dev/reference/doc-templates.md` -- templates for ARCHITECTURE.md, architecture.md, tech-stack.md, CONTEXT.md, and config.json schema
+- `skills/project/reference/add-repo-flow.md` -- wizard questions, configuration steps, and MCP repo creation details
+- `skills/project/reference/gitignore-rules.md` -- Routing reference — points to `skills/gitignore/reference/gitignore-catalog.md` (pattern database) and `skills/gitignore/reference/gitignore-flow.md` (marker format, merge rules, hook template)
+- `skills/project/reference/doc-templates.md` -- templates for ARCHITECTURE.md, architecture.md, tech-stack.md, CONTEXT.md, and config.json schema
