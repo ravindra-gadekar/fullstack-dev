@@ -8,6 +8,14 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 
 ## Features
 
+### v6: Refactor
+
+- **`/refactor [--auto] [--parallel] [--verbose] [--scope <path>] [<target> [-- <reason>]]`** — Graph-powered refactoring with discovery mode (scan + rank candidates) and targeted mode (specific file/folder). Atomic one-change-at-a-time execution with test-verify-commit safety loop and before/after metrics.
+- **Refactor Agent** — Parallel analysis with `--parallel` spawning 4 investigation agents (metrics, dependencies, tests, patterns)
+- Discovery scoring: weighted composite of severity, change frequency, blast radius, and test gaps
+- Safety: stash uncommitted work, establish test baseline before changes, revert on any failure
+- Multi-repo: atomic operations across repos with coordinated commit/revert
+
 ### v5: Debug & Fix
 
 - **`/debug [--auto] [--parallel] [--verbose] <symptoms>`** — Systematic root-cause investigation with mandatory feedback loop, 3-5 ranked hypotheses, tagged instrumentation, and auto-verified fix
@@ -99,6 +107,7 @@ After installation, run `/project --init` in your workspace root and follow the 
 | `/brainstorm` | `[--auto] <feature>` | Brainstorm a feature into a design spec |
 | `/plan` | `[--auto] [--parallel] <spec-path>` | Convert a design spec into a multi-phase implementation plan |
 | `/implement` | `[--auto] [--status] [plan-path]` | Execute implementation plans with auto smoke testing, security testing, and 3-tier auto-fix |
+| `/refactor` | `[--auto] [--parallel] [--verbose] [--scope <path>] [<target> [-- <reason>]]` | Refactor code with graph-powered discovery, atomic changes, and before/after metrics |
 | `/fix` | `[--auto] [--verbose] <directive>` | Apply a known fix directly with verification |
 | `/debug` | `[--auto] [--parallel] [--verbose] <symptoms>` | Investigate and fix unknown bugs — systematic root-cause analysis |
 
@@ -112,7 +121,7 @@ Tech stack inputs are free-text — type whatever you use (Next.js, Django, Rail
 
 ## Future (v6+)
 
-Workflow skills (`/refactor`) will be added as composable skill modules in future versions.
+Additional workflow skills will be added as composable skill modules in future versions.
 
 ## License
 

@@ -591,6 +591,21 @@ Reviewer returns findings:
 | Critical/Important (fix succeeds) | Proceed after fix | Proceed after fix |
 | Critical/Important (fix fails 2x) | Escalate to user | Escalate to user |
 
+### Integration with /refactor
+
+When the task reviewer returns `[Code Quality]` dimension findings that indicate
+structural issues (god class, long function, tightly coupled modules, DRY violations),
+the orchestrator may suggest `/refactor <target>` as a follow-up rather than
+re-dispatching the implementer for a generic fix. This is a suggestion to the user,
+not an automatic dispatch — structural refactoring should be a deliberate choice.
+
+Relevant finding types for /refactor suggestion:
+
+- Separation of concerns violations → `/refactor <file> -- mixed responsibilities`
+- Dead code detected → `/refactor <file> -- remove dead code`
+- Overly complex functions → `/refactor <file> -- function too long`
+- High coupling → `/refactor <directory> -- tightly coupled`
+
 ---
 
 ## 11. Security Review & Trigger Detection
