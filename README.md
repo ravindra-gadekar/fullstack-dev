@@ -8,6 +8,14 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 
 ## Features
 
+### v7: Git Workflow
+
+- **`/git <setup|sync|status|publish> [--all] [repo-name]`** — Unified Git workflow management. Sets up `local-dev` as the persistent working branch, auto-detects target branches from CI/CD config, syncs with rebase (merge fallback), and publishes to remote with auto-generated PRs.
+- **Universal Git Guard** — Every command (`/implement`, `/fix`, `/debug`, `/refactor`, `/brainstorm`, `/plan`) now gets a Step 0 guard that verifies the `local-dev` branch, stashes uncommitted work, and pops on exit. Replaces inconsistent per-command stash logic.
+- **Conventional Commits** — All commands now use `<type>(<scope>): <summary>` format with type auto-mapped per command (`feat` for implement, `fix` for fix/debug, `refactor` for refactor, `docs` for brainstorm/plan).
+- **Per-Repo Target Branches** — Multi-repo projects configure target branches per repo via CI/CD auto-detection. Each repo syncs and publishes independently against its own target.
+- **Dynamic CLAUDE.md** — The Git Workflow section in CLAUDE.md is now generated from config, not hardcoded.
+
 ### v6: Refactor
 
 - **`/refactor [--auto] [--parallel] [--verbose] [--scope <path>] [<target> [-- <reason>]]`** — Graph-powered refactoring with discovery mode (scan + rank candidates) and targeted mode (specific file/folder). Atomic one-change-at-a-time execution with test-verify-commit safety loop and before/after metrics.

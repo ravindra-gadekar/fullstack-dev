@@ -41,7 +41,7 @@ it's a behavior change — stop and suggest `/brainstorm`.
 ```
 /refactor [--auto] [--parallel] [--verbose] [--scope <path>] [<target> [-- <reason>]]
 
-Step 0: Init Guard + Graph Check + Safety Setup (stash)
+Step 0: Git Workflow Guard + Auto-Init + Graph Check
 Step 1: Mode Detection
 
 Arguments?
@@ -60,7 +60,7 @@ Arguments?
     Step 5: Execute (test-verify-commit loop)
     Step 6: Measure (before/after metrics)
 
-Step 7: Final verification + pop stash + report
+Step 7: Final verification + report
 ```
 
 ---
@@ -76,7 +76,11 @@ Step 7: Final verification + pop stash + report
 
 ---
 
-## Step 0: Auto-Init Guard + Graph Check + Safety Setup
+## Step 0: Git Workflow Guard + Auto-Init + Graph Check
+
+Reference → `skills/git-workflow/SKILL.md`, Guard section
+- Verify `local-dev` branch
+- Universal stash (guard handles all stash/pop)
 
 ```
 Auto-Init Guard:
@@ -90,12 +94,6 @@ Check .mcp.json for code-review-graph server entry
 +-- Not configured → offer to set it up
     +-- User accepts → configure per reference/tools-setup.md
     +-- User declines → fall back to Grep/Glob/Read (degraded discovery)
-
-Safety Setup:
-1. Stash uncommitted changes:
-   git stash push -u -m "pre-refactor-stash"
-   +-- Changes stashed → note stash created (will pop in Step 7)
-   +-- Nothing to stash → note no stash needed
 ```
 
 ---
@@ -263,7 +261,7 @@ For EACH refactoring operation:
 3. Run related tests (files importing or imported by $CHANGED_FILES)
    +-- Related tests pass → commit:
    |   git add <specific files>
-   |   git commit -m "refactor: <operation description>"
+   |   git commit -m "refactor(<scope>): <operation description>"
    +-- Related tests fail →
        git checkout -- $CHANGED_FILES  # revert only the files this operation touched
        Log: "Operation N failed: <error>"
@@ -356,9 +354,7 @@ After all candidates: proceed to Step 7.
 
 5. detect_changes → verify changes are contained and correctly scoped
 
-6. Pop stash:
-   +-- Stash was created → git stash pop
-   +-- No stash → skip
+6. Guard handles stash pop on exit (all exit paths).
 
 7. Final report:
    Refactoring complete.

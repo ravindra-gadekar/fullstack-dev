@@ -279,7 +279,8 @@ Create at workspace root. This is the plugin's state file.
       "name": "<repo-name>",
       "path": "<relative-path>",
       "url": "<clone-url or null>",
-      "source": "clone | existing | created"
+      "source": "clone | existing | created",
+      "targetBranch": ""
     }
   ],
   "technologies": {
@@ -288,12 +289,27 @@ Create at workspace root. This is the plugin's state file.
     "databases": [],
     "other": []
   },
+  "gitWorkflow": {
+    "localBranch": "local-dev",
+    "commitConvention": "conventional",
+    "branchNaming": "<type>/<ticket?>-<name>",
+    "deleteRemoteBranches": false
+  },
   "aiIntegration": "<aiIntegration>",
   "teamSize": "<teamSize>",
   "createdAt": "<ISO 8601 timestamp>",
   "updatedAt": "<ISO 8601 timestamp>"
 }
 ```
+
+### 9.1a Target Branch Detection (per repo)
+
+For each repo in the config, detect the CI/CD target branch:
+
+1. Run CI/CD auto-detection per `skills/git-workflow/reference/git-workflow-flow.md` Section 1
+2. Store detected/chosen branch as `repos[i].targetBranch` in config
+
+This step runs BEFORE config is finalized so detection results feed into the config file.
 
 ### 9.2 `.gitignore`
 
@@ -332,6 +348,24 @@ Also ensure these directories exist (create if missing):
 
 - `docs/specs/`
 - `docs/plans/`
+
+### 9.3a `local-dev` Branch Setup (per repo)
+
+For each repo that exists locally, create the `local-dev` branch:
+
+1. Reference: `skills/git-workflow/reference/git-workflow-flow.md` Section 5 (Setup Flow)
+2. For each repo:
+   - `git -C <repo-path> checkout <targetBranch>`
+   - `git -C <repo-path> pull origin <targetBranch>`
+   - `git -C <repo-path> checkout -b local-dev`
+3. Show education message (first-time setup — always shown during init):
+   - Why local-dev exists (isolation from target branch)
+   - All work happens on local-dev
+   - Never push local-dev directly
+   - Use `/git publish` to create remote branches and PRs
+   - Use `/git sync` to pull latest from target
+
+This step runs AFTER config is written (needs config to exist) but BEFORE CLAUDE.md generation (CLAUDE.md references the git workflow).
 
 ### 9.4 `CLAUDE.md`
 
@@ -586,6 +620,8 @@ Git               | Root has git initialized                         | No (warn)
                   | .gitignore exists with plugin marker block       | Yes (regenerate block)
                   | All sub-repos listed in .gitignore               | Yes (add missing)
                   | No new .git/ directories missing from config     | Yes (prompt to add)
+                  | local-dev branch exists in each repo             | Yes (run /git setup)
+                  | targetBranch set in each repo config entry       | Yes (run /git setup)
 Claude Config     | .claude/settings.json exists                     | Yes (create)
                   | PostToolUse hooks configured                     | Yes (merge hooks)
                   | Skills installed                                 | Yes (report missing)

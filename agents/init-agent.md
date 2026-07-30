@@ -85,6 +85,29 @@ After MCP configuration (context7, git platform), offer optional developer tools
    - **Agentation**: add `.mcp.json` entry + npm dev dependency in frontend repos.
 4. Store selections in `config.json`: `optionalTools.codeReviewGraph` (boolean), `optionalTools.agentation` (boolean).
 
+### Phase 3b: Target Branch Detection
+
+For each repo in the config, detect the CI/CD target branch:
+
+1. Run CI/CD auto-detection per `skills/git-workflow/reference/git-workflow-flow.md` Section 1:
+   - Scan for CI/CD config files (`.github/workflows/*.yml`, `.gitlab-ci.yml`, etc.)
+   - Extract literal branch names from push/PR triggers
+   - Single branch found → auto-set as `targetBranch`
+   - Multiple branches → AskUserQuestion: which to target
+   - No CI/CD config → AskUserQuestion: which branch to target (default: main)
+2. Store `repos[i].targetBranch` in config for each repo.
+
+### Phase 3c: `local-dev` Branch Setup
+
+For each repo that exists locally, create the `local-dev` branch:
+
+1. Reference: `skills/git-workflow/reference/git-workflow-flow.md` Section 5
+2. For each repo:
+   - Check if `local-dev` already exists (handle exists-with-commits, exists-clean, doesn't-exist)
+   - Create: `git -C <repo-path> checkout <targetBranch> && git pull origin <targetBranch> && git checkout -b local-dev`
+3. Show education message (first-time — always during init)
+4. If git is not available for a repo, skip branch creation and warn the user.
+
 ### Phase 4: Code Scanning
 
 If repos contain existing code, delegate to the scanner-agent to scan and populate documentation content. The scanner-agent reads source files (package.json, framework configs, database models, route definitions) and fills in the templates from `reference/doc-templates.md`.
@@ -96,6 +119,15 @@ Generate files in the order specified by `reference/doc-templates.md` Section "T
 #### 5.1 `.fullstack-dev/config.json`
 
 Create the directory `.fullstack-dev/` if it does not exist. Write the config file using the schema from `reference/doc-templates.md` Section 7, populated with all wizard answers.
+
+Include the `gitWorkflow` object with defaults:
+
+- `localBranch`: `"local-dev"`
+- `commitConvention`: `"conventional"`
+- `branchNaming`: `"<type>/<ticket?>-<name>"`
+- `deleteRemoteBranches`: `false`
+
+Include `targetBranch` in each repo entry, populated from Phase 3b detection results.
 
 #### 5.2 `.env.example`
 
@@ -136,6 +168,8 @@ Generate one `ARCHITECTURE.md` inside each repo directory using the template fro
 Generate last, because it references other generated files. Follow `reference/doc-templates.md` Section 6:
 - **No existing `CLAUDE.md`** — generate the full file with the marker block wrapping the generated sections.
 - **Existing `CLAUDE.md`** — append the marker block at the end. NEVER overwrite user content outside the markers.
+
+The Git Workflow section uses the dynamic template from `reference/doc-templates.md` — it references `local-dev` and per-repo `targetBranch` values instead of hardcoded `main` branch rules. For multi-repo projects, include the Per-Repo Target Branches table.
 
 #### 5.11 `.mcp.json`
 
@@ -241,7 +275,7 @@ Run every check from the table in `reference/init-flow.md` Section 10.2:
 |----------|--------|
 | **Config** | config.json exists and valid; version matches plugin version |
 | **Docs** | CONTEXT.md exists; docs/project/architecture.md exists; docs/project/tech-stack.md exists; docs/project/brand.md exists (if frontend); per-repo ARCHITECTURE.md for each sub-repo; docs/specs/ directory exists; docs/plans/ directory exists |
-| **Git** | Root has git initialized; .gitignore has plugin marker block; all sub-repos listed in .gitignore; no new .git/ directories missing from config |
+| **Git** | Root has git initialized; .gitignore has plugin marker block; all sub-repos listed in .gitignore; no new .git/ directories missing from config; local-dev branch exists in each repo; targetBranch set in each repo config entry |
 | **Claude Config** | .claude/settings.json exists; PostToolUse hooks configured; skills installed; commands installed |
 | **MCP** | .mcp.json exists; context7 configured; git platform MCP configured |
 | **Optional Tools** | code-review-graph: `.mcp.json` entry exists, `.claude/settings.json` has PostToolUse hook with `code-review-graph update` command; Agentation: `.mcp.json` entry exists (only check if `projectType` is `fullstack` or `frontend`). Status: Configured / Not configured. Auto-fix: offer to configure if not present, following `reference/tools-setup.md` |
@@ -308,6 +342,7 @@ This agent relies on these reference docs. Read them before executing any flow:
 | Document Templates | `skills/fullstack-dev/reference/doc-templates.md` | Templates for all generated files (CONTEXT.md, architecture.md, tech-stack.md, brand.md, ARCHITECTURE.md, CLAUDE.md, config.json, .env.example), population rules, creation order, mono/multi-repo differences |
 | Gitignore Rules | `skills/fullstack-dev/reference/gitignore-rules.md` | Marker block format, merge rules, add/remove repo procedures, mono vs multi-repo handling |
 | Tools Setup | `skills/fullstack-dev/reference/tools-setup.md` | MCP tools configuration (context7, git platform, code-review-graph, Agentation), merge rules for .mcp.json, hooks merge rules, secrets handling, project-level safety |
+| Git Workflow Flow | `skills/git-workflow/reference/git-workflow-flow.md` | CI/CD target branch detection (Section 1), local-dev branch setup (Section 5), used by Phases 3b and 3c |
 
 **Read the relevant reference doc before executing each phase.** The reference docs contain exact formats, validation rules, and edge cases not repeated in this agent definition.
 

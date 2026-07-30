@@ -18,10 +18,13 @@ and behavioral rules.
 
 ---
 
-## Step 0: Auto-Init Guard
+## Step 0: Git Workflow Guard + Auto-Init
 
-Check whether the project is initialized before doing anything else.
+Reference → `skills/git-workflow/SKILL.md`, Guard section
+- Verify `local-dev` branch
+- Universal stash (guard handles all stash/pop)
 
+Then:
 ```
 Read .fullstack-dev/config.json
 +-- Exists and valid JSON
@@ -705,7 +708,7 @@ Start with: `docs/plans/<timestamp>-<name>/phase-1.md`
 
 ```
 --auto flag set?
-+-- YES --> commit with message: "plan: <feature-name> implementation plan"
++-- YES --> commit with message: "docs(plans): add <feature-name> implementation plan"
 +-- NO  --> ask user to confirm before committing
 ```
 
@@ -809,7 +812,7 @@ For each finding in plan-reviewer-agent output:
 - Apply all Critical and accepted Important fixes to the in-memory plan.
 - Re-run affected self-review checks (Step 9) on modified content.
 - Write plan files to disk (Step 8 atomic write protocol).
-- Commit message: `plan: <feature-name> implementation plan`
+- Commit message: `docs(plans): add <feature-name> implementation plan`
   If fixes were applied, append a list of resolved findings to the body.
 
 ---

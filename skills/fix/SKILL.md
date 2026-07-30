@@ -17,8 +17,13 @@ rules, and escalation logic.
 
 ---
 
-## Step 0: Auto-Init Guard
+## Step 0: Git Workflow Guard + Auto-Init
 
+Reference → `skills/git-workflow/SKILL.md`, Guard section
+- Verify `local-dev` branch
+- Universal stash (guard handles all stash/pop)
+
+Then:
 ```
 Read .fullstack-dev/config.json
 +-- Exists and valid JSON → proceed (extract verification commands if configured)
@@ -86,7 +91,8 @@ Result:
 ```
 Verification passed?
 +-- YES → Commit with descriptive message:
-|   "fix: <what was changed and why>"
+|   "fix(<scope>): <what was changed and why>"
+|   Scope: derived from changed files (per git-workflow-flow.md Section 2)
 |   Include: what the issue was, what was changed, why it works
 +-- NO → Mode check:
     +-- Standalone mode → AskUserQuestion:
@@ -109,6 +115,12 @@ Verification passed?
 - **Fixing without reading surrounding code** first
 - **Ignoring the caller's directive** and doing something different
 - **Attempting alternative fixes** when the specified fix fails (report instead)
+
+---
+
+## Post-Fix
+
+After the fix is committed, the guard's stash pop runs on exit. `/fix` commits but does not push. Run `/git publish` when ready to push and create a PR.
 
 ---
 

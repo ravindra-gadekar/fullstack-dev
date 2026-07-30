@@ -436,17 +436,25 @@ This is a mono-repo. Key directories:
 
 ### Git Workflow
 
-1. Work directly on `main` branch locally -- **no local feature/fix branches**
-2. Commit changes to `main` locally
-3. When pushing: create a **remote** branch and push there:
+1. Work on `local-dev` branch -- never commit directly to `<targetBranch>`
+2. Commit using Conventional Commits: `<type>(<scope>): <summary>`
+3. When pushing: `git push origin local-dev:<type>/<name>`
+4. Create PR targeting `<targetBranch>` using MCP tools
+5. Never push `local-dev` to remote
+6. Never create local feature/fix branches
+7. Use `/git sync` to pull latest from `<targetBranch>`
 
-   ```bash
-   git push origin main:feature/<name>   # or fix/<name>
-   ```
+<conditional: multi-repo with multiple repos>
 
-4. Create PR targeting `main` using MCP tools
-5. **Never push directly to main**
-6. **Never create local feature/fix branches**
+### Per-Repo Target Branches
+
+| Repo          | Target Branch       |
+|---------------|---------------------|
+| <repo.name>   | <repo.targetBranch> |
+
+Push and PR commands automatically target the correct branch per repo.
+
+</conditional>
 
 ### <Git Platform> Operations
 
@@ -495,6 +503,7 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 - **Repos** list is built from `config.json` `repos` array.
 - **Tech Stack** summary is a condensed version of `docs/project/tech-stack.md`.
 - **Build commands** are detected from `package.json` scripts or framework conventions. Use placeholder comments when commands cannot be detected.
+- **Git Workflow** uses `repos[i].targetBranch` from `config.json`. Multi-repo table is included when config has multiple repos. Regenerated on `/project --init`, `/git setup`, or config change.
 - **Git Platform** section adapts to `config.json` `gitPlatform.provider`. The MCP tool prefix changes per platform (`mcp__github__*`, `mcp__bitbucket__*`, etc.).
 - **Architecture Reference** always includes all 5 levels. Level 4 (brand.md) is omitted when `hasFrontend: false`.
 
@@ -532,7 +541,8 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
     {
       "name": "",
       "type": "frontend",
-      "stack": []
+      "stack": [],
+      "targetBranch": ""
     }
   ],
   "hasFrontend": true,
@@ -543,6 +553,12 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
     "provider": "github",
     "method": "mcp",
     "org": ""
+  },
+  "gitWorkflow": {
+    "localBranch": "local-dev",
+    "commitConvention": "conventional",
+    "branchNaming": "<type>/<ticket?>-<name>",
+    "deleteRemoteBranches": false
   }
 }
 ```
@@ -572,6 +588,12 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 | `gitPlatform.provider` | enum | yes | One of: `"github"`, `"bitbucket"`, `"gitlab"`, `"azure-devops"`. |
 | `gitPlatform.method` | string | yes | Integration method. Currently always `"mcp"`. |
 | `gitPlatform.org` | string | yes | Organization or workspace name on the platform. |
+| `gitWorkflow` | object | no | Git workflow configuration. Auto-populated during `/git setup` or `/project --init`. |
+| `gitWorkflow.localBranch` | string | -- | Working branch name. Default `"local-dev"`. |
+| `gitWorkflow.commitConvention` | string | -- | Commit format. Default `"conventional"`. |
+| `gitWorkflow.branchNaming` | string | -- | Remote branch naming pattern. Default `"<type>/<ticket?>-<name>"`. |
+| `gitWorkflow.deleteRemoteBranches` | boolean | -- | Whether to delete remote branches after merge. Default `false`. |
+| `repos[].targetBranch` | string | no | PR target branch for this repo (e.g., `"main"`, `"develop"`). Set by CI/CD auto-detection or user choice. |
 
 ### Validation Rules
 

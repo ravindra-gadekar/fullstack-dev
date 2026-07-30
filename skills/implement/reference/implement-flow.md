@@ -43,13 +43,9 @@ For each repo in config.repos:
   +-- NO  -> "Repo directory <path> not found." -> EXIT
   +-- YES -> check git state
 
-  git status --porcelain (in repo directory):
-  +-- Clean (empty output) -> continue
-  +-- Uncommitted changes ->
-  |   +-- --auto -> git stash -u -m "implement-auto-stash" -> continue
-  |   +-- interactive -> "Uncommitted changes in <repo>. Stash or commit first?"
-  |       +-- Stash  -> git stash -u -> continue
-  |       +-- Commit -> "Commit your changes, then re-run /implement" -> EXIT
+  Git workflow guard (Reference -> skills/git-workflow/SKILL.md, Guard section):
+  +-- Verifies local-dev branch
+  +-- Universal stash (guard handles all stash/pop)
   +-- Not a git repo -> "Repo <name> is not a git repository." -> EXIT
 ```
 
@@ -59,7 +55,7 @@ For each repo in config.repos:
 |-----------|----------|-------------|
 | Config missing | Exit with error | Exit with error |
 | Repo dir missing | Exit with error | Exit with error |
-| Uncommitted changes | Auto-stash with message | Prompt: stash or commit |
+| Uncommitted changes | Guard auto-stashes | Guard auto-stashes |
 | Not a git repo | Exit with error | Exit with error |
 | Clean state | Continue | Continue |
 
