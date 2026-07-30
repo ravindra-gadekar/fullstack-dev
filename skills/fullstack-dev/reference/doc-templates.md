@@ -559,6 +559,10 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
     "commitConvention": "conventional",
     "branchNaming": "<type>/<ticket?>-<name>",
     "deleteRemoteBranches": false
+  },
+  "gitIgnore": {
+    "activeCategories": ["universal", "secrets", "node", "nextjs", "typescript", "windows", "macos", "linux", "ide", "build", "cache"],
+    "hookInstalled": true
   }
 }
 ```
@@ -593,6 +597,9 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 | `gitWorkflow.commitConvention` | string | -- | Commit format. Default `"conventional"`. |
 | `gitWorkflow.branchNaming` | string | -- | Remote branch naming pattern. Default `"<type>/<ticket?>-<name>"`. |
 | `gitWorkflow.deleteRemoteBranches` | boolean | -- | Whether to delete remote branches after merge. Default `false`. |
+| `gitIgnore` | object | no | Gitignore management state. |
+| `gitIgnore.activeCategories` | string[] | -- | Catalog categories active for this project. Set during init or `/gitignore rebuild`. |
+| `gitIgnore.hookInstalled` | boolean | -- | Whether the gitignore pre-commit hook is installed. |
 | `repos[].targetBranch` | string | no | PR target branch for this repo (e.g., `"main"`, `"develop"`). Set by CI/CD auto-detection or user choice. |
 
 ### Validation Rules
@@ -644,11 +651,12 @@ Several generated files change shape based on the `repoStructure` setting in `co
 
 | Aspect | Mono-repo | Multi-repo |
 |---|---|---|
-| Marker block | Not needed | Required (lists sub-repo directories) |
-| Sub-repo entries | N/A | One line per repo directory |
-| Standard ignores | Normal `.gitignore` rules | Included inside marker block |
+| Marker block | `fullstack-dev:gitignore` markers with tech-stack patterns | `fullstack-dev:gitignore` markers with tech-stack patterns + sub-repo directories |
+| Sub-repo entries | N/A | Listed as `# Sub-repositories` category inside marker block |
+| Pattern source | `skills/gitignore/reference/gitignore-catalog.md` | `skills/gitignore/reference/gitignore-catalog.md` |
+| Pre-commit hook | Installed with `fullstack-dev:gitignore` marker in `.git/hooks/pre-commit` | Installed per-repo |
 
-See [gitignore-rules.md](gitignore-rules.md) for full marker block details.
+See [gitignore-catalog.md](../../gitignore/reference/gitignore-catalog.md) for the full pattern catalog and [gitignore-flow.md](../../gitignore/reference/gitignore-flow.md) for marker block format and merge rules.
 
 ### Workspace File (*.code-workspace)
 
@@ -703,7 +711,7 @@ During `/project --init`, files are created in this order:
 
 1. `.fullstack-dev/config.json` -- drives everything else
 2. `.env.example` -- environment setup
-3. `.gitignore` -- before any git operations (multi-repo only: marker block)
+3. `.gitignore` -- before any git operations (marker block with tech-stack patterns from catalog)
 4. `*.code-workspace` -- workspace file (multi-repo only)
 5. `CONTEXT.md` -- domain model (populated later by scanner)
 6. `docs/project/tech-stack.md` -- technology inventory

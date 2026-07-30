@@ -118,7 +118,7 @@ Run `git init` inside the new directory to make it its own repository.
 
 ### Step 3: Update `.gitignore`
 
-Add the new repo directory to the meta-repo `.gitignore` marker block. Delegate to `gitignore-rules.md` for the exact format and placement rules.
+Add the new repo directory to the meta-repo `.gitignore` marker block. Reference `skills/gitignore/reference/gitignore-catalog.md` for patterns and `skills/gitignore/reference/gitignore-flow.md` for the marker block format (`fullstack-dev:gitignore`) and merge rules.
 
 ### Step 4: Generate `ARCHITECTURE.md`
 
