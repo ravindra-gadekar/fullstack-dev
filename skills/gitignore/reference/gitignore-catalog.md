@@ -278,6 +278,24 @@ Per-server data directories are added dynamically based on the servers declared 
 
 ---
 
+## Skills CLI
+
+**Key:** `skills-cli`
+**Detect:** `skills-lock.json` exists at the **workspace root only** (not per sub-repo — `.claude/skills/` and `.agents/` are Claude Code session artifacts, not per-repo source artifacts; a Claude Code session, and therefore `npx skills add`, operates from the workspace root regardless of `repoStructure`, the same way `.mcp.json` and `.claude/settings.json` are already workspace-root-level singletons in this plugin's model)
+**Always active:** No
+**Fallback:** None — unlike every other category, this one has no file-detection fallback. `skills-lock.json` is the one reliable, unambiguous signal that `npx skills add` manages this workspace; a heuristic fallback (e.g. guessing from directory contents) risks false positives on hand-authored `.claude/` trees. This is an intentional deviation from the catalog's usual config-plus-fallback pattern, not an oversight.
+
+**Patterns:**
+
+```gitignore
+.claude/skills/
+.agents/
+```
+
+`.claude/skills/` is precisely scoped to that one subpath — never a wildcard on `.claude/*` — because `.claude/` is known to hold hand-authored content (`settings.json`, `settings.local.json`) alongside generated content. `.agents/` is ignored as a whole directory because it currently holds nothing but the generated skills mirror; a wholesale pattern self-extends if `npx skills add` ever mirrors other content there, at the accepted trade-off that any future hand-authored content placed directly under `.agents/` would be unexpectedly ignored too.
+
+---
+
 ## Deployment
 
 **Key:** `deployment`

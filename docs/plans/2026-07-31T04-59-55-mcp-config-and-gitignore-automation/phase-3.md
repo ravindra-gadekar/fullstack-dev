@@ -25,7 +25,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content.** Insert a new category section immediately after `## MCP Tooling` (current lines 263-278) and before `## Deployment` (current line 281):
+- [x] 1. **Write content.** Insert a new category section immediately after `## MCP Tooling` (current lines 263-278) and before `## Deployment` (current line 281):
 
    ````markdown
    ---
@@ -49,9 +49,9 @@ skills/gitignore/reference/
    ---
    ````
 
-- [ ] 2. **Verify references.** The new section sits between `## MCP Tooling` and `## Deployment`, matching the intended catalog position (Task 3 will confirm this also matches the numbered sort order).
+- [x] 2. **Verify references.** The new section sits between `## MCP Tooling` and `## Deployment`, matching the intended catalog position (Task 3 will confirm this also matches the numbered sort order).
 
-- [ ] 3. **Commit:** `docs(gitignore-catalog): add Skills CLI category`
+- [x] 3. **Commit:** `docs(gitignore-catalog): add Skills CLI category`
 
 ---
 
