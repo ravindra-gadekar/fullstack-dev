@@ -5,6 +5,8 @@ tools: Read, Write, Edit, Grep, Glob
 model: sonnet
 maxTurns: 30
 effort: medium
+mcpServers:
+  - context7
 ---
 
 # Refresh Agent
@@ -113,6 +115,14 @@ After completing the refresh, report a brief summary:
 - If no updates were needed, say so.
 
 Keep the summary concise -- a few bullet points, not a narrative.
+
+---
+
+## Context7 MCP Usage
+
+Confirm current framework conventions when refreshing docs for a detected library/framework.
+
+See `skills/project/reference/context7-usage.md` for the full call flow, query scoping, and budget discipline.
 
 ---
 
