@@ -38,7 +38,7 @@
   "gitIgnore": {
     "activeCategories": ["universal", "secrets", "node", "build", "cache", "ide", "macos", "windows", "linux", "mcp-tooling", "skills-cli"],
     "hookInstalled": true,
-    "categoriesEverActivated": []
+    "categoriesEverActivated": ["skills-cli"]
   },
   "optionalTools": {
     "codeReviewGraph": false,
