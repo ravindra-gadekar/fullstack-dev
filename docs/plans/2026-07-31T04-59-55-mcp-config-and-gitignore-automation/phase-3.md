@@ -116,7 +116,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content, part A — `## Pattern Selection Logic` (current lines 297-311).** Add a new tier after tier 5 (MCP tooling), renumbering the existing tier 6 (Deployment) to 7:
+- [x] 1. **Write content, part A — `## Pattern Selection Logic` (current lines 297-311).** Add a new tier after tier 5 (MCP tooling), renumbering the existing tier 6 (Deployment) to 7:
 
    ```markdown
    5. **MCP tooling** — If `.mcp.json` exists and contains server entries, activate the `mcp-tooling` category. Add per-server data directories dynamically based on declared servers.
@@ -126,7 +126,7 @@ skills/gitignore/reference/
    7. **Deployment** — Detect deployment platform config files (`vercel.json`, `serverless.yml`, `firebase.json`) and activate the `deployment` category if any are present.
    ```
 
-- [ ] 2. **Write content, part B — `## Category Sort Order` (current lines 315-331).** Insert `skills-cli` between `mcp-tooling` (9) and `deployment` (10), renumbering the rest:
+- [x] 2. **Write content, part B — `## Category Sort Order` (current lines 315-331).** Insert `skills-cli` between `mcp-tooling` (9) and `deployment` (10), renumbering the rest:
 
    ```markdown
    1. `universal`
@@ -143,9 +143,9 @@ skills/gitignore/reference/
    12. Sub-repositories (managed separately, listed last)
    ```
 
-- [ ] 3. **Verify references.** `grep -n "^[0-9]" skills/gitignore/reference/gitignore-catalog.md` (or a manual read) confirms both numbered lists are sequential with no gaps or duplicate numbers after the edit.
+- [x] 3. **Verify references.** `grep -n "^[0-9]" skills/gitignore/reference/gitignore-catalog.md` (or a manual read) confirms both numbered lists are sequential with no gaps or duplicate numbers after the edit.
 
-- [ ] 4. **Commit:** `docs(gitignore-catalog): wire skills-cli into pattern selection logic and sort order`
+- [x] 4. **Commit:** `docs(gitignore-catalog): wire skills-cli into pattern selection logic and sort order`
 
 ---
 

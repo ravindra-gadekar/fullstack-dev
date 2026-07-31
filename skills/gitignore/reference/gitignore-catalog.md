@@ -328,7 +328,9 @@ When assembling a `.gitignore` file, categories are selected in these tiers (eva
 
 5. **MCP tooling** — If `.mcp.json` exists and contains server entries, activate the `mcp-tooling` category. Add per-server data directories dynamically based on declared servers.
 
-6. **Deployment** — Detect deployment platform config files (`vercel.json`, `serverless.yml`, `firebase.json`) and activate the `deployment` category if any are present.
+6. **Skills CLI** — If `skills-lock.json` exists at the workspace root, activate the `skills-cli` category. No fallback — see the category's own `Fallback` field for why.
+
+7. **Deployment** — Detect deployment platform config files (`vercel.json`, `serverless.yml`, `firebase.json`) and activate the `deployment` category if any are present.
 
 ---
 
@@ -345,7 +347,8 @@ When writing patterns into the `.gitignore` marker block, categories are ordered
 7. `ide`
 8. OS categories (`macos`, `windows`, `linux`)
 9. `mcp-tooling`
-10. `deployment`
-11. Sub-repositories (managed separately, listed last)
+10. `skills-cli`
+11. `deployment`
+12. Sub-repositories (managed separately, listed last)
 
 This ordering groups related patterns together and places the most universal rules at the top with the most specific at the bottom.
