@@ -30,8 +30,8 @@ docs/project/
 
 **Steps:**
 
-- [ ] Read `CONTEXT.md` line 56 (marker naming convention row in the Naming table)
-- [ ] Update the marker blocks row to add `fullstack-dev:code-review-graph` to the list. The current row reads:
+- [x] Read `CONTEXT.md` line 56 (marker naming convention row in the Naming table)
+- [x] Update the marker blocks row to add `fullstack-dev:code-review-graph` to the list. The current row reads:
 
   ```
   | Marker blocks | `fullstack-dev` (docs) / `fullstack-dev:gitignore` (gitignore) — distinct, coexisting markers | `.git/hooks/pre-commit` |
@@ -43,8 +43,8 @@ docs/project/
   | Marker blocks | `fullstack-dev` (docs) / `fullstack-dev:gitignore` (gitignore) / `fullstack-dev:code-review-graph` (graph ignore) — distinct, coexisting markers | `.git/hooks/pre-commit`, `.code-review-graphignore` |
   ```
 
-- [ ] Verify the example column includes `.code-review-graphignore` as a file that uses this marker
-- [ ] Commit: `docs(context): add fullstack-dev:code-review-graph marker naming convention`
+- [x] Verify the example column includes `.code-review-graphignore` as a file that uses this marker
+- [x] Commit: `docs(context): add fullstack-dev:code-review-graph marker naming convention`
 
 ---
 
@@ -62,7 +62,7 @@ docs/project/
 
 **Steps:**
 
-- [ ] Read `docs/project/architecture.md` and locate the code-review-graph row in the External Integrations table (line 60). Change:
+- [x] Read `docs/project/architecture.md` and locate the code-review-graph row in the External Integrations table (line 60). Change:
 
   ```
   | code-review-graph | MCP server (optional) | Structural codebase understanding for token-efficient reviews in target projects |
@@ -74,7 +74,7 @@ docs/project/
   | code-review-graph | MCP server | Structural codebase understanding for token-efficient reviews in target projects |
   ```
 
-- [ ] Read `docs/project/tech-stack.md` and locate the code-review-graph row in the AI/LLM Integration table (line 30). Change:
+- [x] Read `docs/project/tech-stack.md` and locate the code-review-graph row in the AI/LLM Integration table (line 30). Change:
 
   ```
   | code-review-graph (MCP, optional) | Structural codebase understanding for `/plan`, `/refactor`, `/implement` in managed target projects |
@@ -86,8 +86,8 @@ docs/project/
   | code-review-graph (MCP) | Structural codebase understanding for `/plan`, `/refactor`, `/implement` in managed target projects |
   ```
 
-- [ ] Verify no other occurrences of "optional" remain in either file that refer to code-review-graph
-- [ ] Commit: `docs(project): remove "(optional)" from code-review-graph descriptions`
+- [x] Verify no other occurrences of "optional" remain in either file that refer to code-review-graph
+- [x] Commit: `docs(project): remove "(optional)" from code-review-graph descriptions`
 
 ---
 
@@ -104,7 +104,7 @@ docs/project/
 
 **Steps:**
 
-- [ ] Read `.fullstack-dev/config.json` and locate the `optionalTools` object. Current state:
+- [x] Read `.fullstack-dev/config.json` and locate the `optionalTools` object. Current state:
 
   ```json
   "optionalTools": {
@@ -113,7 +113,7 @@ docs/project/
   }
   ```
 
-- [ ] Remove the `codeReviewGraph` field, leaving only `agentation`:
+- [x] Remove the `codeReviewGraph` field, leaving only `agentation`:
 
   ```json
   "optionalTools": {
@@ -121,8 +121,8 @@ docs/project/
   }
   ```
 
-- [ ] Verify the JSON remains valid after the edit (no trailing commas, correct structure)
-- [ ] Commit: `chore(config): remove optionalTools.codeReviewGraph (now always-on)`
+- [x] Verify the JSON remains valid after the edit (no trailing commas, correct structure)
+- [x] Commit: `chore(config): remove optionalTools.codeReviewGraph (now always-on)`
 
 ---
 
