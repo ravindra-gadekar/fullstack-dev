@@ -675,7 +675,7 @@ MCP               | .mcp.json exists                                 | Yes (crea
                   | Git platform MCP configured                      | Yes (add entry)
                   | github entry is not deprecated stdio shape       | Yes (replace, named exception — see Merge Rules)
                   | claude mcp list reports no connectivity warnings | No (report only)
-                  | Required MCP env vars present in settings.local.json | Yes (create skeleton, prompt for value — see Secret Prompt & Write Flow in tools-setup.md)
+                  | Required MCP env vars present in settings.local.json | Partial (agent creates skeleton + reports; orchestrator asks user and writes — see Secret Prompt & Write Flow in tools-setup.md)
 Developer Tools   | code-review-graph in .mcp.json                   | Yes (add entry)
                   | code-review-graph hooks in settings.json         | Yes (merge hooks)
                   | Agentation in .mcp.json (if frontend)            | Yes (add entry)

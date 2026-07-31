@@ -167,6 +167,20 @@ Agent(
 - **Pass the plugin path** — agents need the path to the `project` skill directory to read their own instructions and reference docs. Determine this from the skill's own location.
 - **Report results** — after the agent completes, relay its summary to the user. If the agent reports errors, present them clearly.
 
+### Completing the Secret Prompt & Write Flow after dispatch
+
+A dispatched agent cannot ask the user anything interactively — confirmed by direct testing, this is a hard constraint of subagent dispatch, not something any amount of tool-granting fixes. When init-agent's completion report lists a missing MCP-server secret variable (per `reference/tools-setup.md` § Secret Prompt & Write Flow, step 1 — the agent only ever creates the skeleton and reports the variable name), the orchestrator finishes the flow itself, in this conversation:
+
+1. Ask the user directly, as plain conversational text (not the `AskUserQuestion` tool — it requires ≥2 discrete choices and can't represent open-ended secret entry):
+   ```
+   ? <Variable description> (for the <server> MCP server, stored only in
+     .claude/settings.local.json — never committed): _______________
+     (reply with the value, or say "skip" to leave it blank for now)
+   ```
+2. **Skipped** — leave the skeleton in place; the printed manual-entry snippet from the agent's report already covers this case.
+3. **Value provided** — write it into `.claude/settings.local.json`'s `env` block directly (Edit tool), in this conversation. Confirm briefly without echoing the value back. If the write is rejected, fall back to printing the snippet with the value the user just gave so they can paste it in themselves.
+4. Never log or echo the value anywhere, regardless of outcome.
+
 ---
 
 ## 5. Reference Docs
