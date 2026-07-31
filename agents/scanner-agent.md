@@ -33,6 +33,8 @@ Scan each repo systematically, progressing from broad structure to specific deta
 
 Detect the tech stack, language, and dependency tree.
 
+When signals for two ecosystems both match in the same repo (e.g. a Django project bundling a small Flask-based tool), record both findings rather than forcing a single choice -- use the `<!-- VERIFY: ... -->` convention from the Scanner Accuracy section below so the user confirms during review.
+
 | Glob Pattern | What It Reveals |
 |---|---|
 | `package.json` | Node.js dependencies, scripts, project metadata |
@@ -43,6 +45,12 @@ Detect the tech stack, language, and dependency tree.
 | `pom.xml`, `build.gradle`, `build.gradle.kts` | Java/Kotlin projects |
 | `Gemfile` | Ruby dependencies |
 | `composer.json` | PHP dependencies |
+| `manage.py` present, and `requirements.txt`/`pyproject.toml` contains `django` or `settings.py` contains `INSTALLED_APPS` | Django project confirmed (Python web framework) |
+| `requirements.txt`/`pyproject.toml` contains `flask`, and a Python file greps for `from flask import Flask` | Flask project confirmed (never inferred from `app.py` alone -- that filename is shared with FastAPI, Streamlit, and plain scripts) |
+| `Gemfile` present and `config/routes.rb` present | Rails project confirmed |
+| `pom.xml` contains `spring-boot-starter` or `org.springframework.boot`, or `build.gradle*` contains `org.springframework.boot` | Spring / Spring Boot project confirmed |
+| `composer.json` contains `"laravel/framework"` | Laravel project confirmed |
+| `*.csproj` contains `Microsoft.AspNetCore` | ASP.NET / .NET project confirmed |
 
 Extract: language, framework, runtime, key dependencies (auth, ORM, UI, testing), and dev tooling (linters, formatters, bundlers).
 
@@ -64,6 +72,12 @@ Detect build tools, framework flavor, and project settings.
 | `vitest.config.*`, `jest.config.*`, `playwright.config.*` | Testing frameworks |
 | `docker-compose.*`, `Dockerfile*` | Containerization |
 | `.env.example`, `.env.local.example` | Required environment variables |
+| `settings.py`, `<project>/settings/*.py` | Django settings module, installed apps, database config, middleware stack |
+| `config.py`, `.flaskenv`, `instance/config.py` | Flask app config, environment-specific settings |
+| `config/application.rb`, `config/environments/*.rb`, `config/database.yml` | Rails app config, environment profiles, DB connection |
+| `application.properties`, `application.yml` | Spring Boot config, active profiles, datasource settings |
+| `config/*.php`, `.env` (Laravel) | Laravel config files, environment variables |
+| `appsettings.json`, `appsettings.*.json` | ASP.NET config, environment-specific settings |
 
 ### Entry Points
 
@@ -78,6 +92,12 @@ Determine the application architecture and how the code is organized.
 | `routes/`, `src/routes/` | Explicit route definitions |
 | `src/commands/`, `src/cli.*` | CLI entry points |
 | `steps/`, `src/steps/` | Event-driven step architecture (iii.dev, etc.) |
+| `manage.py`, `wsgi.py`, `asgi.py`, `urls.py` | Django CLI/management entry, WSGI/ASGI entry, root URLconf routing |
+| `app.py`/`wsgi.py` (only after Flask confirmed via the signal above), `__init__.py` Blueprint registrations | Flask app factory and blueprint-based routing |
+| `config/routes.rb`, `app/controllers/`, `config.ru` | Rails routing, controllers, Rack entry point |
+| `src/main/java/**/*Application.java` (`@SpringBootApplication`), `@RestController`/`@Controller` classes | Spring Boot bootstrap class, REST/MVC controllers |
+| `routes/web.php`, `routes/api.php`, `app/Http/Controllers/` | Laravel routing and controllers |
+| `Program.cs`, `Startup.cs`, `Controllers/` | ASP.NET / .NET app bootstrap, middleware pipeline, MVC/API controllers |
 
 ### Models & Schemas
 
@@ -93,6 +113,12 @@ Extract the domain model for CONTEXT.md.
 | `*.entity.*`, `entities/` | TypeORM / domain entities |
 | `types/`, `src/types/`, `*.types.*` | TypeScript type definitions |
 | `interfaces/`, `*.interface.*` | Interface definitions |
+| `models.py`, `<app>/models.py`, `migrations/` | Django ORM models and migration history |
+| `models.py` (SQLAlchemy `db.Model` classes), `schemas.py` (Marshmallow/Pydantic) | Flask ORM models and serialization schemas |
+| `app/models/`, `db/schema.rb`, `db/migrate/` | Rails ActiveRecord models and schema/migration history |
+| `@Entity`-annotated classes, `src/main/resources/db/migration/`, `repository/` | Spring JPA entities, Flyway migrations, Spring Data repositories |
+| `app/Models/`, `database/migrations/` | Laravel Eloquent models and migration history |
+| `Models/`, EF Core `DbContext` classes, `Migrations/` | ASP.NET EF Core models and migration history |
 
 For each model/schema found, extract: entity name, fields (name + type), relationships to other entities, and the source file path.
 
