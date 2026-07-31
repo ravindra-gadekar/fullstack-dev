@@ -26,8 +26,10 @@ _None — this is a prompt/documentation-based Claude Code plugin with no runtim
 | Provider/Tool | Purpose |
 |---|---|
 | Claude (Anthropic) / Claude Code | This plugin *is* a Claude Code plugin — all agents and commands run inside Claude Code sessions |
-| context7 (MCP) | Up-to-date library/framework documentation lookups for agents |
+| context7 (MCP) | Up-to-date library/framework documentation lookups, wired into all 11 agents via `skills/project/reference/context7-usage.md` |
 | code-review-graph (MCP) | Structural codebase understanding for `/plan`, `/refactor`, `/implement` in managed target projects |
+
+`scanner-agent`'s stack-detection tables cover Django, Flask, Rails, Spring/Spring Boot, Laravel, and ASP.NET/.NET at the same depth as the JS/TS ecosystems (Next.js, Nuxt, Prisma) it already detected — see `agents/scanner-agent.md`.
 
 ## Key Libraries
 
