@@ -38,7 +38,7 @@ skills/project/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content.** In `tools-setup.md`, replace the `### GitHub (github.com detected)` section (current lines 94-119) with:
+- [x] 1. **Write content.** In `tools-setup.md`, replace the `### GitHub (github.com detected)` section (current lines 94-119) with:
 
    ````markdown
    ### GitHub (github.com detected)
@@ -79,9 +79,9 @@ skills/project/reference/
    The plugin does not auto-detect network reachability or auto-select between these two — remote HTTP is the generated default; the Docker command above is documented for the user to run manually if needed.
    ````
 
-- [ ] 2. **Verify references.** Confirm no other section of `tools-setup.md` still shows the old `command: "github-mcp-server"` / `args: ["stdio"]` shape (Task 2 fixes the one known remaining instance in "Secrets Handling → Example" — after this task, only that one instance should remain, confirmable via `grep -n "github-mcp-server" skills/project/reference/tools-setup.md`).
+- [x] 2. **Verify references.** Confirm no other section of `tools-setup.md` still shows the old `command: "github-mcp-server"` / `args: ["stdio"]` shape (Task 2 fixes the one known remaining instance in "Secrets Handling → Example" — after this task, only that one instance should remain, confirmable via `grep -n "github-mcp-server" skills/project/reference/tools-setup.md`).
 
-- [ ] 3. **Commit:** `docs(tools-setup): switch GitHub MCP config to remote HTTP endpoint`
+- [x] 3. **Commit:** `docs(tools-setup): switch GitHub MCP config to remote HTTP endpoint`
 
 ---
 

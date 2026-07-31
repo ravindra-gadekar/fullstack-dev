@@ -93,29 +93,41 @@ Match the URL against known platforms, then add the corresponding server to `.mc
 
 ### GitHub (github.com detected)
 
+**Default: zero-install remote HTTP endpoint.** The previous `github-mcp-server` local-binary/stdio approach is deprecated upstream and requires a manual, separate binary install — do not generate it by default.
+
 ```json
 {
   "mcpServers": {
     "github": {
-      "command": "github-mcp-server",
-      "args": ["stdio"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
       }
     }
   }
 }
 ```
 
-Required `.env` entry:
-```
-GITHUB_TOKEN=<personal-access-token>
+Required `.claude/settings.local.json` entry (user-scoped, never committed — see "Secrets Handling" below):
+
+```json
+{
+  "env": {
+    "GITHUB_TOKEN": "<personal-access-token>"
+  }
+}
 ```
 
-Required `.env.example` entry:
+Required `.env.example` entry: **none.** `GITHUB_TOKEN` is an MCP-server secret, not an application-runtime secret — it never appears in `.env`/`.env.example`.
+
+**Trust boundary:** this sends `Authorization: Bearer ${GITHUB_TOKEN}` over HTTPS to `api.githubcopilot.com`, a GitHub-hosted proxy — not a fully local flow. For network-restricted environments, use the Docker fallback instead:
+
+```bash
+claude mcp add github -e GITHUB_OAUTH_CALLBACK_PORT=8085 -- docker run -i --rm -p 127.0.0.1:8085:8085 -e GITHUB_OAUTH_CALLBACK_PORT ghcr.io/github/github-mcp-server
 ```
-GITHUB_TOKEN=
-```
+
+The plugin does not auto-detect network reachability or auto-select between these two — remote HTTP is the generated default; the Docker command above is documented for the user to run manually if needed.
 
 ---
 
