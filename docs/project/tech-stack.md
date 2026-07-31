@@ -27,7 +27,7 @@ _None — this is a prompt/documentation-based Claude Code plugin with no runtim
 |---|---|
 | Claude (Anthropic) / Claude Code | This plugin *is* a Claude Code plugin — all agents and commands run inside Claude Code sessions |
 | context7 (MCP) | Up-to-date library/framework documentation lookups for agents |
-| code-review-graph (MCP, optional) | Structural codebase understanding for `/plan`, `/refactor`, `/implement` in managed target projects |
+| code-review-graph (MCP) | Structural codebase understanding for `/plan`, `/refactor`, `/implement` in managed target projects |
 
 ## Key Libraries
 

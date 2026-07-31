@@ -265,7 +265,7 @@ Create at workspace root. This is the plugin's state file.
 
 ```json
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "projectName": "<projectName>",
   "projectDescription": "<projectDescription>",
   "projectType": "<projectType>",
@@ -420,9 +420,9 @@ to overwrite on every run. It wires up:
 - MCP tool usage instructions
 - Documentation structure
 
-### 9.5 `.mcp.json`
+### 9.5 MCP Setup
 
-Create at workspace root with MCP server configuration.
+Create/merge `.mcp.json` at workspace root with MCP server configuration.
 
 Always include:
 
@@ -447,19 +447,43 @@ Add git platform MCP based on auto-detection (Section 11):
 If no platform detected, ask the user (Section 11) and configure
 accordingly. If the user says "none / skip", only include context7.
 
-### 9.6 Optional Developer Tools
+**code-review-graph (always-on):**
 
-After configuring MCP servers (context7, git platform), offer optional
-developer tools that improve AI agent capabilities. Present the
-following prompt:
+code-review-graph is configured automatically for every project — it is
+no longer an opt-in prompt. Follow `reference/tools-setup.md` Section
+"code-review-graph MCP Configuration" for exact content:
+
+1. **Merge into `.mcp.json`:**
+
+   ```json
+   {"command":"uvx","args":["code-review-graph","mcp","--repo","."]}
+   ```
+
+2. **Merge hooks into `.claude/settings.json`:**
+   - PostToolUse: `uvx code-review-graph update --skip-flows --repo .`
+     (matcher: `Edit|Write|Bash|PowerShell`, timeout: 30000)
+   - SessionStart: `uvx code-review-graph status --repo .`
+     (timeout: 10000)
+3. **Generate `.code-review-graphignore`:**
+   - Read `repos[].stack` + `gitIgnore.activeCategories` from config
+   - Filter to extras NOT covered by built-in defaults (per
+     `reference/tools-setup.md` Section "`.code-review-graphignore`
+     Configuration")
+   - Write file with `fullstack-dev:code-review-graph` marker block
+   - Data dependency: runs AFTER Section 9.2 `.gitignore` generation
+
+> **Note:** the code-review-graph PostToolUse hook (matcher
+> `Edit|Write|Bash|PowerShell`) coexists alongside the fullstack-dev
+> doc-staging PostToolUse hook (matcher `Edit|Write`) — see the Hooks
+> Merge Note in `reference/tools-setup.md`.
+
+### 9.6 Optional Tools
+
+After MCP Setup (Section 9.5), offer remaining optional tools that
+improve AI agent capabilities. Present the following prompt:
 
 ```
 ? Optional developer tools (improve AI agent capabilities):
-
-  code-review-graph — Structural codebase understanding (Recommended)
-    Helps AI read your codebase faster and saves tokens.
-    ○ Configure now (Recommended)
-    ○ Skip
 
   Agentation — Visual UI feedback tool
     Click elements in your browser to report UI issues to the AI agent.
@@ -469,24 +493,15 @@ following prompt:
 ```
 
 **Branching:**
-- Agentation option is only shown when `projectType` includes frontend
+- This prompt is only shown when `projectType` includes frontend
   (`fullstack` or `frontend`).
-- If "Configure now" for code-review-graph: follow
-  `reference/tools-setup.md` Section "code-review-graph MCP
-  Configuration" for `.mcp.json` entry AND hooks in
-  `.claude/settings.json`.
 - If "Configure now" for Agentation: follow `reference/tools-setup.md`
   Section "Agentation" for `.mcp.json` entry AND npm dev dependency.
-- If "Skip" for either: no action, continue to next step.
+- If "Skip": no action, continue to next step.
 
 **Store:**
-- `optionalTools.codeReviewGraph` (boolean) -- whether code-review-graph
-  was configured
 - `optionalTools.agentation` (boolean) -- whether Agentation was
   configured
-
-> **Note:** code-review-graph hooks should be merged alongside existing
-> hooks per the Hooks Merge Note in `reference/tools-setup.md`.
 
 ### 9.7 `.claude/settings.json`
 
@@ -617,6 +632,7 @@ Files created:
   .mcp.json
   .claude/settings.json
   .gitignore
+  .code-review-graphignore
   [<project>.code-workspace]       (if multi-repo)
 
 Next steps:
@@ -676,9 +692,12 @@ MCP               | .mcp.json exists                                 | Yes (crea
                   | github entry is not deprecated stdio shape       | Yes (replace, named exception — see Merge Rules)
                   | claude mcp list reports no connectivity warnings | No (report only)
                   | Required MCP env vars present in settings.local.json | Partial (agent creates skeleton + reports; orchestrator asks user and writes — see Secret Prompt & Write Flow in tools-setup.md)
-Developer Tools   | code-review-graph in .mcp.json                   | Yes (add entry)
-                  | code-review-graph hooks in settings.json         | Yes (merge hooks)
-                  | Agentation in .mcp.json (if frontend)            | Yes (add entry)
+                  | code-review-graph entry in .mcp.json              | Yes (add entry)
+                  | code-review-graph PostToolUse hook in settings.json | Yes (merge hook)
+                  | code-review-graph SessionStart hook in settings.json | Yes (merge hook)
+                  | .code-review-graphignore exists with marker block  | Yes (generate)
+                  | .code-review-graphignore patterns match current tech stack | Yes (regenerate marker block)
+Developer Tools   | Agentation in .mcp.json (if frontend)            | Yes (add entry)
 Workspace         | .code-workspace file exists (if multi-repo)      | Yes (create)
                   | All repos listed in workspace folders            | Yes (add missing)
 ```
@@ -804,6 +823,22 @@ Running health check...
 ```
 
 Then proceed to the health check (Section 10.2).
+
+### 12.3 Version-Specific Migrations
+
+**1.0.0 → 1.1.0: code-review-graph always-on**
+
+- Add code-review-graph `.mcp.json` entry (merge, skip if already present)
+- Add code-review-graph PostToolUse and SessionStart hooks to
+  `.claude/settings.json` (merge alongside existing hooks)
+- Generate `.code-review-graphignore` with marker block (per
+  `reference/tools-setup.md`)
+- Remove `optionalTools.codeReviewGraph` from `config.json` regardless
+  of its prior value (`true` or `false`). The `optionalTools` object
+  remains with only `agentation: boolean`.
+- Projects that previously had `codeReviewGraph: false` get
+  code-review-graph added — intentional, since it is now always-on.
+- Completion report note: "Added code-review-graph (now standard)."
 
 ---
 

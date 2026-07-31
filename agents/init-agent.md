@@ -71,19 +71,17 @@ Before generating MCP configuration, detect the git platform per `reference/tool
 3. If multiple platforms are detected across repos, configure MCP servers for all of them.
 4. If no remotes are found, ask the user which platform they will use (GitHub, GitLab, Bitbucket, Azure DevOps, or none/skip).
 
-### Phase 3a: Optional Developer Tools
+### Phase 3a: Optional Tools
 
-After MCP configuration (context7, git platform), offer optional developer tools:
+After MCP configuration (context7, git platform, code-review-graph — see 5.11b), offer remaining optional tools:
 
 1. Read `reference/tools-setup.md` for setup instructions.
 2. Present the optional tools prompt:
-   - **code-review-graph** — Structural codebase understanding (Recommended). Configure now / Skip
    - **Agentation** — Visual UI feedback tool (only offer for projects with frontend, i.e. `projectType` is `fullstack` or `frontend`). Configure now / Skip
-3. For each tool the user selects "Configure now":
+3. If the user selects "Configure now" for Agentation:
    - Configure per `reference/tools-setup.md` merge rules.
-   - **code-review-graph**: add `.mcp.json` entry + `.claude/settings.json` PostToolUse hook for `code-review-graph update` command (merge alongside existing fullstack-dev hooks).
-   - **Agentation**: add `.mcp.json` entry + npm dev dependency in frontend repos.
-4. Store selections in `config.json`: `optionalTools.codeReviewGraph` (boolean), `optionalTools.agentation` (boolean).
+   - Add `.mcp.json` entry + npm dev dependency in frontend repos.
+4. Store selection in `config.json`: `optionalTools.agentation` (boolean).
 
 ### Phase 3b: Target Branch Detection
 
@@ -200,6 +198,19 @@ Follow `reference/tools-setup.md`:
 
 If any MCP server just configured in 5.11 requires an environment variable (per `reference/tools-setup.md`, e.g. `GITHUB_TOKEN` for `github`), follow step 1 of the Secret Prompt & Write Flow in `reference/tools-setup.md` § Secrets Handling: ensure the skeleton exists (create the file or merge the key in with an empty value). **You cannot ask the user or write the real value yourself when dispatched as a subagent** — you have no interactive channel back to the human. Include each missing variable name explicitly in your completion report (Section 9.12) so the orchestrator (the SKILL.md-level flow, which runs in the main conversation, not as a dispatched agent) can pick it up and complete steps 2-4 directly with the user.
 
+#### 5.11b code-review-graph (always-on)
+
+code-review-graph is configured for every project — not an opt-in prompt:
+
+- Merge code-review-graph entry into `.mcp.json` per `reference/tools-setup.md` § "code-review-graph MCP Configuration".
+- Merge PostToolUse and SessionStart hooks into `.claude/settings.json` per `reference/tools-setup.md` § "Hooks" and "Hooks Merge Note".
+- Generate `.code-review-graphignore` per `reference/tools-setup.md` § "`.code-review-graphignore` Configuration":
+  - Read `repos[].stack` + `gitIgnore.activeCategories` from config.
+  - Compute stack-derived extras from the stack table.
+  - Write file with `fullstack-dev:code-review-graph` marker block.
+  - Apply merge rules (create / prepend / replace within markers).
+- Data dependency: runs AFTER §5.3 `.gitignore` generation.
+
 #### 5.12 `.claude/settings.json`
 
 Create the `.claude/` directory if needed. Write the PostToolUse hook configuration:
@@ -299,8 +310,8 @@ Run every check from the table in `reference/init-flow.md` Section 10.2:
 | **Docs** | CONTEXT.md exists; docs/project/architecture.md exists; docs/project/tech-stack.md exists; docs/project/brand.md exists (if frontend); per-repo ARCHITECTURE.md for each sub-repo; docs/specs/ directory exists; docs/plans/ directory exists |
 | **Git** | Root has git initialized; .gitignore has fullstack-dev:gitignore markers; all sub-repos listed in .gitignore; no new .git/ directories missing from config; local-dev branch exists in each repo; targetBranch set in each repo config entry; pre-commit hook has fullstack-dev:gitignore block; gitIgnore config field exists |
 | **Claude Config** | .claude/settings.json exists; PostToolUse hooks configured; skills installed; commands installed |
-| **MCP** | .mcp.json exists; context7 configured; git platform MCP configured; github entry is not deprecated stdio shape (auto-fix: replace via named merge exception); claude mcp list reports no connectivity warnings (report only); required MCP env vars present in settings.local.json (agent auto-creates skeleton, reports missing var name; orchestrator asks user and writes — see Secret Prompt & Write Flow) |
-| **Optional Tools** | code-review-graph: `.mcp.json` entry exists, `.claude/settings.json` has PostToolUse hook with `code-review-graph update` command; Agentation: `.mcp.json` entry exists (only check if `projectType` is `fullstack` or `frontend`). Status: Configured / Not configured. Auto-fix: offer to configure if not present, following `reference/tools-setup.md` |
+| **MCP** | .mcp.json exists; context7 configured; git platform MCP configured; github entry is not deprecated stdio shape (auto-fix: replace via named merge exception); claude mcp list reports no connectivity warnings (report only); required MCP env vars present in settings.local.json (agent auto-creates skeleton, reports missing var name; orchestrator asks user and writes — see Secret Prompt & Write Flow); code-review-graph entry in `.mcp.json`; code-review-graph PostToolUse hook in `settings.json`; code-review-graph SessionStart hook in `settings.json`; `.code-review-graphignore` exists with marker block; `.code-review-graphignore` patterns match current tech stack |
+| **Developer Tools** | Agentation: `.mcp.json` entry exists (only check if `projectType` is `fullstack` or `frontend`). Auto-fix: offer to configure if not present |
 | **Workspace** | .code-workspace file exists (if multi-repo); all repos listed in workspace folders |
 
 Report each check as PASS or FAIL.

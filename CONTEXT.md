@@ -53,7 +53,7 @@ This is a documentation/prompt-based Claude Code plugin — there is no runtime 
 | Command files | `<verb>.md` in `commands/`, matches the skill name | `project.md` -> `skills/project/` |
 | Skill directories | kebab-case matching the command name | `skills/gitignore/` |
 | Reference docs | descriptive kebab-case under `skills/<skill>/reference/` | `init-flow.md`, `doc-templates.md` |
-| Marker blocks | `fullstack-dev` (docs) / `fullstack-dev:gitignore` (gitignore) — distinct, coexisting markers | `.git/hooks/pre-commit` |
+| Marker blocks | `fullstack-dev` (docs) / `fullstack-dev:gitignore` (gitignore) / `fullstack-dev:code-review-graph` (graph ignore) — distinct, coexisting markers | `.git/hooks/pre-commit`, `.code-review-graphignore` |
 
 ### Patterns
 

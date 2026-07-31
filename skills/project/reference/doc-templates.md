@@ -527,7 +527,7 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 
 ```json
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "plugin": "https://github.com/ravindra-gadekar/fullstack-dev.git",
   "projectName": "",
   "description": "",
@@ -572,7 +572,7 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `version` | string | yes | Config schema version. Currently `"1.0.0"`. |
+| `version` | string | yes | Config schema version. Currently `"1.1.0"`. |
 | `plugin` | string | yes | Git URL of the plugin repo. Always `"https://github.com/ravindra-gadekar/fullstack-dev.git"`. |
 | `projectName` | string | yes | Human-readable project name (e.g., `"My Project"`). |
 | `description` | string | yes | One-line project description. |
@@ -602,6 +602,8 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 | `gitIgnore.activeCategories` | string[] | -- | Catalog categories active for this project. Set during init or `/gitignore rebuild`. |
 | `gitIgnore.hookInstalled` | boolean | -- | Whether the gitignore pre-commit hook is installed. |
 | `gitIgnore.categoriesEverActivated` | string[] | -- | Persistent record of every category ever activated for this project. Unlike `activeCategories` (a live, re-detected snapshot that can drop a category if its detection signal briefly disappears), this array only ever grows. Used to distinguish true first-activation from re-detection. |
+| `optionalTools` | object | no | Optional developer tool configuration. |
+| `optionalTools.agentation` | boolean | -- | Whether Agentation was configured during init. Only relevant when `projectType` includes frontend. |
 | `repos[].targetBranch` | string | no | PR target branch for this repo (e.g., `"main"`, `"develop"`). Set by CI/CD auto-detection or user choice. |
 
 ### Validation Rules
@@ -709,12 +711,13 @@ During `/project --init`, files are created in this order:
 1. `.fullstack-dev/config.json` -- drives everything else
 2. `.env.example` -- environment setup
 3. `.gitignore` -- before any git operations (marker block with tech-stack patterns from catalog)
-4. `*.code-workspace` -- workspace file (multi-repo only)
-5. `CONTEXT.md` -- domain model (populated later by scanner)
-6. `docs/project/tech-stack.md` -- technology inventory
-7. `docs/project/architecture.md` -- system architecture
-8. `docs/project/brand.md` -- design tokens (only if `hasFrontend: true`)
-9. Per-repo `ARCHITECTURE.md` -- one per repo
-10. `CLAUDE.md` -- last, because it references other docs
+4. `.code-review-graphignore` -- after .gitignore (needs gitIgnore.activeCategories)
+5. `*.code-workspace` -- workspace file (multi-repo only)
+6. `CONTEXT.md` -- domain model (populated later by scanner)
+7. `docs/project/tech-stack.md` -- technology inventory
+8. `docs/project/architecture.md` -- system architecture
+9. `docs/project/brand.md` -- design tokens (only if `hasFrontend: true`)
+10. Per-repo `ARCHITECTURE.md` -- one per repo
+11. `CLAUDE.md` -- last, because it references other docs
 
 This order ensures that each file can reference files created before it. The scanner-agent populates placeholder content after all files exist.

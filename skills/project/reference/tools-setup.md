@@ -268,6 +268,69 @@ The code-review-graph hook has a broader matcher (includes Bash/PowerShell). Bot
 
 ---
 
+## `.code-review-graphignore` Configuration
+
+code-review-graph has built-in defaults and auto-respects `.gitignore`, but project-specific extras (docs, plugin metadata, framework caches) need an explicit ignore file. The plugin generates only patterns not covered by the built-in defaults.
+
+### Built-in Defaults (for reference, not generated)
+
+code-review-graph already excludes:
+`node_modules/**`, `.git/**`, `__pycache__/**`, `*.pyc`, `.venv/**`, `venv/**`, `dist/**`, `build/**`, `.next/**`, `target/**`, `*.min.js`, `*.min.css`, `*.map`, `*.lock`, `package-lock.json`, `yarn.lock`, `*.db`, `*.sqlite`, `*.db-journal`, `.code-review-graph/**`
+
+### Minimal Defaults (always included in generated file)
+
+```gitignore
+docs/
+.fullstack-dev/
+```
+
+### Stack-Derived Extras
+
+| Stack signal | Signal source | Extra patterns |
+| --- | --- | --- |
+| `node` or `typescript` | `repos[].stack` contains `"node"` or `"typescript"` | `coverage/`, `.nyc_output/` |
+| `nextjs` | `repos[].stack` contains `"next.js"` | `storybook-static/` |
+| `astro` | `repos[].stack` contains `"astro"` | `.astro/` |
+| `python` | `repos[].stack` contains `"python"` | `.mypy_cache/`, `.pytest_cache/`, `.ruff_cache/`, `htmlcov/` |
+| `iiidev` | `repos[].stack` contains `"iii.dev"` or `"motia"` | `.motia/`, `data/` |
+| `frontend` (any) | `hasFrontend == true` | `storybook-static/`, `.storybook/` |
+| Infrastructure | File-presence: `*.tf` or `docker-compose*` in repo | `.terraform/`, `terraform.tfstate*` |
+
+### Marker Block Format
+
+```gitignore
+# >>> fullstack-dev:code-review-graph (do not edit this block) >>>
+
+# Project metadata
+docs/
+.fullstack-dev/
+
+# Node/TypeScript (stack-derived)
+coverage/
+.nyc_output/
+
+# <<< fullstack-dev:code-review-graph <<<
+
+# --- User entries below ---
+```
+
+### Multi-Repo Handling
+
+A single `.code-review-graphignore` is generated at the workspace root. Patterns are the UNION of stack-derived extras across all `repos[].stack` entries. Root-relative patterns apply to all sub-repos. No per-sub-repo ignore files.
+
+### Data Dependency
+
+Generation runs AFTER `.gitignore` generation (§9.2) because it reads `gitIgnore.activeCategories`.
+
+### Merge Rules (identical to `.gitignore` merge semantics)
+
+- No `.code-review-graphignore` exists → create with full marker block
+- File exists without marker block → prepend marker block, preserve existing content below
+- Marker block exists → replace content between markers only, preserve user content outside
+- If `gitIgnore.activeCategories` is empty or missing → fall back to minimal defaults only
+
+---
+
 ## Agentation
 
 Agentation provides agent orchestration and monitoring capabilities. It integrates via an MCP server and an optional frontend component for development-time visibility.

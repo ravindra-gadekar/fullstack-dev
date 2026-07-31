@@ -57,7 +57,7 @@ All persistent state lives as plain files: this repo's own `agents/`, `commands/
 |---|---|---|
 | context7 | MCP server | Up-to-date library/framework documentation for agents working in target projects |
 | GitHub / GitLab / Bitbucket / Azure DevOps MCP servers | MCP server | Git-platform operations (issues, PRs, branches) in target projects, auto-detected from remotes |
-| code-review-graph | MCP server (optional) | Structural codebase understanding for token-efficient reviews in target projects |
+| code-review-graph | MCP server | Structural codebase understanding for token-efficient reviews in target projects |
 | Agentation | MCP server (optional) | Visual UI feedback for frontend target projects |
 
 ## Authentication & Authorization

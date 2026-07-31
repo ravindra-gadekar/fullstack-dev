@@ -41,7 +41,6 @@
     "categoriesEverActivated": ["skills-cli"]
   },
   "optionalTools": {
-    "codeReviewGraph": false,
     "agentation": false
   },
   "createdAt": "2026-07-31T00:00:00Z",
