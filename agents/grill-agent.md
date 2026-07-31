@@ -5,6 +5,8 @@ tools: Read, Grep, Glob, WebFetch
 model: sonnet
 maxTurns: 30
 effort: high
+mcpServers:
+  - context7
 ---
 
 # Grill Agent
@@ -193,6 +195,14 @@ Return your findings as a single structured text block. Group findings by priori
 - Findings must be specific to this spec — no generic advice ("consider security" is not a finding; "the /api/widgets endpoint has no auth check" is).
 - If a dimension produces no findings, do not list it in the output — only mention it in the "Clean dimensions" summary line.
 - Number findings sequentially across all priority groups (1, 2, 3... not restarting per group).
+
+---
+
+## Context7 MCP Usage
+
+Verify a spec's claims about a library/framework's capabilities against current documentation.
+
+See `skills/project/reference/context7-usage.md` for the full call flow, query scoping, and budget discipline.
 
 ---
 
