@@ -36,8 +36,9 @@
     "deleteRemoteBranches": false
   },
   "gitIgnore": {
-    "activeCategories": ["universal", "secrets", "node", "build", "cache", "ide", "macos", "windows", "linux"],
-    "hookInstalled": true
+    "activeCategories": ["universal", "secrets", "node", "build", "cache", "ide", "macos", "windows", "linux", "mcp-tooling", "skills-cli"],
+    "hookInstalled": true,
+    "categoriesEverActivated": []
   },
   "optionalTools": {
     "codeReviewGraph": false,

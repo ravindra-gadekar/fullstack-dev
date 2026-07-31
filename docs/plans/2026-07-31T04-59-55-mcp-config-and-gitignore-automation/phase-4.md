@@ -122,11 +122,11 @@
 
 **Steps (Config: Create-and-verify):**
 
-- [ ] 1. **Create config.** Run `/gitignore rebuild` (per `skills/gitignore/SKILL.md` Step 3, using the now-updated catalog and flow docs from Phase 3). This detects `skills-lock.json` at the workspace root (present — confirmed earlier in this session), activates `skills-cli` alongside whatever else the existing detection finds (`universal`, `secrets`, `node`, `build`, `cache`, `ide`, `macos`, `windows`, `linux`, and `mcp-tooling` since `.mcp.json` has server entries), and regenerates the marker block accordingly. Per Phase 3 Task 6's design, `rebuild` only ever touches `activeCategories` — `categoriesEverActivated` is written exclusively by `cleanup`'s first-activation check (Task 4), not by this task.
+- [x] 1. **Create config.** Run `/gitignore rebuild` (per `skills/gitignore/SKILL.md` Step 3, using the now-updated catalog and flow docs from Phase 3). This detects `skills-lock.json` at the workspace root (present — confirmed earlier in this session), activates `skills-cli` alongside whatever else the existing detection finds (`universal`, `secrets`, `node`, `build`, `cache`, `ide`, `macos`, `windows`, `linux`, and `mcp-tooling` since `.mcp.json` has server entries), and regenerates the marker block accordingly. Per Phase 3 Task 6's design, `rebuild` only ever touches `activeCategories` — `categoriesEverActivated` is written exclusively by `cleanup`'s first-activation check (Task 4), not by this task.
 
-- [ ] 2. **Run verification.** Confirm `.gitignore`'s marker block includes a `# Skills CLI` section with `.claude/skills/` and `.agents/`; confirm the `# Secrets` section includes `.claude/settings.local.json`; confirm the `# IDE` section includes `*.code-workspace`. Confirm `.fullstack-dev/config.json`'s `gitIgnore.activeCategories` includes `skills-cli`. Do **not** expect `gitIgnore.categoriesEverActivated` to change yet — it's still whatever it was before this task ran (Task 4 is what updates it).
+- [x] 2. **Run verification.** Confirm `.gitignore`'s marker block includes a `# Skills CLI` section with `.claude/skills/` and `.agents/`; confirm the `# Secrets` section includes `.claude/settings.local.json`; confirm the `# IDE` section includes `*.code-workspace`. Confirm `.fullstack-dev/config.json`'s `gitIgnore.activeCategories` includes `skills-cli`. Do **not** expect `gitIgnore.categoriesEverActivated` to change yet — it's still whatever it was before this task ran (Task 4 is what updates it).
 
-- [ ] 3. **Commit:** `chore(gitignore): rebuild with skills-cli, settings.local.json, and code-workspace patterns`
+- [x] 3. **Commit:** `chore(gitignore): rebuild with skills-cli, settings.local.json, and code-workspace patterns`
 
 ---
 
