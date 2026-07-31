@@ -824,6 +824,22 @@ Running health check...
 
 Then proceed to the health check (Section 10.2).
 
+### 12.3 Version-Specific Migrations
+
+**1.0.0 → 1.1.0: code-review-graph always-on**
+
+- Add code-review-graph `.mcp.json` entry (merge, skip if already present)
+- Add code-review-graph PostToolUse and SessionStart hooks to
+  `.claude/settings.json` (merge alongside existing hooks)
+- Generate `.code-review-graphignore` with marker block (per
+  `reference/tools-setup.md`)
+- Remove `optionalTools.codeReviewGraph` from `config.json` regardless
+  of its prior value (`true` or `false`). The `optionalTools` object
+  remains with only `agentation: boolean`.
+- Projects that previously had `codeReviewGraph: false` get
+  code-review-graph added — intentional, since it is now always-on.
+- Completion report note: "Added code-review-graph (now standard)."
+
 ---
 
 ## 13. Team Member Onboarding
