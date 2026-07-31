@@ -25,7 +25,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content.** Insert a new category section immediately after `## MCP Tooling` (current lines 263-278) and before `## Deployment` (current line 281):
+- [ ] 1. **Write content.** Insert a new category section immediately after `## MCP Tooling` (current lines 263-278) and before `## Deployment` (current line 281):
 
    ````markdown
    ---
@@ -49,9 +49,9 @@ skills/gitignore/reference/
    ---
    ````
 
-2. **Verify references.** The new section sits between `## MCP Tooling` and `## Deployment`, matching the intended catalog position (Task 3 will confirm this also matches the numbered sort order).
+- [ ] 2. **Verify references.** The new section sits between `## MCP Tooling` and `## Deployment`, matching the intended catalog position (Task 3 will confirm this also matches the numbered sort order).
 
-3. **Commit:** `docs(gitignore-catalog): add Skills CLI category`
+- [ ] 3. **Commit:** `docs(gitignore-catalog): add Skills CLI category`
 
 ---
 
@@ -68,7 +68,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content, part A — `## Secrets` (current lines 27-43).** Add `.claude/settings.local.json` to the patterns block:
+- [ ] 1. **Write content, part A — `## Secrets` (current lines 27-43).** Add `.claude/settings.local.json` to the patterns block:
 
    ```gitignore
    .env
@@ -81,7 +81,7 @@ skills/gitignore/reference/
    .claude/settings.local.json
    ```
 
-2. **Write content, part B — `## IDE` (current lines 188-207).** Add `*.code-workspace` to the patterns block, alongside the existing `.vscode/*` entries:
+- [ ] 2. **Write content, part B — `## IDE` (current lines 188-207).** Add `*.code-workspace` to the patterns block, alongside the existing `.vscode/*` entries:
 
    ```gitignore
    .idea/
@@ -97,9 +97,9 @@ skills/gitignore/reference/
    *.code-workspace
    ```
 
-3. **Verify references.** Both categories remain `Always active: Yes` (no change to their `Detect`/`Always active` fields — only new pattern lines added).
+- [ ] 3. **Verify references.** Both categories remain `Always active: Yes` (no change to their `Detect`/`Always active` fields — only new pattern lines added).
 
-4. **Commit:** `docs(gitignore-catalog): add settings.local.json to secrets, *.code-workspace to ide`
+- [ ] 4. **Commit:** `docs(gitignore-catalog): add settings.local.json to secrets, *.code-workspace to ide`
 
 ---
 
@@ -116,7 +116,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content, part A — `## Pattern Selection Logic` (current lines 297-311).** Add a new tier after tier 5 (MCP tooling), renumbering the existing tier 6 (Deployment) to 7:
+- [ ] 1. **Write content, part A — `## Pattern Selection Logic` (current lines 297-311).** Add a new tier after tier 5 (MCP tooling), renumbering the existing tier 6 (Deployment) to 7:
 
    ```markdown
    5. **MCP tooling** — If `.mcp.json` exists and contains server entries, activate the `mcp-tooling` category. Add per-server data directories dynamically based on declared servers.
@@ -126,7 +126,7 @@ skills/gitignore/reference/
    7. **Deployment** — Detect deployment platform config files (`vercel.json`, `serverless.yml`, `firebase.json`) and activate the `deployment` category if any are present.
    ```
 
-2. **Write content, part B — `## Category Sort Order` (current lines 315-331).** Insert `skills-cli` between `mcp-tooling` (9) and `deployment` (10), renumbering the rest:
+- [ ] 2. **Write content, part B — `## Category Sort Order` (current lines 315-331).** Insert `skills-cli` between `mcp-tooling` (9) and `deployment` (10), renumbering the rest:
 
    ```markdown
    1. `universal`
@@ -143,9 +143,9 @@ skills/gitignore/reference/
    12. Sub-repositories (managed separately, listed last)
    ```
 
-3. **Verify references.** `grep -n "^[0-9]" skills/gitignore/reference/gitignore-catalog.md` (or a manual read) confirms both numbered lists are sequential with no gaps or duplicate numbers after the edit.
+- [ ] 3. **Verify references.** `grep -n "^[0-9]" skills/gitignore/reference/gitignore-catalog.md` (or a manual read) confirms both numbered lists are sequential with no gaps or duplicate numbers after the edit.
 
-4. **Commit:** `docs(gitignore-catalog): wire skills-cli into pattern selection logic and sort order`
+- [ ] 4. **Commit:** `docs(gitignore-catalog): wire skills-cli into pattern selection logic and sort order`
 
 ---
 
@@ -162,7 +162,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content.** In "## 1. Marker Block Format" → "### Structural Rules" (current lines 41-52), the category sort order list mirrors the catalog's — apply the identical renumbering from Phase 3 Task 3:
+- [ ] 1. **Write content.** In "## 1. Marker Block Format" → "### Structural Rules" (current lines 41-52), the category sort order list mirrors the catalog's — apply the identical renumbering from Phase 3 Task 3:
 
    ```markdown
    - **Category sort order** follows the catalog's canonical order:
@@ -180,9 +180,9 @@ skills/gitignore/reference/
      12. Sub-repositories
    ```
 
-2. **Verify references.** This list now matches Phase 3 Task 3's catalog list item-for-item (same order, same 12 entries).
+- [ ] 2. **Verify references.** This list now matches Phase 3 Task 3's catalog list item-for-item (same order, same 12 entries).
 
-3. **Commit:** `docs(gitignore-flow): sync structural-rules sort order with skills-cli category`
+- [ ] 3. **Commit:** `docs(gitignore-flow): sync structural-rules sort order with skills-cli category`
 
 ---
 
@@ -199,7 +199,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content, part A.** In "## 4. Tech-Stack Detection Heuristics", insert a new subsection after "### MCP Tooling Detection" (current lines 313-327) and before "### Deployment Detection" (current line 329):
+- [ ] 1. **Write content, part A.** In "## 4. Tech-Stack Detection Heuristics", insert a new subsection after "### MCP Tooling Detection" (current lines 313-327) and before "### Deployment Detection" (current line 329):
 
    ```markdown
    ### Skills CLI Detection
@@ -215,7 +215,7 @@ skills/gitignore/reference/
    No fallback heuristic exists for this category — see `gitignore-catalog.md`'s Skills CLI section for why.
    ```
 
-2. **Write content, part B.** In "### Full Detection Decision Tree" (current lines 340-359), add a line after the MCP tooling check:
+- [ ] 2. **Write content, part B.** In "### Full Detection Decision Tree" (current lines 340-359), add a line after the MCP tooling check:
 
    ```markdown
    Start
@@ -237,9 +237,9 @@ skills/gitignore/reference/
    +-- Output final pattern list
    ```
 
-3. **Verify references.** The new subsection's placement (after MCP Tooling Detection, before Deployment Detection) matches the sort-order position established in Phase 3 Task 3/4.
+- [ ] 3. **Verify references.** The new subsection's placement (after MCP Tooling Detection, before Deployment Detection) matches the sort-order position established in Phase 3 Task 3/4.
 
-4. **Commit:** `docs(gitignore-flow): add Skills CLI detection heuristics and update decision tree`
+- [ ] 4. **Commit:** `docs(gitignore-flow): add Skills CLI detection heuristics and update decision tree`
 
 ---
 
@@ -256,7 +256,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content.** In "## 7. Cleanup Logic" → "### Cleanup Steps" (current lines 555-596), insert a new step between "Step 1: Verify .gitignore" and "Step 2: Group by pattern type":
+- [ ] 1. **Write content.** In "## 7. Cleanup Logic" → "### Cleanup Steps" (current lines 555-596), insert a new step between "Step 1: Verify .gitignore" and "Step 2: Group by pattern type":
 
    ```markdown
    Step 1a: Skills-CLI first-activation check (only when the skills-cli category is part of this cleanup run)
@@ -291,9 +291,9 @@ skills/gitignore/reference/
      so subsequent runs skip straight to Step 3.
    ```
 
-2. **Verify references.** The renumbered "Step 2" through "Step 5" below still read correctly with "Step 1a" inserted between "Step 1" and what was "Step 2" (no numbering collision — "1a" is intentionally non-sequential to avoid renumbering the rest of the list).
+- [ ] 2. **Verify references.** The renumbered "Step 2" through "Step 5" below still read correctly with "Step 1a" inserted between "Step 1" and what was "Step 2" (no numbering collision — "1a" is intentionally non-sequential to avoid renumbering the rest of the list).
 
-3. **Commit:** `docs(gitignore-flow): add first-activation mirror-diff/mtime warning logic to cleanup`
+- [ ] 3. **Commit:** `docs(gitignore-flow): add first-activation mirror-diff/mtime warning logic to cleanup`
 
 ## Phase 3 Complete
 

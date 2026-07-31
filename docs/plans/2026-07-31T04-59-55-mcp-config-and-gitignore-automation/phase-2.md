@@ -26,7 +26,7 @@ agents/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content.** In the health-check table (current lines 648-681), the `MCP` category currently reads:
+- [ ] 1. **Write content.** In the health-check table (current lines 648-681), the `MCP` category currently reads:
 
    ```
    MCP               | .mcp.json exists                                 | Yes (create)
@@ -45,9 +45,9 @@ agents/
                      | Required MCP env vars present in settings.local.json | No (report only)
    ```
 
-2. **Verify references.** Table column alignment stays consistent with the rest of the table (pipe-delimited, not a strict markdown table — matches existing formatting in this section).
+- [ ] 2. **Verify references.** Table column alignment stays consistent with the rest of the table (pipe-delimited, not a strict markdown table — matches existing formatting in this section).
 
-3. **Commit:** `docs(init-flow): add deprecated-shape, connectivity, and settings.local.json checks to MCP health-check category`
+- [ ] 3. **Commit:** `docs(init-flow): add deprecated-shape, connectivity, and settings.local.json checks to MCP health-check category`
 
 ---
 
@@ -64,7 +64,7 @@ agents/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content.** In the "Step 3: Health Check Table" summary (current lines 288-301), the `MCP` row currently reads:
+- [ ] 1. **Write content.** In the "Step 3: Health Check Table" summary (current lines 288-301), the `MCP` row currently reads:
 
    ```markdown
    | **MCP** | .mcp.json exists; context7 configured; git platform MCP configured |
@@ -76,9 +76,9 @@ agents/
    | **MCP** | .mcp.json exists; context7 configured; git platform MCP configured; github entry is not deprecated stdio shape (auto-fix: replace via named merge exception); claude mcp list reports no connectivity warnings (report only); required MCP env vars present in settings.local.json (report only) |
    ```
 
-2. **Verify references.** `grep -n "context7 configured" skills/project/reference/init-flow.md agents/init-agent.md` shows both files' MCP rows contain the same set of checks (same substrings present in both), confirming the mirror stays accurate.
+- [ ] 2. **Verify references.** `grep -n "context7 configured" skills/project/reference/init-flow.md agents/init-agent.md` shows both files' MCP rows contain the same set of checks (same substrings present in both), confirming the mirror stays accurate.
 
-3. **Commit:** `docs(init-agent): mirror the extended MCP health-check checks into the condensed table`
+- [ ] 3. **Commit:** `docs(init-agent): mirror the extended MCP health-check checks into the condensed table`
 
 ---
 
@@ -95,7 +95,7 @@ agents/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content.** In the "Merge Rules — CRITICAL" table (current lines 330-336), the `.mcp.json` row currently reads:
+- [ ] 1. **Write content.** In the "Merge Rules — CRITICAL" table (current lines 330-336), the `.mcp.json` row currently reads:
 
    ```markdown
    | `.mcp.json` | Parse existing JSON. Add new server entries to `mcpServers` only if not already present. Never remove or modify existing server entries. |
@@ -107,9 +107,9 @@ agents/
    | `.mcp.json` | Parse existing JSON. Add new server entries to `mcpServers` only if not already present. Never remove or modify existing server entries — **with exactly one named exception:** a `github` entry matching the deprecated shape byte-for-byte (`command: "github-mcp-server"`, `args: ["stdio"]`) is replaced with the remote HTTP form from `tools-setup.md`, and the replacement is always reported to the user explicitly, never applied silently. No other server or shape is ever modified. |
    ```
 
-2. **Verify references.** The bullet immediately below the table ("When merging JSON files...") still applies unchanged — the named exception is a scoped addition to step 3 ("Add new servers...") of that merge, not a change to the merge procedure itself; no further edit needed there.
+- [ ] 2. **Verify references.** The bullet immediately below the table ("When merging JSON files...") still applies unchanged — the named exception is a scoped addition to step 3 ("Add new servers...") of that merge, not a change to the merge procedure itself; no further edit needed there.
 
-3. **Commit:** `docs(init-agent): add named exception for deprecated github mcp.json shape`
+- [ ] 3. **Commit:** `docs(init-agent): add named exception for deprecated github mcp.json shape`
 
 ---
 
@@ -126,7 +126,7 @@ agents/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content, part A.** In the "Health Check Flow" section, after "### Step 3: Health Check Table" (current lines 288-302) and before "### Step 4: Results and Auto-Fix" (current line 304), insert:
+- [ ] 1. **Write content, part A.** In the "Health Check Flow" section, after "### Step 3: Health Check Table" (current lines 288-302) and before "### Step 4: Results and Auto-Fix" (current line 304), insert:
 
    ```markdown
    ### Step 3a: MCP Connectivity Check
@@ -141,7 +141,7 @@ agents/
    - **Any other/unrecognized warning text** — report it verbatim with a pointer to `claude mcp list` for full detail, rather than dropping it silently.
    ```
 
-2. **Write content, part B.** In the "## Constraints" section (current lines 378-384), the existing bullet:
+- [ ] 2. **Write content, part B.** In the "## Constraints" section (current lines 378-384), the existing bullet:
 
    ```markdown
    - Never include actual secrets or tokens in any tracked file. Use `${VAR_NAME}` references in `.mcp.json` and empty values in `.env.example`.
@@ -153,9 +153,9 @@ agents/
    - Never write a literal secret value into any file, in any mode (first-run or health-check) — including `.claude/settings.local.json`. Only print variable names, file paths, and copy-pasteable snippets/commands with empty placeholders for the user to fill in themselves. Health-check output and chat-facing summaries report presence/absence and variable names only — never the value, even partially.
    ```
 
-3. **Verify references.** The new "Step 3a" section correctly precedes "Step 4: Results and Auto-Fix" in document order, and both new bullets in "Constraints" read consistently with the "No Agent-Authored Secret Writes" principle established in Phase 1.
+- [ ] 3. **Verify references.** The new "Step 3a" section correctly precedes "Step 4: Results and Auto-Fix" in document order, and both new bullets in "Constraints" read consistently with the "No Agent-Authored Secret Writes" principle established in Phase 1.
 
-4. **Commit:** `docs(init-agent): add MCP connectivity-check execution logic and secret-reporting constraints`
+- [ ] 4. **Commit:** `docs(init-agent): add MCP connectivity-check execution logic and secret-reporting constraints`
 
 ## Phase 2 Complete
 

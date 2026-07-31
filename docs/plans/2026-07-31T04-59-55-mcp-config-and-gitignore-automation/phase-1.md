@@ -38,7 +38,7 @@ skills/project/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content.** In `tools-setup.md`, replace the `### GitHub (github.com detected)` section (current lines 94-119) with:
+- [ ] 1. **Write content.** In `tools-setup.md`, replace the `### GitHub (github.com detected)` section (current lines 94-119) with:
 
    ````markdown
    ### GitHub (github.com detected)
@@ -79,9 +79,9 @@ skills/project/reference/
    The plugin does not auto-detect network reachability or auto-select between these two — remote HTTP is the generated default; the Docker command above is documented for the user to run manually if needed.
    ````
 
-2. **Verify references.** Confirm no other section of `tools-setup.md` still shows the old `command: "github-mcp-server"` / `args: ["stdio"]` shape (Task 2 fixes the one known remaining instance in "Secrets Handling → Example" — after this task, only that one instance should remain, confirmable via `grep -n "github-mcp-server" skills/project/reference/tools-setup.md`).
+- [ ] 2. **Verify references.** Confirm no other section of `tools-setup.md` still shows the old `command: "github-mcp-server"` / `args: ["stdio"]` shape (Task 2 fixes the one known remaining instance in "Secrets Handling → Example" — after this task, only that one instance should remain, confirmable via `grep -n "github-mcp-server" skills/project/reference/tools-setup.md`).
 
-3. **Commit:** `docs(tools-setup): switch GitHub MCP config to remote HTTP endpoint`
+- [ ] 3. **Commit:** `docs(tools-setup): switch GitHub MCP config to remote HTTP endpoint`
 
 ---
 
@@ -98,7 +98,7 @@ skills/project/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content.** Replace the `### Example` subsection under `## Secrets Handling` (current lines 302-327) with:
+- [ ] 1. **Write content.** Replace the `### Example` subsection under `## Secrets Handling` (current lines 302-327) with:
 
    ````markdown
    ### Example
@@ -130,9 +130,9 @@ skills/project/reference/
    `.env.example` (tracked in git) — no `GITHUB_TOKEN` entry. It's an MCP-server secret, not an application-runtime one.
    ````
 
-2. **Verify references.** `grep -n "github-mcp-server" skills/project/reference/tools-setup.md` returns no matches — confirms both examples are now consistent.
+- [ ] 2. **Verify references.** `grep -n "github-mcp-server" skills/project/reference/tools-setup.md` returns no matches — confirms both examples are now consistent.
 
-3. **Commit:** `docs(tools-setup): fix stale duplicate GitHub example in Secrets Handling`
+- [ ] 3. **Commit:** `docs(tools-setup): fix stale duplicate GitHub example in Secrets Handling`
 
 ---
 
@@ -149,7 +149,7 @@ skills/project/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content.** Replace the `## Secrets Handling` → `### Principles` subsection (current lines 296-300) with:
+- [ ] 1. **Write content.** Replace the `## Secrets Handling` → `### Principles` subsection (current lines 296-300) with:
 
    ```markdown
    ### Principles
@@ -167,9 +167,9 @@ skills/project/reference/
    - Unaffected by the MCP-secrets change above — this category of secret was already handled correctly.
    ```
 
-2. **Verify references.** Confirm the "Checklist" subsection immediately below (current lines 329-334) still makes sense given the split — it does, since it only discusses `.env`/`.env.example`/`.mcp.json`, which remain accurate for application secrets; no edit needed there.
+- [ ] 2. **Verify references.** Confirm the "Checklist" subsection immediately below (current lines 329-334) still makes sense given the split — it does, since it only discusses `.env`/`.env.example`/`.mcp.json`, which remain accurate for application secrets; no edit needed there.
 
-3. **Commit:** `docs(tools-setup): split Secrets Handling into MCP-secrets vs app-secrets`
+- [ ] 3. **Commit:** `docs(tools-setup): split Secrets Handling into MCP-secrets vs app-secrets`
 
 ---
 
@@ -186,7 +186,7 @@ skills/project/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content.** In the `### Summary` table under `## Project-Level Safety` (current lines 351-359), add a row after the `.claude/settings.json` row:
+- [ ] 1. **Write content.** In the `### Summary` table under `## Project-Level Safety` (current lines 351-359), add a row after the `.claude/settings.json` row:
 
    ```markdown
    | `.claude/settings.local.json` (project root) | Project | Read-only — the plugin prints instructions for the user to edit this file directly; it never writes to it itself. |
@@ -205,9 +205,9 @@ skills/project/reference/
    | `~/.claude/settings.local.json` | User | No |
    ```
 
-2. **Verify references.** Table renders correctly (consistent column count with the header separator row).
+- [ ] 2. **Verify references.** Table renders correctly (consistent column count with the header separator row).
 
-3. **Commit:** `docs(tools-setup): document settings.local.json as read-only for the plugin`
+- [ ] 3. **Commit:** `docs(tools-setup): document settings.local.json as read-only for the plugin`
 
 ---
 
@@ -224,7 +224,7 @@ skills/project/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-1. **Write content, part A — `.env.example` template (Section 8, current lines 615-643).** Replace the template code block:
+- [ ] 1. **Write content, part A — `.env.example` template (Section 8, current lines 615-643).** Replace the template code block:
 
    ```env
    # ============================================
@@ -244,7 +244,7 @@ skills/project/reference/
 
    (This removes the `GitHub projects: GITHUB_TOKEN=` and `Bitbucket projects: BITBUCKET_TOKEN=` bullets — git-platform tokens are always MCP-server secrets, never `.env` entries, regardless of platform.)
 
-2. **Write content, part B — `config.json` schema (Section 7, current lines 526-568) and field reference table (569-604).** In the JSON schema block, change:
+- [ ] 2. **Write content, part B — `config.json` schema (Section 7, current lines 526-568) and field reference table (569-604).** In the JSON schema block, change:
 
    ```json
    "gitIgnore": {
@@ -269,9 +269,9 @@ skills/project/reference/
    | `gitIgnore.categoriesEverActivated` | string[] | -- | Persistent record of every category ever activated for this project. Unlike `activeCategories` (a live, re-detected snapshot that can drop a category if its detection signal briefly disappears), this array only ever grows. Used to distinguish true first-activation from re-detection. |
    ```
 
-3. **Verify references.** `grep -n "GITHUB_TOKEN" skills/project/reference/doc-templates.md` returns no matches. `grep -n "categoriesEverActivated" skills/project/reference/doc-templates.md` returns two matches (schema block + field table).
+- [ ] 3. **Verify references.** `grep -n "GITHUB_TOKEN" skills/project/reference/doc-templates.md` returns no matches. `grep -n "categoriesEverActivated" skills/project/reference/doc-templates.md` returns two matches (schema block + field table).
 
-4. **Commit:** `docs(doc-templates): remove GITHUB_TOKEN from .env.example, add categoriesEverActivated to config schema`
+- [ ] 4. **Commit:** `docs(doc-templates): remove GITHUB_TOKEN from .env.example, add categoriesEverActivated to config schema`
 
 ## Phase 1 Complete
 
