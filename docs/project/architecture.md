@@ -33,7 +33,7 @@ Fullstack Dev is a Claude Code plugin, not a running application. It ships as a 
 ### Agents (`agents/`)
 
 - **Repo:** `agents/*.md`
-- **Purpose:** Specialized, tool-scoped subagents (e.g. `init-agent`, `scanner-agent`, `refresh-agent`, `debugger-agent`, `implementer-agent`) that execute a flow end-to-end inside a target project's working directory.
+- **Purpose:** Specialized, tool-scoped subagents (e.g. `init-agent`, `scanner-agent`, `refresh-agent`, `debugger-agent`, `implementer-agent`) that execute a flow end-to-end inside a target project's working directory. All 11 agents hold the `context7` MCP grant for version-accurate library/framework lookups — see `skills/project/reference/context7-usage.md`.
 - **Tech:** Markdown with YAML frontmatter (`tools`, `model`, `maxTurns`, `effort`, `mcpServers`)
 - **Communication:** Dispatched via the `Agent` tool by a skill or command; reads reference docs, then reads/writes files in the target project
 
@@ -55,7 +55,7 @@ All persistent state lives as plain files: this repo's own `agents/`, `commands/
 
 | Integration | Type | Purpose |
 |---|---|---|
-| context7 | MCP server | Up-to-date library/framework documentation for agents working in target projects |
+| context7 | MCP server | Up-to-date library/framework documentation for agents working in target projects — wired into all 11 agents per `skills/project/reference/context7-usage.md` |
 | GitHub / GitLab / Bitbucket / Azure DevOps MCP servers | MCP server | Git-platform operations (issues, PRs, branches) in target projects, auto-detected from remotes |
 | code-review-graph | MCP server | Structural codebase understanding for token-efficient reviews in target projects |
 | Agentation | MCP server (optional) | Visual UI feedback for frontend target projects |
