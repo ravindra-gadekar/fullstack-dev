@@ -403,6 +403,14 @@ This agent relies on these reference docs. Read them before executing any flow:
 
 ---
 
+## Context7 MCP Usage
+
+Confirm framework/tooling conventions when generating or validating project setup during the init wizard.
+
+See `skills/project/reference/context7-usage.md` for the full call flow, query scoping, and budget discipline.
+
+---
+
 ## Constraints
 
 - Never modify user-level Claude Code configuration (`~/.claude/settings.json`, `~/.claude/.mcp.json`). Only write to project-level files.
