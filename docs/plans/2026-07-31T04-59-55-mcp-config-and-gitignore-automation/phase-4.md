@@ -143,11 +143,11 @@
 
 **Steps (Config: Create-and-verify):**
 
-- [ ] 1. **Create config.** Run `/gitignore cleanup` (per `skills/gitignore/SKILL.md` Step 4). Per Phase 3 Task 6's design, this is the step that checks `categoriesEverActivated`: since `skills-cli` was only just added to `activeCategories` by Task 3 and has never appeared in `categoriesEverActivated` before, this is a first activation. The self-hosting branch applies (this repo has a root `skills/` directory): compare `.claude/skills/` against `skills/` — expected identical (confirmed earlier via research: byte-identical mirrors modulo line endings), so no warning fires. Untrack `.claude/skills/`, `.agents/`, and `fullstack-dev.code-workspace` via `git rm --cached`, then add `skills-cli` to `categoriesEverActivated`.
+- [x] 1. **Create config.** Run `/gitignore cleanup` (per `skills/gitignore/SKILL.md` Step 4). Per Phase 3 Task 6's design, this is the step that checks `categoriesEverActivated`: since `skills-cli` was only just added to `activeCategories` by Task 3 and has never appeared in `categoriesEverActivated` before, this is a first activation. The self-hosting branch applies (this repo has a root `skills/` directory): compare `.claude/skills/` against `skills/` — expected identical (confirmed earlier via research: byte-identical mirrors modulo line endings), so no warning fires. Untrack `.claude/skills/`, `.agents/`, and `fullstack-dev.code-workspace` via `git rm --cached`, then add `skills-cli` to `categoriesEverActivated`.
 
-- [ ] 2. **Run verification.** `git ls-files | grep -c "^\.claude/skills/"` returns `0`. `git ls-files | grep -c "^\.agents/"` returns `0`. `git ls-files | grep -c "fullstack-dev.code-workspace"` returns `0`. `git ls-files | grep -c "^\.claude/settings\.json$"` returns `1` (still tracked). `.fullstack-dev/config.json`'s `gitIgnore.categoriesEverActivated` now includes `skills-cli`, added by this cleanup run's first-activation check — not by Task 3's rebuild.
+- [x] 2. **Run verification.** `git ls-files | grep -c "^\.claude/skills/"` returns `0`. `git ls-files | grep -c "^\.agents/"` returns `0`. `git ls-files | grep -c "fullstack-dev.code-workspace"` returns `0`. `git ls-files | grep -c "^\.claude/settings\.json$"` returns `1` (still tracked). `.fullstack-dev/config.json`'s `gitIgnore.categoriesEverActivated` now includes `skills-cli`, added by this cleanup run's first-activation check — not by Task 3's rebuild.
 
-- [ ] 3. **Commit:** `chore(gitignore): untrack ignored files` (per the standard cleanup commit message convention in `gitignore-flow.md` § Commit After Cleanup)
+- [x] 3. **Commit:** `chore(gitignore): untrack ignored files` (per the standard cleanup commit message convention in `gitignore-flow.md` § Commit After Cleanup)
 
 ---
 
