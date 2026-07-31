@@ -34,6 +34,17 @@ This is a **simple echo reminder** — it does not run a script or programmatica
 
 This is the primary mechanism that keeps docs current during active development sessions.
 
+### Hook Coexistence
+
+Two PostToolUse hooks fire during Claude sessions in managed projects:
+
+1. **Fullstack-dev doc-staging hook** — matcher `Edit|Write`, echoes a reminder to update docs (instant, ~1s timeout)
+2. **code-review-graph update hook** — matcher `Edit|Write|Bash|PowerShell`, runs `uvx code-review-graph update --skip-flows --repo .` to keep the graph current (30s timeout)
+
+The code-review-graph hook has a broader matcher (includes `Bash` and `PowerShell`). Both fire on `Edit`/`Write` operations — this is intentional. The echo hook is instant, and the graph update runs in parallel. Neither hook depends on or interferes with the other.
+
+This coexistence is a documentation note for the refresh mechanism. Health checks for both hooks are defined in `init-flow.md` §10.2 (doc-staging under Claude Config, code-review-graph under MCP).
+
 ---
 
 ## Layer 2: Pre-commit Hook (Staging)
