@@ -1,7 +1,7 @@
 ---
 name: init-agent
 description: "Runs the /project --init wizard — first-run initialization or health check for existing projects. Detects repo structure, asks wizard questions, generates docs and config."
-tools: Read, Write, Edit, Bash, Grep, Glob
+tools: Read, Write, Edit, Bash, Grep, Glob, AskUserQuestion
 model: sonnet
 maxTurns: 50
 effort: high
