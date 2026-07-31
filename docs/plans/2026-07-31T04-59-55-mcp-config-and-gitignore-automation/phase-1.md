@@ -98,7 +98,7 @@ skills/project/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content.** Replace the `### Example` subsection under `## Secrets Handling` (current lines 302-327) with:
+- [x] 1. **Write content.** Replace the `### Example` subsection under `## Secrets Handling` (current lines 302-327) with:
 
    ````markdown
    ### Example
@@ -130,9 +130,9 @@ skills/project/reference/
    `.env.example` (tracked in git) — no `GITHUB_TOKEN` entry. It's an MCP-server secret, not an application-runtime one.
    ````
 
-- [ ] 2. **Verify references.** `grep -n "github-mcp-server" skills/project/reference/tools-setup.md` returns no matches — confirms both examples are now consistent.
+- [x] 2. **Verify references.** `grep -n "github-mcp-server" skills/project/reference/tools-setup.md` returns no matches — confirms both examples are now consistent.
 
-- [ ] 3. **Commit:** `docs(tools-setup): fix stale duplicate GitHub example in Secrets Handling`
+- [x] 3. **Commit:** `docs(tools-setup): fix stale duplicate GitHub example in Secrets Handling`
 
 ---
 

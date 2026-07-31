@@ -314,29 +314,32 @@ Add the `<Agentation />` component to the app's dev-only wrapper. This component
 ### Example
 
 `.mcp.json` (tracked in git):
+
 ```json
 {
   "mcpServers": {
     "github": {
-      "command": "github-mcp-server",
-      "args": ["stdio"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
       }
     }
   }
 }
 ```
 
-`.env` (gitignored):
-```
-GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+`.claude/settings.local.json` (user-scoped, never committed):
+
+```json
+{
+  "env": {
+    "GITHUB_TOKEN": "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  }
+}
 ```
 
-`.env.example` (tracked in git):
-```
-GITHUB_TOKEN=
-```
+`.env.example` (tracked in git) — no `GITHUB_TOKEN` entry. It's an MCP-server secret, not an application-runtime one.
 
 ### Checklist
 
