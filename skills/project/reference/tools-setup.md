@@ -342,7 +342,7 @@ Two distinct kinds of secret exist, and they never live in the same place:
 ```json
 {
   "env": {
-    "GITHUB_TOKEN": "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    "GITHUB_TOKEN": "<personal-access-token>"
   }
 }
 ```
