@@ -462,8 +462,8 @@ no longer an opt-in prompt. Follow `reference/tools-setup.md` Section
 2. **Merge hooks into `.claude/settings.json`:**
    - PostToolUse: `uvx code-review-graph update --skip-flows --repo .`
      (matcher: `Edit|Write|Bash|PowerShell`, timeout: 30000)
-   - SessionStart: `uvx code-review-graph status --repo .`
-     (timeout: 10000)
+   - SessionStart: `uvx code-review-graph build --skip-flows --repo .`
+     (timeout: 120000)
 3. **Generate `.code-review-graphignore`:**
    - Read `repos[].stack` + `gitIgnore.activeCategories` from config
    - Filter to extras NOT covered by built-in defaults (per
