@@ -230,9 +230,6 @@ When uncertain about a classification, include the finding but add a `<!-- VERIF
 
 ## Context7 MCP Usage
 
-Use the context7 MCP server to look up current documentation for any framework or library you encounter during scanning. This ensures version-accurate information about:
-- Framework conventions (e.g., Next.js App Router vs Pages Router)
-- Configuration file schemas (e.g., valid Tailwind config keys)
-- Default directory structures for detected frameworks
+Confirm framework conventions, config schemas, and default directory structures for a detected ecosystem.
 
-Query context7 when you need to confirm how a framework organizes its code, not for general programming concepts.
+See `skills/project/reference/context7-usage.md` for the full call flow, query scoping, and budget discipline.
