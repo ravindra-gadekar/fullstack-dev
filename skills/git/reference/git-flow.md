@@ -325,13 +325,26 @@ Step 6: Push
   git push origin local-dev:<branch-name>
 
 Step 7: Auto-generate PR content
-  - Title: from branch name or primary commit
-  - Body: list of commits, description of changes
+  - Title: short (<70 chars), from branch name or primary commit
+  - Body: use the template below
   - Labels: based on type (feat → enhancement, fix → bug, etc.)
 
 Step 8: Create PR
   mcp__github__create_pull_request
   Base: <target>, Head: <branch-name>
+
+  CRITICAL: The `body` parameter must use actual multi-line strings
+  with real line breaks — NEVER use `\n` escape sequences. The MCP
+  tool passes the body verbatim; `\n` renders as literal text on
+  GitHub, breaking the PR description.
+
+  PR body template:
+
+  ## Summary
+  <1-3 bullet points describing what changed and why>
+
+  ## Test plan
+  <bulleted checklist of verification steps>
 
 Step 9: Report PR link
   Show URL to user

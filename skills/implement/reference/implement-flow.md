@@ -795,6 +795,9 @@ AskUserQuestion:
     → Detect git workflow (above)
     → Push to remote
     → Create PR with title from plan goal
+    → PR body: ## Summary (bullet points) + ## Test plan (checklist)
+    → CRITICAL: body must use real newlines, NEVER \n escapes
+      (MCP tool passes body verbatim; \n renders as literal text)
     → If plan linked to GitHub issue (spec has issue #N): include "Closes #N" in PR body
 (b) Just commit locally
     → Ensure all changes are committed
