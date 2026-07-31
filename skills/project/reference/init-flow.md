@@ -265,7 +265,7 @@ Create at workspace root. This is the plugin's state file.
 
 ```json
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "projectName": "<projectName>",
   "projectDescription": "<projectDescription>",
   "projectType": "<projectType>",
