@@ -462,8 +462,8 @@ no longer an opt-in prompt. Follow `reference/tools-setup.md` Section
 2. **Merge hooks into `.claude/settings.json`:**
    - PostToolUse: `uvx code-review-graph update --skip-flows --repo .`
      (matcher: `Edit|Write|Bash|PowerShell`, timeout: 30000)
-   - SessionStart: `uvx code-review-graph status --repo .`
-     (timeout: 10000)
+   - SessionStart: `uvx code-review-graph build --skip-flows --repo .`
+     (timeout: 120000)
 3. **Generate `.code-review-graphignore`:**
    - Read `repos[].stack` + `gitIgnore.activeCategories` from config
    - Filter to extras NOT covered by built-in defaults (per
@@ -471,6 +471,12 @@ no longer an opt-in prompt. Follow `reference/tools-setup.md` Section
      Configuration")
    - Write file with `fullstack-dev:code-review-graph` marker block
    - Data dependency: runs AFTER Section 9.2 `.gitignore` generation
+4. **Run initial graph build:**
+   - Execute: `uvx code-review-graph build --skip-flows --repo .`
+   - This builds the graph immediately so it is ready to use without
+     requiring a session restart
+   - The SessionStart hook will rebuild it on subsequent sessions;
+     the PostToolUse hook will keep it current during sessions
 
 > **Note:** the code-review-graph PostToolUse hook (matcher
 > `Edit|Write|Bash|PowerShell`) coexists alongside the fullstack-dev
@@ -636,6 +642,7 @@ Files created:
   [<project>.code-workspace]       (if multi-repo)
 
 Next steps:
+  - Restart Claude Code to activate MCP servers and hooks
   - Review CONTEXT.md and fill in domain-specific sections
   - Run /project --add-repo to add more repositories
   - Run /project --refresh to regenerate docs after changes
@@ -833,6 +840,8 @@ Then proceed to the health check (Section 10.2).
   `.claude/settings.json` (merge alongside existing hooks)
 - Generate `.code-review-graphignore` with marker block (per
   `reference/tools-setup.md`)
+- Run initial graph build: `uvx code-review-graph build --skip-flows
+  --repo .` so the graph is ready immediately
 - Remove `optionalTools.codeReviewGraph` from `config.json` regardless
   of its prior value (`true` or `false`). The `optionalTools` object
   remains with only `agentation: boolean`.

@@ -1,0 +1,13 @@
+# >>> fullstack-dev:code-review-graph (do not edit this block) >>>
+
+# Project metadata
+docs/
+.fullstack-dev/
+
+# Node (stack-derived)
+coverage/
+.nyc_output/
+
+# <<< fullstack-dev:code-review-graph <<<
+
+# --- User entries below ---

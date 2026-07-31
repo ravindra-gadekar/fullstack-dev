@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "plugin": "https://github.com/ravindra-gadekar/fullstack-dev.git",
   "projectName": "Fullstack Dev",
   "description": "Claude Code plugin that manages project structure, documentation, and tooling configuration across mono-repo and multi-repo codebases of any tech stack.",

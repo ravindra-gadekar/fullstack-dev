@@ -9,6 +9,27 @@
             "command": "echo '>> Docs may be stale. If you changed exports, schemas, or domain concepts, update the relevant ARCHITECTURE.md and CONTEXT.md sections now.'"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uvx code-review-graph update --skip-flows --repo .",
+            "timeout": 30000
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uvx code-review-graph build --skip-flows --repo .",
+            "timeout": 120000
+          }
+        ]
       }
     ]
   }

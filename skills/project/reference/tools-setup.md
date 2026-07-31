@@ -249,8 +249,8 @@ Add the following hooks to `.claude/settings.json` in the project root:
     "SessionStart": [{
       "hooks": [{
         "type": "command",
-        "command": "uvx code-review-graph status --repo .",
-        "timeout": 10000
+        "command": "uvx code-review-graph build --skip-flows --repo .",
+        "timeout": 120000
       }]
     }]
   }
