@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "plugin": "https://github.com/ravindra-gadekar/fullstack-dev.git",
+  "projectName": "Fullstack Dev",
+  "description": "Claude Code plugin that manages project structure, documentation, and tooling configuration across mono-repo and multi-repo codebases of any tech stack.",
+  "projectType": "cli",
+  "repoStructure": "mono-repo",
+  "metaRepo": {
+    "remote": true,
+    "url": "https://github.com/ravindra-gadekar/fullstack-dev.git"
+  },
+  "repos": [
+    {
+      "name": "fullstack-dev",
+      "path": ".",
+      "url": "https://github.com/ravindra-gadekar/fullstack-dev.git",
+      "source": "existing",
+      "type": "library",
+      "stack": ["node", "markdown", "bash", "json"],
+      "targetBranch": "main"
+    }
+  ],
+  "hasFrontend": false,
+  "databases": [],
+  "aiIntegration": ["claude"],
+  "teamSize": "solo",
+  "gitPlatform": {
+    "provider": "github",
+    "method": "mcp",
+    "org": "ravindra-gadekar"
+  },
+  "gitWorkflow": {
+    "localBranch": "local-dev",
+    "commitConvention": "conventional",
+    "branchNaming": "<type>/<ticket?>-<name>",
+    "deleteRemoteBranches": false
+  },
+  "gitIgnore": {
+    "activeCategories": ["universal", "secrets", "node", "build", "cache", "ide", "macos", "windows", "linux"],
+    "hookInstalled": true
+  },
+  "optionalTools": {
+    "codeReviewGraph": false,
+    "agentation": false
+  },
+  "createdAt": "2026-07-31T00:00:00Z",
+  "updatedAt": "2026-07-31T00:00:00Z"
+}

@@ -1,0 +1,78 @@
+# >>> fullstack-dev:gitignore (do not edit this block) >>>
+
+# Universal
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pids/
+*.pid
+*.seed
+
+# Secrets
+.env
+.env.local
+.env.*.local
+.env.production
+*.pem
+credentials.json
+serviceAccountKey.json
+
+# Node
+node_modules/
+.npm/
+.pnpm-store/
+*.tgz
+.yarn-integrity
+.pnp.*
+
+# Build
+dist/
+build/
+out/
+coverage/
+.nyc_output/
+*.lcov
+
+# Cache
+.cache/
+.eslintcache
+.stylelintcache
+.turbo/
+.parcel-cache/
+.vite/
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.vsix
+
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+__MACOSX/
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# <<< fullstack-dev:gitignore <<<
+
+# --- User entries below ---
