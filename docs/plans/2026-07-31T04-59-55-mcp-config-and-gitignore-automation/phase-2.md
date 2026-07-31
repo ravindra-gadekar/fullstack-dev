@@ -126,7 +126,7 @@ agents/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content, part A.** In the "Health Check Flow" section, after "### Step 3: Health Check Table" (current lines 288-302) and before "### Step 4: Results and Auto-Fix" (current line 304), insert:
+- [x] 1. **Write content, part A.** In the "Health Check Flow" section, after "### Step 3: Health Check Table" (current lines 288-302) and before "### Step 4: Results and Auto-Fix" (current line 304), insert:
 
    ```markdown
    ### Step 3a: MCP Connectivity Check
@@ -141,7 +141,7 @@ agents/
    - **Any other/unrecognized warning text** — report it verbatim with a pointer to `claude mcp list` for full detail, rather than dropping it silently.
    ```
 
-- [ ] 2. **Write content, part B.** In the "## Constraints" section (current lines 378-384), the existing bullet:
+- [x] 2. **Write content, part B.** In the "## Constraints" section (current lines 378-384), the existing bullet:
 
    ```markdown
    - Never include actual secrets or tokens in any tracked file. Use `${VAR_NAME}` references in `.mcp.json` and empty values in `.env.example`.
@@ -153,9 +153,9 @@ agents/
    - Never write a literal secret value into any file, in any mode (first-run or health-check) — including `.claude/settings.local.json`. Only print variable names, file paths, and copy-pasteable snippets/commands with empty placeholders for the user to fill in themselves. Health-check output and chat-facing summaries report presence/absence and variable names only — never the value, even partially.
    ```
 
-- [ ] 3. **Verify references.** The new "Step 3a" section correctly precedes "Step 4: Results and Auto-Fix" in document order, and both new bullets in "Constraints" read consistently with the "No Agent-Authored Secret Writes" principle established in Phase 1.
+- [x] 3. **Verify references.** The new "Step 3a" section correctly precedes "Step 4: Results and Auto-Fix" in document order, and both new bullets in "Constraints" read consistently with the "No Agent-Authored Secret Writes" principle established in Phase 1.
 
-- [ ] 4. **Commit:** `docs(init-agent): add MCP connectivity-check execution logic and secret-reporting constraints`
+- [x] 4. **Commit:** `docs(init-agent): add MCP connectivity-check execution logic and secret-reporting constraints`
 
 ## Phase 2 Complete
 

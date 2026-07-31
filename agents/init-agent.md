@@ -301,6 +301,17 @@ Run every check from the table in `reference/init-flow.md` Section 10.2:
 
 Report each check as PASS or FAIL.
 
+### Step 3a: MCP Connectivity Check
+
+For each configured MCP server, attempt `claude mcp list` and parse its output:
+
+- **CLI call fails or isn't invokable in this execution context** (e.g. sandboxing prevents a nested CLI call) — skip this check gracefully. Report: "Could not verify connectivity in this session — run `claude mcp list` manually."
+- **`Missing environment variables: <VAR>`** reported for a server — check whether `<VAR>` is already present in `.claude/settings.local.json`'s `env` block (read-only check, per the Merge Rules table — this agent never writes to that file):
+  - Not present at all — report the exact variable name and the snippet to add it (from `tools-setup.md` § Secrets Handling), with **no value filled in**.
+  - Present but still reported missing — report: "Found in settings.local.json but Claude Code hasn't picked it up yet — restart your session."
+- **`Pending approval`** reported for a server — report: "Run `claude` interactively once to approve the `<server>` server."
+- **Any other/unrecognized warning text** — report it verbatim with a pointer to `claude mcp list` for full detail, rather than dropping it silently.
+
 ### Step 4: Results and Auto-Fix
 
 - **All checks pass** — print "Project is healthy. Nothing to do."
@@ -379,5 +390,6 @@ This agent relies on these reference docs. Read them before executing any flow:
 
 - Never modify user-level Claude Code configuration (`~/.claude/settings.json`, `~/.claude/.mcp.json`). Only write to project-level files.
 - Never include actual secrets or tokens in any tracked file. Use `${VAR_NAME}` references in `.mcp.json` and empty values in `.env.example`.
+- Never write a literal secret value into any file, in any mode (first-run or health-check) — including `.claude/settings.local.json`. Only print variable names, file paths, and copy-pasteable snippets/commands with empty placeholders for the user to fill in themselves. Health-check output and chat-facing summaries report presence/absence and variable names only — never the value, even partially.
 - Never push to a remote repository. Only commit locally and inform the user.
 - Always use the AskUserQuestion pattern for wizard questions — present the question, wait for the answer, validate, then proceed.
