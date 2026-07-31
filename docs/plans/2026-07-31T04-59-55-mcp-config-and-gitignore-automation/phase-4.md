@@ -74,7 +74,7 @@
 
 **Steps (Config: Create-and-verify):**
 
-- [ ] 1. **Create config.** In `.env.example`, remove the `# Git platform token (required for MCP tools)` comment and `GITHUB_TOKEN=` line, leaving:
+- [x] 1. **Create config.** In `.env.example`, remove the `# Git platform token (required for MCP tools)` comment and `GITHUB_TOKEN=` line, leaving:
 
    ```env
    # ============================================
@@ -89,7 +89,7 @@
 
    In `.env` (gitignored, not committed — this is a local cleanup, not a secret write), remove the now-stale `GITHUB_TOKEN=ghp_...` line the same way. This does **not** write a secret anywhere new — it only removes a reference to a file MCP servers don't read, and does not touch the token's value.
 
-- [ ] 2. **Run verification.** `grep -n "GITHUB_TOKEN" .env.example` returns no matches. Print the exact instruction block for the user (do not execute it — this is the one place in this plan where a human, not the agent, performs the write):
+- [x] 2. **Run verification.** `grep -n "GITHUB_TOKEN" .env.example` returns no matches. Print the exact instruction block for the user (do not execute it — this is the one place in this plan where a human, not the agent, performs the write):
 
    ```
    Add your GitHub token to .claude/settings.local.json (create the file if it doesn't exist):
@@ -103,7 +103,7 @@
    Then restart your Claude Code session so it picks up the new value.
    ```
 
-- [ ] 3. **Commit:** `chore(env): remove stale GITHUB_TOKEN reference from .env.example` (only `.env.example` is committed — `.env` is gitignored and never enters git history)
+- [x] 3. **Commit:** `chore(env): remove stale GITHUB_TOKEN reference from .env.example` (only `.env.example` is committed — `.env` is gitignored and never enters git history)
 
 ---
 
