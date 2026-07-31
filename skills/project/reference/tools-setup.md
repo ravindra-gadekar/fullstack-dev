@@ -307,9 +307,17 @@ Add the `<Agentation />` component to the app's dev-only wrapper. This component
 
 ### Principles
 
-- `.mcp.json` uses `${VAR_NAME}` syntax to reference environment variables — it NEVER contains actual secret values
-- Actual tokens and secrets go in `.env` (which must be gitignored)
-- `.env.example` (tracked in git) documents required variables with empty values so collaborators know what to set up
+Two distinct kinds of secret exist, and they never live in the same place:
+
+**MCP server secrets** — consumed by Claude Code itself to authenticate an MCP server (e.g. `GITHUB_TOKEN` for the `github` server's `Authorization` header):
+- `.mcp.json` uses `${VAR_NAME}` syntax to reference them — it NEVER contains actual secret values.
+- The actual value goes in `.claude/settings.local.json`'s `env` block (user-scoped, never committed). Claude Code does **not** read `.env` for `${VAR}` expansion in `.mcp.json` — putting an MCP secret in `.env` silently fails to connect.
+- The plugin never writes a real value into `.claude/settings.local.json` itself — it only prints the exact snippet for the user to fill in (see "No Agent-Authored Secret Writes" in the health-check flow).
+
+**Application runtime secrets** — consumed by the target app at runtime (e.g. a database URL, a third-party API key the app's own code calls):
+- These go in `.env` (which must be gitignored) as before.
+- `.env.example` (tracked in git) documents required variable names with empty values.
+- Unaffected by the MCP-secrets change above — this category of secret was already handled correctly.
 
 ### Example
 

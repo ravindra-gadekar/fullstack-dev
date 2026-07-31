@@ -149,7 +149,7 @@ skills/project/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content.** Replace the `## Secrets Handling` → `### Principles` subsection (current lines 296-300) with:
+- [x] 1. **Write content.** Replace the `## Secrets Handling` → `### Principles` subsection (current lines 296-300) with:
 
    ```markdown
    ### Principles
@@ -167,9 +167,9 @@ skills/project/reference/
    - Unaffected by the MCP-secrets change above — this category of secret was already handled correctly.
    ```
 
-- [ ] 2. **Verify references.** Confirm the "Checklist" subsection immediately below (current lines 329-334) still makes sense given the split — it does, since it only discusses `.env`/`.env.example`/`.mcp.json`, which remain accurate for application secrets; no edit needed there.
+- [x] 2. **Verify references.** Confirm the "Checklist" subsection immediately below (current lines 329-334) still makes sense given the split — it does, since it only discusses `.env`/`.env.example`/`.mcp.json`, which remain accurate for application secrets; no edit needed there.
 
-- [ ] 3. **Commit:** `docs(tools-setup): split Secrets Handling into MCP-secrets vs app-secrets`
+- [x] 3. **Commit:** `docs(tools-setup): split Secrets Handling into MCP-secrets vs app-secrets`
 
 ---
 
