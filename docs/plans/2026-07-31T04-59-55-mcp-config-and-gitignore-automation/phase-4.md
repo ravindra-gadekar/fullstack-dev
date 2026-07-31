@@ -28,7 +28,7 @@
 
 **Steps (Config: Create-and-verify):**
 
-- [ ] 1. **Create config.** Current `.mcp.json` `github` entry:
+- [x] 1. **Create config.** Current `.mcp.json` `github` entry:
 
    ```json
    "github": {
@@ -54,9 +54,9 @@
 
    Leave the `context7` entry completely untouched — the exception applies to this one deprecated `github` shape only.
 
-- [ ] 2. **Run verification.** Confirm `.mcp.json` is syntactically valid JSON (`node -e "JSON.parse(require('fs').readFileSync('.mcp.json'))"` or equivalent) and that `context7` is byte-for-byte unchanged from before this edit.
+- [x] 2. **Run verification.** Confirm `.mcp.json` is syntactically valid JSON (`node -e "JSON.parse(require('fs').readFileSync('.mcp.json'))"` or equivalent) and that `context7` is byte-for-byte unchanged from before this edit.
 
-- [ ] 3. **Commit:** `fix(mcp): switch this repo's github MCP entry to remote HTTP endpoint`
+- [x] 3. **Commit:** `fix(mcp): switch this repo's github MCP entry to remote HTTP endpoint`
 
 ---
 
