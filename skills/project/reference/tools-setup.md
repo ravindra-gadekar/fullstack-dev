@@ -377,6 +377,7 @@ Two distinct kinds of secret exist, and they never live in the same place:
 |------|-------|--------------------|
 | `.mcp.json` (project root) | Project | Yes |
 | `.claude/settings.json` (project root) | Project | Yes |
+| `.claude/settings.local.json` (project root) | Project | Read-only — the plugin prints instructions for the user to edit this file directly; it never writes to it itself. |
 | `~/.claude/.mcp.json` | User | No |
 | `~/.claude/settings.json` | User | No |
 | `~/.claude/settings.local.json` | User | No |

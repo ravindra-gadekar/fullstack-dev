@@ -186,7 +186,7 @@ skills/project/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content.** In the `### Summary` table under `## Project-Level Safety` (current lines 351-359), add a row after the `.claude/settings.json` row:
+- [x] 1. **Write content.** In the `### Summary` table under `## Project-Level Safety` (current lines 351-359), add a row after the `.claude/settings.json` row:
 
    ```markdown
    | `.claude/settings.local.json` (project root) | Project | Read-only — the plugin prints instructions for the user to edit this file directly; it never writes to it itself. |
@@ -205,9 +205,9 @@ skills/project/reference/
    | `~/.claude/settings.local.json` | User | No |
    ```
 
-- [ ] 2. **Verify references.** Table renders correctly (consistent column count with the header separator row).
+- [x] 2. **Verify references.** Table renders correctly (consistent column count with the header separator row).
 
-- [ ] 3. **Commit:** `docs(tools-setup): document settings.local.json as read-only for the plugin`
+- [x] 3. **Commit:** `docs(tools-setup): document settings.local.json as read-only for the plugin`
 
 ---
 
