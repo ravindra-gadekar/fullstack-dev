@@ -68,7 +68,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content, part A — `## Secrets` (current lines 27-43).** Add `.claude/settings.local.json` to the patterns block:
+- [x] 1. **Write content, part A — `## Secrets` (current lines 27-43).** Add `.claude/settings.local.json` to the patterns block:
 
    ```gitignore
    .env
@@ -81,7 +81,7 @@ skills/gitignore/reference/
    .claude/settings.local.json
    ```
 
-- [ ] 2. **Write content, part B — `## IDE` (current lines 188-207).** Add `*.code-workspace` to the patterns block, alongside the existing `.vscode/*` entries:
+- [x] 2. **Write content, part B — `## IDE` (current lines 188-207).** Add `*.code-workspace` to the patterns block, alongside the existing `.vscode/*` entries:
 
    ```gitignore
    .idea/
@@ -97,9 +97,9 @@ skills/gitignore/reference/
    *.code-workspace
    ```
 
-- [ ] 3. **Verify references.** Both categories remain `Always active: Yes` (no change to their `Detect`/`Always active` fields — only new pattern lines added).
+- [x] 3. **Verify references.** Both categories remain `Always active: Yes` (no change to their `Detect`/`Always active` fields — only new pattern lines added).
 
-- [ ] 4. **Commit:** `docs(gitignore-catalog): add settings.local.json to secrets, *.code-workspace to ide`
+- [x] 4. **Commit:** `docs(gitignore-catalog): add settings.local.json to secrets, *.code-workspace to ide`
 
 ---
 

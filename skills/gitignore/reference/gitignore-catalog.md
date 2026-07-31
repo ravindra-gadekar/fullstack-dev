@@ -40,6 +40,7 @@ pids/
 *.pem
 credentials.json
 serviceAccountKey.json
+.claude/settings.local.json
 ```
 
 ---
@@ -204,6 +205,7 @@ coverage/
 !.vscode/launch.json
 !.vscode/extensions.json
 *.vsix
+*.code-workspace
 ```
 
 ---
