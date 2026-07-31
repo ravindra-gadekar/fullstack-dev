@@ -40,6 +40,7 @@ pids/
 *.pem
 credentials.json
 serviceAccountKey.json
+.claude/settings.local.json
 ```
 
 ---
@@ -204,6 +205,7 @@ coverage/
 !.vscode/launch.json
 !.vscode/extensions.json
 *.vsix
+*.code-workspace
 ```
 
 ---
@@ -278,6 +280,24 @@ Per-server data directories are added dynamically based on the servers declared 
 
 ---
 
+## Skills CLI
+
+**Key:** `skills-cli`
+**Detect:** `skills-lock.json` exists at the **workspace root only** (not per sub-repo — `.claude/skills/` and `.agents/` are Claude Code session artifacts, not per-repo source artifacts; a Claude Code session, and therefore `npx skills add`, operates from the workspace root regardless of `repoStructure`, the same way `.mcp.json` and `.claude/settings.json` are already workspace-root-level singletons in this plugin's model)
+**Always active:** No
+**Fallback:** None — unlike every other category, this one has no file-detection fallback. `skills-lock.json` is the one reliable, unambiguous signal that `npx skills add` manages this workspace; a heuristic fallback (e.g. guessing from directory contents) risks false positives on hand-authored `.claude/` trees. This is an intentional deviation from the catalog's usual config-plus-fallback pattern, not an oversight.
+
+**Patterns:**
+
+```gitignore
+.claude/skills/
+.agents/
+```
+
+`.claude/skills/` is precisely scoped to that one subpath — never a wildcard on `.claude/*` — because `.claude/` is known to hold hand-authored content (`settings.json`, `settings.local.json`) alongside generated content. `.agents/` is ignored as a whole directory because it currently holds nothing but the generated skills mirror; a wholesale pattern self-extends if `npx skills add` ever mirrors other content there, at the accepted trade-off that any future hand-authored content placed directly under `.agents/` would be unexpectedly ignored too.
+
+---
+
 ## Deployment
 
 **Key:** `deployment`
@@ -308,7 +328,9 @@ When assembling a `.gitignore` file, categories are selected in these tiers (eva
 
 5. **MCP tooling** — If `.mcp.json` exists and contains server entries, activate the `mcp-tooling` category. Add per-server data directories dynamically based on declared servers.
 
-6. **Deployment** — Detect deployment platform config files (`vercel.json`, `serverless.yml`, `firebase.json`) and activate the `deployment` category if any are present.
+6. **Skills CLI** — If `skills-lock.json` exists at the workspace root, activate the `skills-cli` category. No fallback — see the category's own `Fallback` field for why.
+
+7. **Deployment** — Detect deployment platform config files (`vercel.json`, `serverless.yml`, `firebase.json`) and activate the `deployment` category if any are present.
 
 ---
 
@@ -325,7 +347,8 @@ When writing patterns into the `.gitignore` marker block, categories are ordered
 7. `ide`
 8. OS categories (`macos`, `windows`, `linux`)
 9. `mcp-tooling`
-10. `deployment`
-11. Sub-repositories (managed separately, listed last)
+10. `skills-cli`
+11. `deployment`
+12. Sub-repositories (managed separately, listed last)
 
 This ordering groups related patterns together and places the most universal rules at the top with the most specific at the bottom.

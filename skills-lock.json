@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "brainstorm": {
+      "source": "ravindra-gadekar/fullstack-dev",
+      "sourceType": "github",
+      "skillPath": "skills/brainstorm/SKILL.md",
+      "computedHash": "ea8894908f8104c5018a8a7d8a8779cbff6e27b1a3b7bfb43011810ac1b88b7b"
+    },
+    "debug": {
+      "source": "ravindra-gadekar/fullstack-dev",
+      "sourceType": "github",
+      "skillPath": "skills/debug/SKILL.md",
+      "computedHash": "4611a22af386ffc8a270f8b33cb6d294aee43decbf320057028ab10c4a9e9ce0"
+    },
+    "fix": {
+      "source": "ravindra-gadekar/fullstack-dev",
+      "sourceType": "github",
+      "skillPath": "skills/fix/SKILL.md",
+      "computedHash": "5c2c4433a1ce93c44fc1efa8233d48f72e2b126e71ca0764d5e866843f04300c"
+    },
+    "git": {
+      "source": "ravindra-gadekar/fullstack-dev",
+      "sourceType": "github",
+      "skillPath": "skills/git/SKILL.md",
+      "computedHash": "54823560b89568a5b65d6e20d83fdf1dddfcb8f93f719bac2dea7ef3fa0cb5a8"
+    },
+    "gitignore": {
+      "source": "ravindra-gadekar/fullstack-dev",
+      "sourceType": "github",
+      "skillPath": "skills/gitignore/SKILL.md",
+      "computedHash": "410b1040d63f129330e3ef879b16ffe899846a13f2ab3bec99b0d958336f59ff"
+    },
+    "implement": {
+      "source": "ravindra-gadekar/fullstack-dev",
+      "sourceType": "github",
+      "skillPath": "skills/implement/SKILL.md",
+      "computedHash": "ad1fd535d78bb8046c220c264618f1fb461435f39aa96b78bb876d3d49f57133"
+    },
+    "plan": {
+      "source": "ravindra-gadekar/fullstack-dev",
+      "sourceType": "github",
+      "skillPath": "skills/plan/SKILL.md",
+      "computedHash": "24af954361b4415df6b778c6939b3c5f74cbaefa4625370d0c390ada9a2e0982"
+    },
+    "project": {
+      "source": "ravindra-gadekar/fullstack-dev",
+      "sourceType": "github",
+      "skillPath": "skills/project/SKILL.md",
+      "computedHash": "f1008b347cae6d1594f64dc09209a654d133de1afa9352beb1082f512074fcfa"
+    },
+    "refactor": {
+      "source": "ravindra-gadekar/fullstack-dev",
+      "sourceType": "github",
+      "skillPath": "skills/refactor/SKILL.md",
+      "computedHash": "2d182d8c5142d12be5c8446eb3e9db6d0b561131816d6de8386221ea8b851706"
+    }
+  }
+}

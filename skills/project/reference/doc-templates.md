@@ -562,7 +562,8 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
   },
   "gitIgnore": {
     "activeCategories": ["universal", "secrets", "node", "nextjs", "typescript", "windows", "macos", "linux", "ide", "build", "cache"],
-    "hookInstalled": true
+    "hookInstalled": true,
+    "categoriesEverActivated": []
   }
 }
 ```
@@ -600,6 +601,7 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 | `gitIgnore` | object | no | Gitignore management state. |
 | `gitIgnore.activeCategories` | string[] | -- | Catalog categories active for this project. Set during init or `/gitignore rebuild`. |
 | `gitIgnore.hookInstalled` | boolean | -- | Whether the gitignore pre-commit hook is installed. |
+| `gitIgnore.categoriesEverActivated` | string[] | -- | Persistent record of every category ever activated for this project. Unlike `activeCategories` (a live, re-detected snapshot that can drop a category if its detection signal briefly disappears), this array only ever grows. Used to distinguish true first-activation from re-detection. |
 | `repos[].targetBranch` | string | no | PR target branch for this repo (e.g., `"main"`, `"develop"`). Set by CI/CD auto-detection or user choice. |
 
 ### Validation Rules
@@ -626,9 +628,6 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 # Required Environment Variables
 # Copy this file to .env and fill in values
 # ============================================
-
-# Git platform token (required for MCP tools)
-GITHUB_TOKEN=
 ```
 
 ### Rules
@@ -636,9 +635,7 @@ GITHUB_TOKEN=
 - Every variable must have a comment explaining its purpose.
 - Values are always empty -- never include actual secrets, even as examples.
 - Group variables by category with blank-line separators.
-- The specific variables included depend on the project's `gitPlatform.provider` and `aiIntegration` settings:
-  - GitHub projects: `GITHUB_TOKEN=`
-  - Bitbucket projects: `BITBUCKET_TOKEN=`
+- The specific variables included depend on the project's `aiIntegration` settings (application-runtime secrets only — MCP-server secrets like `GITHUB_TOKEN` never appear here, see `tools-setup.md` § Secrets Handling):
   - AI integrations: `OPENAI_API_KEY=`, `ANTHROPIC_API_KEY=`, etc. (one per detected provider)
 
 ---

@@ -93,29 +93,41 @@ Match the URL against known platforms, then add the corresponding server to `.mc
 
 ### GitHub (github.com detected)
 
+**Default: zero-install remote HTTP endpoint.** The previous `github-mcp-server` local-binary/stdio approach is deprecated upstream and requires a manual, separate binary install — do not generate it by default.
+
 ```json
 {
   "mcpServers": {
     "github": {
-      "command": "github-mcp-server",
-      "args": ["stdio"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
       }
     }
   }
 }
 ```
 
-Required `.env` entry:
-```
-GITHUB_TOKEN=<personal-access-token>
+Required `.claude/settings.local.json` entry (user-scoped, never committed — see "Secrets Handling" below):
+
+```json
+{
+  "env": {
+    "GITHUB_TOKEN": "<personal-access-token>"
+  }
+}
 ```
 
-Required `.env.example` entry:
+Required `.env.example` entry: **none.** `GITHUB_TOKEN` is an MCP-server secret, not an application-runtime secret — it never appears in `.env`/`.env.example`.
+
+**Trust boundary:** this sends `Authorization: Bearer ${GITHUB_TOKEN}` over HTTPS to `api.githubcopilot.com`, a GitHub-hosted proxy — not a fully local flow. For network-restricted environments, use the Docker fallback instead:
+
+```bash
+claude mcp add github -e GITHUB_OAUTH_CALLBACK_PORT=8085 -- docker run -i --rm -p 127.0.0.1:8085:8085 -e GITHUB_OAUTH_CALLBACK_PORT ghcr.io/github/github-mcp-server
 ```
-GITHUB_TOKEN=
-```
+
+The plugin does not auto-detect network reachability or auto-select between these two — remote HTTP is the generated default; the Docker command above is documented for the user to run manually if needed.
 
 ---
 
@@ -295,36 +307,47 @@ Add the `<Agentation />` component to the app's dev-only wrapper. This component
 
 ### Principles
 
-- `.mcp.json` uses `${VAR_NAME}` syntax to reference environment variables — it NEVER contains actual secret values
-- Actual tokens and secrets go in `.env` (which must be gitignored)
-- `.env.example` (tracked in git) documents required variables with empty values so collaborators know what to set up
+Two distinct kinds of secret exist, and they never live in the same place:
+
+**MCP server secrets** — consumed by Claude Code itself to authenticate an MCP server (e.g. `GITHUB_TOKEN` for the `github` server's `Authorization` header):
+- `.mcp.json` uses `${VAR_NAME}` syntax to reference them — it NEVER contains actual secret values.
+- The actual value goes in `.claude/settings.local.json`'s `env` block (user-scoped, never committed). Claude Code does **not** read `.env` for `${VAR}` expansion in `.mcp.json` — putting an MCP secret in `.env` silently fails to connect.
+- The plugin never writes a real value into `.claude/settings.local.json` itself — it only prints the exact snippet for the user to fill in (see "No Agent-Authored Secret Writes" in the health-check flow).
+
+**Application runtime secrets** — consumed by the target app at runtime (e.g. a database URL, a third-party API key the app's own code calls):
+- These go in `.env` (which must be gitignored) as before.
+- `.env.example` (tracked in git) documents required variable names with empty values.
+- Unaffected by the MCP-secrets change above — this category of secret was already handled correctly.
 
 ### Example
 
 `.mcp.json` (tracked in git):
+
 ```json
 {
   "mcpServers": {
     "github": {
-      "command": "github-mcp-server",
-      "args": ["stdio"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
       }
     }
   }
 }
 ```
 
-`.env` (gitignored):
-```
-GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+`.claude/settings.local.json` (user-scoped, never committed):
+
+```json
+{
+  "env": {
+    "GITHUB_TOKEN": "<personal-access-token>"
+  }
+}
 ```
 
-`.env.example` (tracked in git):
-```
-GITHUB_TOKEN=
-```
+`.env.example` (tracked in git) — no `GITHUB_TOKEN` entry. It's an MCP-server secret, not an application-runtime one.
 
 ### Checklist
 
@@ -354,6 +377,7 @@ GITHUB_TOKEN=
 |------|-------|--------------------|
 | `.mcp.json` (project root) | Project | Yes |
 | `.claude/settings.json` (project root) | Project | Yes |
+| `.claude/settings.local.json` (project root) | Project | Read-only — the plugin prints instructions for the user to edit this file directly; it never writes to it itself. |
 | `~/.claude/.mcp.json` | User | No |
 | `~/.claude/settings.json` | User | No |
 | `~/.claude/settings.local.json` | User | No |
