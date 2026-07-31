@@ -209,6 +209,7 @@ code-review-graph is configured for every project — not an opt-in prompt:
   - Compute stack-derived extras from the stack table.
   - Write file with `fullstack-dev:code-review-graph` marker block.
   - Apply merge rules (create / prepend / replace within markers).
+- Run initial graph build: `uvx code-review-graph build --skip-flows --repo .` so the graph is ready to use immediately without requiring a session restart.
 - Data dependency: runs AFTER §5.3 `.gitignore` generation.
 
 #### 5.12 `.claude/settings.json`
