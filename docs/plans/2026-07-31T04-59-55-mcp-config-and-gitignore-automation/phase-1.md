@@ -218,7 +218,7 @@ skills/project/reference/
 
 **Interfaces:**
 - Consumes: the MCP-secrets/app-secrets split from Task 3 (rationale for removing `GITHUB_TOKEN` from `.env.example`)
-- Produces: the `gitIgnore.categoriesEverActivated` field, consumed by Phase 3 Task 6 (cleanup logic) and Phase 4 Task 3 (live regeneration)
+- Produces: the `gitIgnore.categoriesEverActivated` field, consumed by Phase 3 Task 6 (cleanup logic, which is what actually writes to it) and Phase 4 Task 4 (the live `/gitignore cleanup` run that populates it on this repo — not Task 3's `/gitignore rebuild`, which only touches `activeCategories`)
 
 **Acceptance Criteria:** "`.env.example` no longer references GITHUB_TOKEN in either the template code block or the Rules bullet list"; "config.json's schema includes the new persistent gitIgnore.categoriesEverActivated field."
 

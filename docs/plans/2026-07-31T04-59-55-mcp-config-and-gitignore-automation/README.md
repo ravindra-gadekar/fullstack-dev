@@ -41,8 +41,8 @@ All 14 acceptance criteria from the spec map to tasks below:
 | Spec Acceptance Criterion | Phase.Task |
 |---|---|
 | `.mcp.json`'s `github` entry uses remote HTTP form | 1.1, 4.1 |
-| `.env.example` no longer references `GITHUB_TOKEN` | 1.4, 4.2 |
-| Secrets Handling split; both `.mcp.json` examples updated | 1.1, 1.2 |
+| `.env.example` no longer references `GITHUB_TOKEN` | 1.5, 4.2 |
+| Secrets Handling split; both `.mcp.json` examples updated | 1.1, 1.2, 1.3 |
 | Health-check "MCP" category has 3 checks | 2.1, 2.2 |
 | Deprecated shape flagged + replaced via named exception | 2.3, 2.4, 4.1 |
 | Connectivity check runs and degrades gracefully | 2.4 |
