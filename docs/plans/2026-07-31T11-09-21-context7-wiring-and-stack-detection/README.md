@@ -26,18 +26,18 @@
 
 ### Acceptance Criteria (synthesized)
 
-- [ ] AC1: `skills/project/reference/context7-usage.md` exists as the new canonical doc covering the resolve-library-id → query-docs flow, one-concept query scoping, call-budget discipline (including debugger-agent/refactor-agent per-instance reservation guidance), and a concrete, falsifiable skip heuristic.
-- [ ] AC2: All 11 agent files (`agents/*.md`) declare `mcpServers: [context7]` in frontmatter.
-- [ ] AC3: All 10 non-scanner-agent context7-using agents each carry a short "Context7 MCP Usage" section with their exact spec-defined framing line, pointing to `context7-usage.md`.
-- [ ] AC4: `debugger-agent`'s and `refactor-agent`'s framing lines are observation/evidence-only, never action-oriented — consistent with their existing read-only Constraints.
-- [ ] AC5: `scanner-agent.md`'s inline Context7 MCP Usage section is replaced with a shorter pointer to `context7-usage.md`, preserving its own existing framing.
-- [ ] AC6: `scanner-agent.md`'s Package & Dependency Files table gains Django/Flask/Rails/Spring/Laravel/.NET rows using the exact content-check signals specified in the spec's Data Flow table.
-- [ ] AC7: `scanner-agent.md`'s Configuration Files, Entry Points, and Models & Schemas tables are extended to the same depth for the same six ecosystems (Django and Flask kept as separate rows throughout).
-- [ ] AC8: `docs/project/architecture.md` is updated to reflect context7 wired into all 11 agents.
-- [ ] AC9: `docs/project/tech-stack.md` is updated to reflect full context7 wiring and deepened non-JS stack detection.
-- [ ] AC10: No changes are made to `.mcp.json`, `skills/project/reference/tools-setup.md`, or any target-project generation logic.
-- [ ] AC11: A grep of `mcpServers` across all `agents/*.md` frontmatters confirms all 11 agents hold the context7 grant; a grep for `context7-usage.md` confirms all 10 non-scanner agents reference it.
-- [ ] AC12: Ambiguous/conflicting ecosystem signals (e.g. Django + Flask both present in one repo) are recorded via the existing `<!-- VERIFY: ... -->` comment convention rather than forcing a single choice.
+- [x] AC1: `skills/project/reference/context7-usage.md` exists as the new canonical doc covering the resolve-library-id → query-docs flow, one-concept query scoping, call-budget discipline (including debugger-agent/refactor-agent per-instance reservation guidance), and a concrete, falsifiable skip heuristic.
+- [x] AC2: All 11 agent files (`agents/*.md`) declare `mcpServers: [context7]` in frontmatter.
+- [x] AC3: All 10 non-scanner-agent context7-using agents each carry a short "Context7 MCP Usage" section with their exact spec-defined framing line, pointing to `context7-usage.md`.
+- [x] AC4: `debugger-agent`'s and `refactor-agent`'s framing lines are observation/evidence-only, never action-oriented — consistent with their existing read-only Constraints.
+- [x] AC5: `scanner-agent.md`'s inline Context7 MCP Usage section is replaced with a shorter pointer to `context7-usage.md`, preserving its own existing framing.
+- [x] AC6: `scanner-agent.md`'s Package & Dependency Files table gains Django/Flask/Rails/Spring/Laravel/.NET rows using the exact content-check signals specified in the spec's Data Flow table.
+- [x] AC7: `scanner-agent.md`'s Configuration Files, Entry Points, and Models & Schemas tables are extended to the same depth for the same six ecosystems (Django and Flask kept as separate rows throughout).
+- [x] AC8: `docs/project/architecture.md` is updated to reflect context7 wired into all 11 agents.
+- [x] AC9: `docs/project/tech-stack.md` is updated to reflect full context7 wiring and deepened non-JS stack detection.
+- [x] AC10: No changes are made to `.mcp.json`, `skills/project/reference/tools-setup.md`, or any target-project generation logic.
+- [x] AC11: A grep of `mcpServers` across all `agents/*.md` frontmatters confirms all 11 agents hold the context7 grant; a grep for `context7-usage.md` confirms all 10 non-scanner agents reference it.
+- [x] AC12: Ambiguous/conflicting ecosystem signals (e.g. Django + Flask both present in one repo) are recorded via the existing `<!-- VERIFY: ... -->` comment convention rather than forcing a single choice.
 
 ## Phases
 
