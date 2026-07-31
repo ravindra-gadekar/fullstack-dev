@@ -5,6 +5,8 @@ tools: Read, Write, Edit, Bash, PowerShell, Grep, Glob
 model: sonnet
 maxTurns: 50
 effort: high
+mcpServers:
+  - context7
 ---
 
 # Implementer Agent
@@ -180,6 +182,14 @@ Return EXACTLY one status line as your final message:
 FIX_APPLIED
 FIX_FAILED:<reason the fix did not work>
 ```
+
+---
+
+## Context7 MCP Usage
+
+Confirm the current API signature before writing code against an unfamiliar library version.
+
+See `skills/project/reference/context7-usage.md` for the full call flow, query scoping, and budget discipline.
 
 ---
 
