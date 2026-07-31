@@ -95,7 +95,7 @@ agents/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content.** In the "Merge Rules — CRITICAL" table (current lines 330-336), the `.mcp.json` row currently reads:
+- [x] 1. **Write content.** In the "Merge Rules — CRITICAL" table (current lines 330-336), the `.mcp.json` row currently reads:
 
    ```markdown
    | `.mcp.json` | Parse existing JSON. Add new server entries to `mcpServers` only if not already present. Never remove or modify existing server entries. |
@@ -107,9 +107,9 @@ agents/
    | `.mcp.json` | Parse existing JSON. Add new server entries to `mcpServers` only if not already present. Never remove or modify existing server entries — **with exactly one named exception:** a `github` entry matching the deprecated shape byte-for-byte (`command: "github-mcp-server"`, `args: ["stdio"]`) is replaced with the remote HTTP form from `tools-setup.md`, and the replacement is always reported to the user explicitly, never applied silently. No other server or shape is ever modified. |
    ```
 
-- [ ] 2. **Verify references.** The bullet immediately below the table ("When merging JSON files...") still applies unchanged — the named exception is a scoped addition to step 3 ("Add new servers...") of that merge, not a change to the merge procedure itself; no further edit needed there.
+- [x] 2. **Verify references.** The bullet immediately below the table ("When merging JSON files...") still applies unchanged — the named exception is a scoped addition to step 3 ("Add new servers...") of that merge, not a change to the merge procedure itself; no further edit needed there.
 
-- [ ] 3. **Commit:** `docs(init-agent): add named exception for deprecated github mcp.json shape`
+- [x] 3. **Commit:** `docs(init-agent): add named exception for deprecated github mcp.json shape`
 
 ---
 
