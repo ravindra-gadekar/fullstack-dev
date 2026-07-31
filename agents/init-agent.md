@@ -198,7 +198,7 @@ Follow `reference/tools-setup.md`:
 
 #### 5.11a `.claude/settings.local.json` (MCP secrets)
 
-If any MCP server just configured in 5.11 requires an environment variable (per `reference/tools-setup.md`, e.g. `GITHUB_TOKEN` for `github`), follow the Secret Prompt & Write Flow in `reference/tools-setup.md` § Secrets Handling for each required variable: auto-create the skeleton, ask the user directly for the value, attempt the write, fall back to printing the snippet only if the write is rejected.
+If any MCP server just configured in 5.11 requires an environment variable (per `reference/tools-setup.md`, e.g. `GITHUB_TOKEN` for `github`), follow step 1 of the Secret Prompt & Write Flow in `reference/tools-setup.md` § Secrets Handling: ensure the skeleton exists (create the file or merge the key in with an empty value). **You cannot ask the user or write the real value yourself when dispatched as a subagent** — you have no interactive channel back to the human. Include each missing variable name explicitly in your completion report (Section 9.12) so the orchestrator (the SKILL.md-level flow, which runs in the main conversation, not as a dispatched agent) can pick it up and complete steps 2-4 directly with the user.
 
 #### 5.12 `.claude/settings.json`
 
@@ -299,7 +299,7 @@ Run every check from the table in `reference/init-flow.md` Section 10.2:
 | **Docs** | CONTEXT.md exists; docs/project/architecture.md exists; docs/project/tech-stack.md exists; docs/project/brand.md exists (if frontend); per-repo ARCHITECTURE.md for each sub-repo; docs/specs/ directory exists; docs/plans/ directory exists |
 | **Git** | Root has git initialized; .gitignore has fullstack-dev:gitignore markers; all sub-repos listed in .gitignore; no new .git/ directories missing from config; local-dev branch exists in each repo; targetBranch set in each repo config entry; pre-commit hook has fullstack-dev:gitignore block; gitIgnore config field exists |
 | **Claude Config** | .claude/settings.json exists; PostToolUse hooks configured; skills installed; commands installed |
-| **MCP** | .mcp.json exists; context7 configured; git platform MCP configured; github entry is not deprecated stdio shape (auto-fix: replace via named merge exception); claude mcp list reports no connectivity warnings (report only); required MCP env vars present in settings.local.json (auto: create skeleton + prompt for value, see Secret Prompt & Write Flow) |
+| **MCP** | .mcp.json exists; context7 configured; git platform MCP configured; github entry is not deprecated stdio shape (auto-fix: replace via named merge exception); claude mcp list reports no connectivity warnings (report only); required MCP env vars present in settings.local.json (agent auto-creates skeleton, reports missing var name; orchestrator asks user and writes — see Secret Prompt & Write Flow) |
 | **Optional Tools** | code-review-graph: `.mcp.json` entry exists, `.claude/settings.json` has PostToolUse hook with `code-review-graph update` command; Agentation: `.mcp.json` entry exists (only check if `projectType` is `fullstack` or `frontend`). Status: Configured / Not configured. Auto-fix: offer to configure if not present, following `reference/tools-setup.md` |
 | **Workspace** | .code-workspace file exists (if multi-repo); all repos listed in workspace folders |
 
@@ -311,7 +311,7 @@ For each configured MCP server, attempt `claude mcp list` and parse its output:
 
 - **CLI call fails or isn't invokable in this execution context** (e.g. sandboxing prevents a nested CLI call) — skip this check gracefully. Report: "Could not verify connectivity in this session — run `claude mcp list` manually."
 - **`Missing environment variables: <VAR>`** reported for a server — check whether `<VAR>` is already present in `.claude/settings.local.json`'s `env` block:
-  - Not present at all — follow the Secret Prompt & Write Flow in `tools-setup.md` § Secrets Handling: auto-create the skeleton, ask the user directly for the value, attempt the write, fall back to printing the snippet only if the write is rejected.
+  - Not present at all — follow step 1 of the Secret Prompt & Write Flow in `tools-setup.md` § Secrets Handling: auto-create the skeleton. **Do not attempt to ask the user or write the value yourself** — as a dispatched subagent you have no interactive channel back to the human, confirmed by direct testing. Include `<VAR>` explicitly in your final report so the orchestrator can complete steps 2-4 with the user directly.
   - Present but still reported missing — report: "Found in settings.local.json but Claude Code hasn't picked it up yet — restart your session."
 - **`Pending approval`** reported for a server — report: "Run `claude` interactively once to approve the `<server>` server."
 - **Any other/unrecognized warning text** — report it verbatim with a pointer to `claude mcp list` for full detail, rather than dropping it silently.
@@ -395,6 +395,6 @@ This agent relies on these reference docs. Read them before executing any flow:
 
 - Never modify user-level Claude Code configuration (`~/.claude/settings.json`, `~/.claude/.mcp.json`). Only write to project-level files.
 - Never include actual secrets or tokens in any tracked file. Use `${VAR_NAME}` references in `.mcp.json` and empty values in `.env.example`.
-- For MCP-server secrets, follow the Secret Prompt & Write Flow in `reference/tools-setup.md`: always safe to auto-create the `.claude/settings.local.json` skeleton; ask the user directly for the value in a wizard-style prompt; attempt to write it; fall back to printing the snippet if the write is rejected. Never invent, guess, or hardcode a secret value yourself — only ever use the value the user just typed in this session. Never echo a secret value back in any report, commit message, or chat-facing summary, regardless of which path was taken.
+- For MCP-server secrets, follow the Secret Prompt & Write Flow in `reference/tools-setup.md`. As a dispatched subagent you can only ever do step 1 (safe to auto-create the `.claude/settings.local.json` skeleton) — you have no interactive channel to ask the user anything, confirmed by direct testing. Report missing variable names explicitly so the orchestrator can ask and write. Never invent, guess, or hardcode a secret value yourself. Never echo a secret value back in any report, commit message, or chat-facing summary.
 - Never push to a remote repository. Only commit locally and inform the user.
 - Always use the AskUserQuestion pattern for wizard questions — present the question, wait for the answer, validate, then proceed.

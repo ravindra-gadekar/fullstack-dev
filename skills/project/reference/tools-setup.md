@@ -321,19 +321,21 @@ Two distinct kinds of secret exist, and they never live in the same place:
 
 ### Secret Prompt & Write Flow
 
-Whenever a required MCP-server secret (e.g. `GITHUB_TOKEN`) is missing from `.claude/settings.local.json`, follow this sequence — used identically by first-run generation and health-check:
+Whenever a required MCP-server secret (e.g. `GITHUB_TOKEN`) is missing from `.claude/settings.local.json`, follow this sequence — used identically by first-run generation and health-check.
 
-1. **Ensure the skeleton exists.** If `.claude/settings.local.json` doesn't exist, create it with an empty `env` block. If it exists but lacks the required key, merge the key in with an empty string value. This step never involves a secret value — it's always safe to automate.
-2. **Ask the user directly**, in wizard style:
+**Split responsibility — this matters.** Steps 1 and 5-6 (skeleton creation, never-echo, never-overwrite) are safe to run inside a dispatched agent. Step 2 (asking the user) and step 4 (writing the real value) can **only** happen at the orchestrating conversation level — the top-level assistant loop, not a subagent dispatched via the Agent tool. Verified live: a dispatched `init-agent` cannot ask the user anything interactively, regardless of what tools its frontmatter grants — it runs to completion and returns a result, it cannot pause mid-task for a human reply. A dispatched agent that hits a missing secret must create the skeleton (step 1), then **report the missing variable name back to the orchestrator** instead of attempting to ask or write. The orchestrator picks up from there.
+
+1. **Ensure the skeleton exists.** If `.claude/settings.local.json` doesn't exist, create it with an empty `env` block. If it exists but lacks the required key, merge the key in with an empty string value. This step never involves a secret value — it's always safe to automate, including inside a dispatched agent.
+2. **Orchestrator asks the user directly**, as plain conversational text — **not** the `AskUserQuestion` tool, which requires ≥2 discrete choices and cannot represent open-ended free-text secret entry:
    ```
    ? GitHub Personal Access Token (for the github MCP server, stored only in
      .claude/settings.local.json — never committed): _______________
-     (Press Enter to skip and add it yourself later)
+     (reply with the token, or say "skip" to leave it blank for now)
    ```
-3. **Empty answer (skipped)** — leave the skeleton in place, print the exact snippet and file path for manual entry, and continue. This is not a failure.
-4. **Value provided** — attempt to write it into the `env` block via the normal file-write path.
+3. **Skipped** — leave the skeleton in place, print the exact snippet and file path for manual entry, and continue. This is not a failure.
+4. **Value provided** — the orchestrator attempts to write it into the `env` block directly via the normal file-write path (not the dispatched agent — it already returned).
    - **Write succeeds** — confirm briefly ("Saved to `.claude/settings.local.json`") without echoing the value back.
-   - **Write is rejected** (e.g. blocked by a permission policy, or denied by the user) — do not retry with a different mechanism to work around the rejection. Fall back to printing the exact snippet with the value the user just gave, so they can paste it in themselves, and note that the automatic write wasn't possible in this session.
+   - **Write is rejected** (e.g. blocked by a permission policy) — do not retry with a different mechanism to work around the rejection. Fall back to printing the exact snippet with the value the user just gave, so they can paste it in themselves, and note that the automatic write wasn't possible in this session.
 5. **Never log or echo the value** in any report, commit message, or chat-facing summary, regardless of which path was taken.
 6. **Never overwrite an existing non-empty value** for a key without asking the user first — a value already present may be intentional and current.
 
