@@ -164,15 +164,15 @@
 
 **Steps (Documentation: Write-and-review, since this is a verification checklist rather than a file edit):**
 
-- [ ] 1. **Write content.** Present this checklist to the user (do not attempt to fill in the token or restart the session on their behalf):
+- [x] 1. **Write content.** Present this checklist to the user (do not attempt to fill in the token or restart the session on their behalf):
    - [ ] Add `GITHUB_TOKEN` to `.claude/settings.local.json` per the instruction printed in Task 2.
    - [ ] Restart the Claude Code session.
    - [ ] Run `claude mcp list`.
    - [ ] Confirm the `github` server shows connected — no `Missing environment variables` or `Pending approval` warning.
 
-- [ ] 2. **Verify references.** If `claude mcp list` still reports an issue, cross-check against Phase 2 Task 4's connectivity-check branches (missing var not yet in settings.local.json vs. present-but-not-picked-up vs. pending approval) to diagnose which case applies.
+- [x] 2. **Verify references.** If `claude mcp list` still reports an issue, cross-check against Phase 2 Task 4's connectivity-check branches (missing var not yet in settings.local.json vs. present-but-not-picked-up vs. pending approval) to diagnose which case applies.
 
-- [ ] 3. **Commit:** None — this is a manual verification task with no file changes of its own.
+- [x] 3. **Commit:** None — this is a manual verification task with no file changes of its own.
 
 ## Phase 4 Complete
 

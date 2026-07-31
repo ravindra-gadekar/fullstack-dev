@@ -20,14 +20,18 @@
 - `.claude/settings.json` and `.claude/settings.local.json` must never be matched by the new `skills-cli` gitignore category — only `.claude/skills/` (precisely scoped) and `.agents/` (whole directory) are matched.
 - No automated test suite exists for this plugin; every task's verification step is a manual/inspection step (read the file back, run the relevant `/command`, check output), not a unit test run.
 
+## Progress
+
+**20/20 tasks complete (100%).** All 4 phases implemented and committed. Phase 4 Task 5's checklist requires a manual step from the user (adding the real `GITHUB_TOKEN` to `.claude/settings.local.json` and restarting the session) — everything this plan can automate is done.
+
 ## Phases
 
-| Phase | Repo | Name | Tasks | Delivers |
-|-------|------|------|-------|----------|
-| 1 | fullstack-dev | MCP Secrets & GitHub Server Docs | 5 | `tools-setup.md` + `doc-templates.md` corrected: remote HTTP GitHub config, secrets split, new config schema field |
-| 2 | fullstack-dev | MCP Health-Check & Merge-Rule Exception | 4 | `init-flow.md` + `init-agent.md` gain the 3 new health checks and the named merge-rule exception, kept in sync across both tables |
-| 3 | fullstack-dev | Skills-CLI & IDE/Secrets Gitignore Categories | 6 | `gitignore-catalog.md` + `gitignore-flow.md` gain the `skills-cli` category, `.claude/settings.local.json`, `*.code-workspace` |
-| 4 | fullstack-dev | Live Validation on This Repo | 5 | This repo's own `.mcp.json`, `.env.example`, `.gitignore` regenerated; `/gitignore cleanup` run; connectivity verified |
+| Phase | Repo | Name | Tasks | Delivers | Status |
+|-------|------|------|-------|----------|--------|
+| 1 | fullstack-dev | MCP Secrets & GitHub Server Docs | 5 | `tools-setup.md` + `doc-templates.md` corrected: remote HTTP GitHub config, secrets split, new config schema field | Done |
+| 2 | fullstack-dev | MCP Health-Check & Merge-Rule Exception | 4 | `init-flow.md` + `init-agent.md` gain the 3 new health checks and the named merge-rule exception, kept in sync across both tables | Done |
+| 3 | fullstack-dev | Skills-CLI & IDE/Secrets Gitignore Categories | 6 | `gitignore-catalog.md` + `gitignore-flow.md` gain the `skills-cli` category, `.claude/settings.local.json`, `*.code-workspace` | Done |
+| 4 | fullstack-dev | Live Validation on This Repo | 5 | This repo's own `.mcp.json`, `.env.example`, `.gitignore` regenerated; `/gitignore cleanup` run; connectivity verified | Done (pending your manual token step) |
 
 ## Execution Order
 
