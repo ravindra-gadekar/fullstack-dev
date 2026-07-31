@@ -234,9 +234,10 @@ For target repo(s):
    git push origin local-dev:<branch-name>
 
 7. Auto-generate PR content:
-   Title: from branch name or first commit
-   Body: list of commits, linked tickets
+   Title: short (<70 chars), from branch name or first commit
+   Body: ## Summary + ## Test plan (see git-flow.md Step 7-8)
    Labels: from type (feature, bugfix, etc.)
+   CRITICAL: body must use real newlines, NEVER \n escapes
 
 8. Create PR:
    mcp__github__create_pull_request
