@@ -293,6 +293,14 @@ Adjust the summary to reflect what was actually done -- omit lines for skipped s
 
 ---
 
+## Context7 MCP Usage
+
+Confirm current scaffolding conventions for the framework/runtime chosen in the add-repo wizard.
+
+See `skills/project/reference/context7-usage.md` for the full call flow, query scoping, and budget discipline.
+
+---
+
 ## Reference Documents
 
 - `skills/project/reference/add-repo-flow.md` -- wizard questions, configuration steps, and MCP repo creation details
