@@ -64,7 +64,7 @@ agents/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content.** In the "Step 3: Health Check Table" summary (current lines 288-301), the `MCP` row currently reads:
+- [x] 1. **Write content.** In the "Step 3: Health Check Table" summary (current lines 288-301), the `MCP` row currently reads:
 
    ```markdown
    | **MCP** | .mcp.json exists; context7 configured; git platform MCP configured |
@@ -76,9 +76,9 @@ agents/
    | **MCP** | .mcp.json exists; context7 configured; git platform MCP configured; github entry is not deprecated stdio shape (auto-fix: replace via named merge exception); claude mcp list reports no connectivity warnings (report only); required MCP env vars present in settings.local.json (report only) |
    ```
 
-- [ ] 2. **Verify references.** `grep -n "context7 configured" skills/project/reference/init-flow.md agents/init-agent.md` shows both files' MCP rows contain the same set of checks (same substrings present in both), confirming the mirror stays accurate.
+- [x] 2. **Verify references.** `grep -n "context7 configured" skills/project/reference/init-flow.md agents/init-agent.md` shows both files' MCP rows contain the same set of checks (same substrings present in both), confirming the mirror stays accurate.
 
-- [ ] 3. **Commit:** `docs(init-agent): mirror the extended MCP health-check checks into the condensed table`
+- [x] 3. **Commit:** `docs(init-agent): mirror the extended MCP health-check checks into the condensed table`
 
 ---
 
