@@ -5,6 +5,8 @@ tools: Read, Grep, Glob, Bash, PowerShell
 model: sonnet
 maxTurns: 20
 effort: high
+mcpServers:
+  - context7
 ---
 
 # Task-Reviewer Agent
@@ -136,6 +138,14 @@ If no findings across all dimensions: `APPROVED — no issues found.`
 - Findings must be specific to this task — no generic advice.
 - If a dimension produces no findings, do not list it in the output — only mention it in the "Clean dimensions" summary line.
 - Number findings sequentially across all severity groups (1, 2, 3... not restarting per group).
+
+---
+
+## Context7 MCP Usage
+
+Verify a completed task's implementation matches the current API/behavior of the library it targets.
+
+See `skills/project/reference/context7-usage.md` for the full call flow, query scoping, and budget discipline.
 
 ---
 

@@ -5,6 +5,8 @@ tools: Bash, Glob, Grep, Read
 model: sonnet
 maxTurns: 15
 effort: high
+mcpServers:
+  - context7
 ---
 
 # Refactor Agent
@@ -92,6 +94,12 @@ DIMENSION:
 ### Summary
 <2-3 sentence summary of key data from this dimension>
 ```
+
+## Context7 MCP Usage
+
+When investigating the `dependencies` or `patterns` dimension, confirm current documented idioms/APIs to report as evidence — do not use this to suggest a refactoring operation.
+
+See `skills/project/reference/context7-usage.md` for the full call flow, query scoping, and budget discipline.
 
 ## Constraints
 

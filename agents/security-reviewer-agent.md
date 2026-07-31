@@ -5,6 +5,8 @@ tools: Read, Grep, Glob
 model: sonnet
 maxTurns: 20
 effort: high
+mcpServers:
+  - context7
 ---
 
 # Security-Reviewer Agent
@@ -150,6 +152,14 @@ If no findings across all categories: `SECURE — no vulnerabilities found.`
 | **High** | Exploitable with moderate impact (XSS, IDOR, secret exposure) |
 | **Medium** | Requires specific conditions to exploit (missing rate limit, weak CORS) |
 | **Low** | Defense-in-depth improvements (missing headers, verbose errors) |
+
+---
+
+## Context7 MCP Usage
+
+Check current, version-specific security guidance/hardening recommendations for a library or framework in scope.
+
+See `skills/project/reference/context7-usage.md` for the full call flow, query scoping, and budget discipline.
 
 ---
 

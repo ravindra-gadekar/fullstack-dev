@@ -5,6 +5,8 @@ tools: Bash, Glob, Grep, Read
 model: sonnet
 maxTurns: 15
 effort: high
+mcpServers:
+  - context7
 ---
 
 # Debugger Agent
@@ -94,6 +96,12 @@ Read these files for project awareness (skip silently if missing):
 ### Summary
 <2-3 sentence summary of key evidence from this dimension>
 ```
+
+## Context7 MCP Usage
+
+When investigating the `dependencies` dimension, confirm a library's documented API/behavior to report as evidence — do not use this to form or imply a root-cause hypothesis.
+
+See `skills/project/reference/context7-usage.md` for the full call flow, query scoping, and budget discipline.
 
 ## Constraints
 
