@@ -91,7 +91,7 @@ Alternatively, the init agent will detect the conflict and offer to remove the o
 ## Update
 
 ```bash
-npx skills update fullstack-dev --skill '*'
+npx skills update -y
 ```
 
 ## Remove

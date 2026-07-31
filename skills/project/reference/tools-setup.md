@@ -312,12 +312,30 @@ Two distinct kinds of secret exist, and they never live in the same place:
 **MCP server secrets** — consumed by Claude Code itself to authenticate an MCP server (e.g. `GITHUB_TOKEN` for the `github` server's `Authorization` header):
 - `.mcp.json` uses `${VAR_NAME}` syntax to reference them — it NEVER contains actual secret values.
 - The actual value goes in `.claude/settings.local.json`'s `env` block (user-scoped, never committed). Claude Code does **not** read `.env` for `${VAR}` expansion in `.mcp.json` — putting an MCP secret in `.env` silently fails to connect.
-- The plugin never writes a real value into `.claude/settings.local.json` itself — it only prints the exact snippet for the user to fill in (see "No Agent-Authored Secret Writes" in the health-check flow).
+- The plugin auto-creates `.claude/settings.local.json` with the correct structure whenever a required MCP secret is missing, asks the user directly for the value, and attempts to write it — falling back to printing the exact snippet only if the write is rejected. See "Secret Prompt & Write Flow" below.
 
 **Application runtime secrets** — consumed by the target app at runtime (e.g. a database URL, a third-party API key the app's own code calls):
 - These go in `.env` (which must be gitignored) as before.
 - `.env.example` (tracked in git) documents required variable names with empty values.
 - Unaffected by the MCP-secrets change above — this category of secret was already handled correctly.
+
+### Secret Prompt & Write Flow
+
+Whenever a required MCP-server secret (e.g. `GITHUB_TOKEN`) is missing from `.claude/settings.local.json`, follow this sequence — used identically by first-run generation and health-check:
+
+1. **Ensure the skeleton exists.** If `.claude/settings.local.json` doesn't exist, create it with an empty `env` block. If it exists but lacks the required key, merge the key in with an empty string value. This step never involves a secret value — it's always safe to automate.
+2. **Ask the user directly**, in wizard style:
+   ```
+   ? GitHub Personal Access Token (for the github MCP server, stored only in
+     .claude/settings.local.json — never committed): _______________
+     (Press Enter to skip and add it yourself later)
+   ```
+3. **Empty answer (skipped)** — leave the skeleton in place, print the exact snippet and file path for manual entry, and continue. This is not a failure.
+4. **Value provided** — attempt to write it into the `env` block via the normal file-write path.
+   - **Write succeeds** — confirm briefly ("Saved to `.claude/settings.local.json`") without echoing the value back.
+   - **Write is rejected** (e.g. blocked by a permission policy, or denied by the user) — do not retry with a different mechanism to work around the rejection. Fall back to printing the exact snippet with the value the user just gave, so they can paste it in themselves, and note that the automatic write wasn't possible in this session.
+5. **Never log or echo the value** in any report, commit message, or chat-facing summary, regardless of which path was taken.
+6. **Never overwrite an existing non-empty value** for a key without asking the user first — a value already present may be intentional and current.
 
 ### Example
 
@@ -355,6 +373,7 @@ Two distinct kinds of secret exist, and they never live in the same place:
 - [ ] `.env.example` exists with all required variable names (no values)
 - [ ] `.mcp.json` references secrets only via `${VAR_NAME}` syntax
 - [ ] No actual tokens appear in any tracked file
+- [ ] `.claude/settings.local.json` is listed in `.gitignore`'s `secrets` category (never committed)
 
 ---
 
@@ -362,7 +381,7 @@ Two distinct kinds of secret exist, and they never live in the same place:
 
 ### Scope
 
-- The plugin only writes to project-level files (`.mcp.json` in the project root)
+- The plugin only writes to project-level files (`.mcp.json`, `.claude/settings.json`, `.claude/settings.local.json` in the project root)
 - The plugin NEVER modifies global/user-level Claude Code configuration (`~/.claude/settings.json`, `~/.claude/.mcp.json`, etc.)
 
 ### context7 layering
@@ -377,7 +396,7 @@ Two distinct kinds of secret exist, and they never live in the same place:
 |------|-------|--------------------|
 | `.mcp.json` (project root) | Project | Yes |
 | `.claude/settings.json` (project root) | Project | Yes |
-| `.claude/settings.local.json` (project root) | Project | Read-only — the plugin prints instructions for the user to edit this file directly; it never writes to it itself. |
+| `.claude/settings.local.json` (project root) | Project | Yes — limited to creating/merging the key skeleton and writing a value the user explicitly provides via the Secret Prompt & Write Flow. Never invents or overwrites an existing value without asking. |
 | `~/.claude/.mcp.json` | User | No |
 | `~/.claude/settings.json` | User | No |
 | `~/.claude/settings.local.json` | User | No |
