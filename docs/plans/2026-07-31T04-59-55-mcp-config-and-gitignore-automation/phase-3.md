@@ -162,7 +162,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content.** In "## 1. Marker Block Format" → "### Structural Rules" (current lines 41-52), the category sort order list mirrors the catalog's — apply the identical renumbering from Phase 3 Task 3:
+- [x] 1. **Write content.** In "## 1. Marker Block Format" → "### Structural Rules" (current lines 41-52), the category sort order list mirrors the catalog's — apply the identical renumbering from Phase 3 Task 3:
 
    ```markdown
    - **Category sort order** follows the catalog's canonical order:
@@ -180,9 +180,9 @@ skills/gitignore/reference/
      12. Sub-repositories
    ```
 
-- [ ] 2. **Verify references.** This list now matches Phase 3 Task 3's catalog list item-for-item (same order, same 12 entries).
+- [x] 2. **Verify references.** This list now matches Phase 3 Task 3's catalog list item-for-item (same order, same 12 entries).
 
-- [ ] 3. **Commit:** `docs(gitignore-flow): sync structural-rules sort order with skills-cli category`
+- [x] 3. **Commit:** `docs(gitignore-flow): sync structural-rules sort order with skills-cli category`
 
 ---
 

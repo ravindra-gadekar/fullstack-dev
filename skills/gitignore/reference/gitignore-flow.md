@@ -48,8 +48,9 @@ backend-api/
   7. IDE
   8. macOS, Windows, Linux
   9. MCP Tooling
-  10. Deployment
-  11. Sub-repositories
+  10. Skills CLI
+  11. Deployment
+  12. Sub-repositories
 - **Empty categories** are omitted entirely (no header, no patterns)
 - **Sub-repositories** are always listed as the last category inside the block, with each directory on its own line and a trailing `/`
 - The `# --- User entries below ---` line appears immediately after the end marker, separated by one blank line
