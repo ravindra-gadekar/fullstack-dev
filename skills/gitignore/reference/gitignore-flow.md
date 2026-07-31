@@ -327,6 +327,18 @@ Always include all three OS categories (`macos`, `windows`, `linux`) uncondition
     +-- Add any per-server data directories not already in catalog
 ```
 
+### Skills CLI Detection
+
+```
+skills-lock.json exists at the workspace root?
++-- NO --> Skip skills-cli category
++-- YES --> Activate skills-cli category
+    (workspace-root check only — never per sub-repo, since .claude/skills/
+     and .agents/ are Claude Code session artifacts, not per-repo source)
+```
+
+No fallback heuristic exists for this category — see `gitignore-catalog.md`'s Skills CLI section for why.
+
 ### Deployment Detection
 
 ```
@@ -351,6 +363,7 @@ Start
 +-- Always include: macos, windows, linux
 |
 +-- Check .mcp.json for MCP tooling
++-- Check skills-lock.json at workspace root for Skills CLI
 +-- Check for deployment config files
 |
 +-- Merge all activated categories

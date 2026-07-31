@@ -199,7 +199,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content, part A.** In "## 4. Tech-Stack Detection Heuristics", insert a new subsection after "### MCP Tooling Detection" (current lines 313-327) and before "### Deployment Detection" (current line 329):
+- [x] 1. **Write content, part A.** In "## 4. Tech-Stack Detection Heuristics", insert a new subsection after "### MCP Tooling Detection" (current lines 313-327) and before "### Deployment Detection" (current line 329):
 
    ```markdown
    ### Skills CLI Detection
@@ -215,7 +215,7 @@ skills/gitignore/reference/
    No fallback heuristic exists for this category — see `gitignore-catalog.md`'s Skills CLI section for why.
    ```
 
-- [ ] 2. **Write content, part B.** In "### Full Detection Decision Tree" (current lines 340-359), add a line after the MCP tooling check:
+- [x] 2. **Write content, part B.** In "### Full Detection Decision Tree" (current lines 340-359), add a line after the MCP tooling check:
 
    ```markdown
    Start
@@ -237,9 +237,9 @@ skills/gitignore/reference/
    +-- Output final pattern list
    ```
 
-- [ ] 3. **Verify references.** The new subsection's placement (after MCP Tooling Detection, before Deployment Detection) matches the sort-order position established in Phase 3 Task 3/4.
+- [x] 3. **Verify references.** The new subsection's placement (after MCP Tooling Detection, before Deployment Detection) matches the sort-order position established in Phase 3 Task 3/4.
 
-- [ ] 4. **Commit:** `docs(gitignore-flow): add Skills CLI detection heuristics and update decision tree`
+- [x] 4. **Commit:** `docs(gitignore-flow): add Skills CLI detection heuristics and update decision tree`
 
 ---
 
