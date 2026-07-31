@@ -26,7 +26,7 @@ agents/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content.** In the health-check table (current lines 648-681), the `MCP` category currently reads:
+- [x] 1. **Write content.** In the health-check table (current lines 648-681), the `MCP` category currently reads:
 
    ```
    MCP               | .mcp.json exists                                 | Yes (create)
@@ -45,9 +45,9 @@ agents/
                      | Required MCP env vars present in settings.local.json | No (report only)
    ```
 
-- [ ] 2. **Verify references.** Table column alignment stays consistent with the rest of the table (pipe-delimited, not a strict markdown table — matches existing formatting in this section).
+- [x] 2. **Verify references.** Table column alignment stays consistent with the rest of the table (pipe-delimited, not a strict markdown table — matches existing formatting in this section).
 
-- [ ] 3. **Commit:** `docs(init-flow): add deprecated-shape, connectivity, and settings.local.json checks to MCP health-check category`
+- [x] 3. **Commit:** `docs(init-flow): add deprecated-shape, connectivity, and settings.local.json checks to MCP health-check category`
 
 ---
 
