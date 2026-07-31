@@ -224,7 +224,7 @@ skills/project/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content, part A — `.env.example` template (Section 8, current lines 615-643).** Replace the template code block:
+- [x] 1. **Write content, part A — `.env.example` template (Section 8, current lines 615-643).** Replace the template code block:
 
    ```env
    # ============================================
@@ -244,7 +244,7 @@ skills/project/reference/
 
    (This removes the `GitHub projects: GITHUB_TOKEN=` and `Bitbucket projects: BITBUCKET_TOKEN=` bullets — git-platform tokens are always MCP-server secrets, never `.env` entries, regardless of platform.)
 
-- [ ] 2. **Write content, part B — `config.json` schema (Section 7, current lines 526-568) and field reference table (569-604).** In the JSON schema block, change:
+- [x] 2. **Write content, part B — `config.json` schema (Section 7, current lines 526-568) and field reference table (569-604).** In the JSON schema block, change:
 
    ```json
    "gitIgnore": {
@@ -269,9 +269,9 @@ skills/project/reference/
    | `gitIgnore.categoriesEverActivated` | string[] | -- | Persistent record of every category ever activated for this project. Unlike `activeCategories` (a live, re-detected snapshot that can drop a category if its detection signal briefly disappears), this array only ever grows. Used to distinguish true first-activation from re-detection. |
    ```
 
-- [ ] 3. **Verify references.** `grep -n "GITHUB_TOKEN" skills/project/reference/doc-templates.md` returns no matches. `grep -n "categoriesEverActivated" skills/project/reference/doc-templates.md` returns two matches (schema block + field table).
+- [x] 3. **Verify references.** `grep -n "GITHUB_TOKEN" skills/project/reference/doc-templates.md` returns no matches. `grep -n "categoriesEverActivated" skills/project/reference/doc-templates.md` returns two matches (schema block + field table).
 
-- [ ] 4. **Commit:** `docs(doc-templates): remove GITHUB_TOKEN from .env.example, add categoriesEverActivated to config schema`
+- [x] 4. **Commit:** `docs(doc-templates): remove GITHUB_TOKEN from .env.example, add categoriesEverActivated to config schema`
 
 ## Phase 1 Complete
 
