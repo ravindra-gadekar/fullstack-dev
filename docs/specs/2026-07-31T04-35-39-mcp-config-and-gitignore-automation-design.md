@@ -180,3 +180,22 @@ The `.mcp.json` merge rule ("never remove or modify existing server entries") ge
 - **A `/project --init` wizard question for the skills-mirror commit-vs-ignore choice.** The "ignore, like node_modules" default applies unconditionally; a per-project override wizard question was explicitly considered and declined during brainstorming.
 - **Narrowing `.agents/` to `.agents/skills/` specifically.** Explicitly considered and declined in favor of the whole-directory pattern — see "Gitignore Category Precision" in Security Requirements for the accepted trade-off.
 - **Other IDE workspace-file formats** beyond `*.code-workspace` (e.g. JetBrains `.idea/workspace.xml`, already covered by the existing `ide` category's `.idea/` pattern). No new formats are added beyond what was specifically requested.
+
+---
+
+## 9. Acceptance Criteria
+
+- [ ] `.mcp.json`'s `github` entry uses the remote HTTP form (`type: "http"`, `url: "https://api.githubcopilot.com/mcp"`, `Authorization: Bearer ${GITHUB_TOKEN}` header) instead of the deprecated local stdio binary form.
+- [ ] `.env.example` no longer references `GITHUB_TOKEN` in either the template code block or the "Rules" bullet list in `doc-templates.md`.
+- [ ] `tools-setup.md`'s "Secrets Handling" section clearly separates MCP server secrets (`.claude/settings.local.json`) from application runtime secrets (`.env`/`.env.example`), and both GitHub `.mcp.json` example locations in the file are updated consistently (no stale stdio example remains).
+- [ ] `init-flow.md`'s "MCP" health-check category includes three checks: config-shape (including deprecated-shape detection), connectivity, and settings.local.json presence.
+- [ ] `init-agent.md` health-check mode flags a deprecated `github` stdio shape (`command: "github-mcp-server"`, `args: ["stdio"]`) as a named FAIL and replaces it via the one explicitly-named exception to the `.mcp.json` merge rule, reporting the change to the user rather than applying it silently.
+- [ ] `init-agent.md` health-check mode runs the connectivity check (parses `claude mcp list` for missing-variable/pending-approval/unrecognized warnings) and degrades gracefully (reports "run manually") if the CLI call isn't invokable in-session.
+- [ ] Init-agent never writes a literal secret value to any file, in any mode (first-run or health-check) — only variable names, file paths, and copy-pasteable snippets/commands with empty placeholders.
+- [ ] `gitignore-catalog.md` has a new `skills-cli` category, detected by `skills-lock.json` at the workspace root only, covering `.claude/skills/` (precisely scoped) and `.agents/` (whole directory), with no file-detection fallback.
+- [ ] `gitignore-catalog.md`'s `secrets` category includes `.claude/settings.local.json`; its `ide` category includes `*.code-workspace`.
+- [ ] `gitignore-flow.md` documents the `skills-cli` detection rule, its position in category sort order, and the first-activation mirror-diff (self-hosting) / mtime (general target-project) warning logic in Section 7.
+- [ ] `config.json`'s schema includes the new persistent `gitIgnore.categoriesEverActivated` field, distinct from the live-redetected `activeCategories`.
+- [ ] Running `/gitignore rebuild` on this repo produces a `.gitignore` with `.claude/skills/`, `.agents/`, `*.code-workspace`, and `.claude/settings.local.json` patterns correctly categorized, and updates `config.json` accordingly.
+- [ ] Running `/gitignore cleanup` on this repo untracks `.claude/skills/`, `.agents/`, and `fullstack-dev.code-workspace`, while `.claude/settings.json` remains tracked throughout.
+- [ ] This repo's own live `.mcp.json`, `.env`/`.env.example`, and `.gitignore` are corrected to match the new templates, serving as the first real validation of every criterion above.
