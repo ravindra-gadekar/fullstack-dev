@@ -256,7 +256,7 @@ skills/gitignore/reference/
 
 **Steps (Documentation: Write-and-review):**
 
-- [ ] 1. **Write content.** In "## 7. Cleanup Logic" → "### Cleanup Steps" (current lines 555-596), insert a new step between "Step 1: Verify .gitignore" and "Step 2: Group by pattern type":
+- [x] 1. **Write content.** In "## 7. Cleanup Logic" → "### Cleanup Steps" (current lines 555-596), insert a new step between "Step 1: Verify .gitignore" and "Step 2: Group by pattern type":
 
    ```markdown
    Step 1a: Skills-CLI first-activation check (only when the skills-cli category is part of this cleanup run)
@@ -291,9 +291,9 @@ skills/gitignore/reference/
      so subsequent runs skip straight to Step 3.
    ```
 
-- [ ] 2. **Verify references.** The renumbered "Step 2" through "Step 5" below still read correctly with "Step 1a" inserted between "Step 1" and what was "Step 2" (no numbering collision — "1a" is intentionally non-sequential to avoid renumbering the rest of the list).
+- [x] 2. **Verify references.** The renumbered "Step 2" through "Step 5" below still read correctly with "Step 1a" inserted between "Step 1" and what was "Step 2" (no numbering collision — "1a" is intentionally non-sequential to avoid renumbering the rest of the list).
 
-- [ ] 3. **Commit:** `docs(gitignore-flow): add first-activation mirror-diff/mtime warning logic to cleanup`
+- [x] 3. **Commit:** `docs(gitignore-flow): add first-activation mirror-diff/mtime warning logic to cleanup`
 
 ## Phase 3 Complete
 

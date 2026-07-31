@@ -574,6 +574,37 @@ Step 1: Verify .gitignore
   +-- Missing patterns? --> Add them to marker block first (Section 2)
   +-- All present? --> Continue
 
+Step 1a: Skills-CLI first-activation check (only when the skills-cli category is part of this cleanup run)
+  Determine first-time activation from config.json's gitIgnore.categoriesEverActivated
+  (a persistent array that only ever grows — distinct from the live-redetected
+  activeCategories snapshot, which can drop skills-cli back out if skills-lock.json
+  is briefly absent between runs).
+
+  +-- skills-cli already in categoriesEverActivated?
+  |   +-- YES --> Skip the diff/mtime check below. Untrack directly (Step 3).
+  |   +-- NO  --> This is the first activation. Branch on repo shape:
+  |
+  +-- Self-hosting case (a root skills/ directory of authored content
+  |   literally exists -- true for this plugin's own repo, not for a
+  |   typical downstream target project):
+  |       Compare .claude/skills/ content against root skills/.
+  |       +-- Differ --> Warn the user before untracking (possible
+  |       |   manual edit to a mirror instead of the source) instead
+  |       |   of silently dropping the file from git.
+  |       +-- Identical --> Untrack as usual (Step 3).
+  |
+  +-- General target-project case (no root skills/ directory to
+      compare against -- the normal case for every project that
+      installs this plugin):
+          Skip the content-diff entirely (no source of truth to diff
+          against). Instead, warn only if any file under .claude/skills/
+          has an mtime newer than skills-lock.json's own mtime -- a
+          signal of a possible post-install manual edit, without
+          requiring a comparison directory that doesn't exist here.
+
+  Either way, once evaluated, add skills-cli to categoriesEverActivated
+  so subsequent runs skip straight to Step 3.
+
 Step 2: Group by pattern type
   Directory patterns (ending with /):
     Collect: all matched file paths under each directory
