@@ -23,15 +23,15 @@ Two independent sub-features, both implemented as edits to existing reference do
 
 ### 1. MCP Secrets & GitHub Server Correctness
 
-- `skills/project/reference/tools-setup.md` — GitHub section rewritten to generate the remote HTTP endpoint config instead of the local `github-mcp-server` binary; the Docker-based local run stays documented as a fallback for network-restricted environments, not deleted. The "Secrets Handling" section is split into two previously-conflated concerns: **MCP server secrets** (consumed by Claude Code itself — must live in `.claude/settings.local.json`) and **application runtime secrets** (consumed by the target app at runtime — stay in `.env`/`.env.example`, unaffected by this change).
-- `skills/project/reference/doc-templates.md` — `.mcp.json` GitHub template updated to the HTTP form; `.env.example` template drops the `GITHUB_TOKEN` line, since it was never an application secret.
-- `skills/project/reference/init-flow.md` — the existing "MCP" health-check category gains two new report-only checks (connectivity, settings.local.json presence).
-- `agents/init-agent.md` — health-check mode executes the two new checks and formats findings per the secret-reporting rules (variable names and file paths only, never values); never auto-writes a secret value in any mode.
+- `skills/project/reference/tools-setup.md` — GitHub section rewritten to generate the remote HTTP endpoint config instead of the local `github-mcp-server` binary; the Docker-based local run stays documented as a fallback for network-restricted environments, not deleted. **Both** places this file currently shows a GitHub `.mcp.json` snippet are updated: the "GitHub (github.com detected)" section itself, and the separate "Secrets Handling → Example" subsection later in the file, which embeds its own now-stale stdio example — left alone, the file would end up self-contradicting with two different `github` configs. The "Secrets Handling" section is split into two previously-conflated concerns: **MCP server secrets** (consumed by Claude Code itself — must live in `.claude/settings.local.json`) and **application runtime secrets** (consumed by the target app at runtime — stay in `.env`/`.env.example`, unaffected by this change). The "Project-Level Safety → Summary" table gains a row for the project-level `.claude/settings.local.json` (marked "read-only" for the plugin — the file is never written by an agent, only referenced in instructions).
+- `skills/project/reference/doc-templates.md` — `.mcp.json` GitHub template updated to the HTTP form. `.env.example` loses its `GITHUB_TOKEN` reference in **both** places it currently appears: the template code block, and the "Rules" bullet list ("GitHub projects: `GITHUB_TOKEN=`") — both must change together or the file ends up internally contradictory.
+- `skills/project/reference/init-flow.md` — the existing "MCP" health-check category gains three report-only checks: a **config-shape check** extended to flag the deprecated local-stdio `github` shape (not just presence/absence of an entry), plus the two new checks (connectivity, settings.local.json presence).
+- `agents/init-agent.md` — health-check mode executes the three checks and formats findings per the secret-reporting rules (variable names and file paths only, never values); never auto-writes a secret value in any mode. Gains one **explicit, named exception** to the general `.mcp.json` merge rule ("never remove or modify existing server entries"): when the `github` entry matches the deprecated shape exactly (`command: "github-mcp-server"`, `args: ["stdio"]`), init-agent replaces it with the HTTP form and reports the change — this is the only server/shape combination allowed to be modified rather than left untouched. No other merge behavior changes.
 
 ### 2. Skills-cli Install-Artifact Gitignore Category
 
-- `skills/gitignore/reference/gitignore-catalog.md` — new category `skills-cli` (detect: `skills-lock.json` exists at repo root; patterns: `.claude/skills/`, `.agents/skills/`). Also adds `.claude/settings.local.json` to the always-active `secrets` category, since it's user-local, can hold live tokens, and currently isn't covered by any pattern at all.
-- `skills/gitignore/reference/gitignore-flow.md` — Section 4 detection heuristics gain a `skills-lock.json → skills-cli` rule; category sort order gains `skills-cli` (placed after `mcp-tooling`, before `deployment`); Section 7 (Cleanup Logic) gains a first-activation mirror-diff warning rule.
+- `skills/gitignore/reference/gitignore-catalog.md` — new category `skills-cli` (detect: `skills-lock.json` exists at the **workspace root only** — see Data Flow for the multi-repo rationale; patterns: `.claude/skills/`, `.agents/skills/`, applied to the workspace-root `.gitignore` regardless of `repoStructure`). Unlike every other catalog category, this one has no file-detection fallback — that's an intentional deviation, not an oversight: `skills-lock.json` is the one reliable, unambiguous signal that `npx skills add` manages this workspace, and a heuristic fallback (e.g. guessing from directory contents) risks false positives on hand-authored `.claude/` trees that happen to contain a `skills/` subdirectory. Also adds `.claude/settings.local.json` to the always-active `secrets` category, since it's user-local, can hold live tokens, and currently isn't covered by any pattern at all.
+- `skills/gitignore/reference/gitignore-flow.md` — Section 4 detection heuristics gain a `skills-lock.json → skills-cli` rule (workspace-root check, explicitly not per-sub-repo). Category sort order gains `skills-cli` (placed after `mcp-tooling`, before `deployment`). Section 7 (Cleanup Logic) gains the first-activation mirror-diff warning rule, scoped correctly for both the self-hosting case and the general target-project case (see Data Flow). `config.json`'s schema gains a new persistent field, `gitIgnore.categoriesEverActivated` (an array, distinct from the live-detected `activeCategories` snapshot), so "first activation" can be determined reliably even if `skills-cli` ever drops out of `activeCategories` between runs (e.g. `skills-lock.json` briefly absent).
 
 ---
 
@@ -55,22 +55,37 @@ Two independent sub-features, both implemented as edits to existing reference do
 
    → generates `.env.example` without a `GITHUB_TOKEN` line → prints a copy-pasteable instruction block telling the user to add `GITHUB_TOKEN` to `.claude/settings.local.json`'s `env` block themselves, with the exact JSON snippet shown and no value filled in.
 
-2. `/project --init` (health-check mode, existing repos) → init-agent runs the two new MCP checks:
-   - **Config-shape check** (existing pattern, unchanged): does `.mcp.json` have the expected entries?
-   - **Connectivity check** (new): attempt `claude mcp list`, parse output for `Missing environment variables: <VAR>` or `Pending approval` per server.
+   *Verified:* embedding `${VAR}` inside a larger string value (e.g. `"Bearer ${GITHUB_TOKEN}"`) is officially supported — Claude Code's own `.mcp.json` docs give this exact `Authorization: Bearer ${API_KEY}` pattern as a worked example, alongside mid-string expansion in `url`. This isn't a novel assumption; it's the documented mechanism.
+
+2. `/project --init` (health-check mode, existing repos) → init-agent runs the extended "MCP" health-check category (three checks total):
+   - **Config-shape check** (existing category, extended): in addition to the existing "does `.mcp.json` have the expected entries?" check, now also flags the deprecated local-stdio `github` shape (`command: "github-mcp-server"`, `args: ["stdio"]`) as a named FAIL — not just silence until the connectivity check happens to catch it. When this exact deprecated shape is found, init-agent applies the one named exception to the `.mcp.json` merge rule (see Architecture) and replaces the entry with the HTTP form, reporting the change explicitly rather than silently.
+   - **Connectivity check** (new): attempt `claude mcp list`, parse output for `Missing environment variables: <VAR>` or `Pending approval` per server; catch-all branch for any other/unrecognized failure text (reported verbatim rather than dropped).
      - CLI call fails or isn't invokable in this context → skip gracefully, report: "Could not verify connectivity in this session — run `claude mcp list` manually."
      - A variable is reported missing → check whether it's already present in `.claude/settings.local.json`'s `env` block.
        - Not present at all → report the exact variable name and the snippet to add it (never the value).
        - Present but still reported missing → report: "Found in settings.local.json but Claude Code hasn't picked it up yet — restart your session."
      - `Pending approval` → report: "Run `claude` interactively once to approve the `<server>` server."
+     - Unrecognized warning text → report it verbatim with a pointer to `claude mcp list` for full detail, rather than swallowing it silently.
+
+   Rendered in the existing `init-flow.md` §10.2 health-check table format (`Category | Check | Auto-fix?`), this reads as three rows under the "MCP" category:
+
+   ```text
+   | MCP | .mcp.json has expected entries       | Yes (add missing)         |
+   | MCP | github entry is not deprecated shape | Yes (replace, see note)   |
+   | MCP | claude mcp list reports no warnings   | No (report only)          |
+   ```
 
 3. This flow doubles as a live test case on this exact repo: right now `GITHUB_TOKEN` sits only in `.env` (the wrong place — a leftover from before this fix), so a health-check run here should surface exactly that mismatch once implemented.
 
 **Skills-cli gitignore category:**
 
-1. `/gitignore scan|rebuild|cleanup` → the detection step (Section 4 of `gitignore-flow.md`) now also checks for `skills-lock.json` at repo root → if present, `skills-cli` activates alongside whatever else was detected.
+1. `/gitignore scan|rebuild|cleanup` → the detection step (Section 4 of `gitignore-flow.md`) now also checks for `skills-lock.json` at the **workspace root** (not per sub-repo — see rationale below) → if present, `skills-cli` activates alongside whatever else was detected, and its patterns apply to the workspace-root `.gitignore` only.
+   - *Why workspace-root-only:* `.claude/skills/` and `.agents/skills/` are Claude Code session artifacts, not per-repo source-code artifacts — a Claude Code session (and therefore `npx skills add`) operates from the workspace root regardless of `repoStructure`, the same way `.mcp.json` and `.claude/settings.json` are already workspace-root-level singletons in this plugin's model, not duplicated per sub-repo. This differs from tech-stack categories (`node`, `python`, etc.), which genuinely vary per sub-repo and are detected accordingly.
 2. `rebuild` → adds `.claude/skills/` and `.agents/skills/` to the marker block under a `# Skills CLI` header — never touches `.claude/settings.json` or `.claude/settings.local.json`, since neither is matched by any pattern in this category.
-3. `cleanup` → determines first-time activation by checking whether `skills-cli` is already present in `config.json`'s `gitIgnore.activeCategories` (the existing mechanism this plugin already uses to track which categories have been applied before). If `skills-cli` is not yet listed, this is the first activation: before untracking, compare `.claude/skills/` content against root `skills/`. If they differ (a possible manual edit to a mirror instead of the source), warn the user instead of silently untracking. If identical (the normal case) — or if `skills-cli` was already listed from a prior run — untrack as usual with no comparison.
+3. `cleanup` → determines first-time activation from a new **persistent** `config.json` field, `gitIgnore.categoriesEverActivated` (an array that only ever grows, unlike the live-redetected `activeCategories` snapshot which can drop `skills-cli` back out if `skills-lock.json` is briefly absent). If `skills-cli` is not yet in `categoriesEverActivated`:
+   - **Self-hosting case** (a root `skills/` directory of authored content literally exists — true for this plugin's own repo, not for a typical downstream target project): compare `.claude/skills/` content against root `skills/` before untracking. If they differ (a possible manual edit to a mirror instead of the source), warn the user instead of silently untracking.
+   - **General target-project case** (no root `skills/` directory to compare against — the normal case for every project that installs this plugin): skip the content-diff entirely (there is no source of truth to diff against in the target project), and instead warn only if any file under `.claude/skills/` has an mtime newer than `skills-lock.json`'s own mtime — a signal of a possible post-install manual edit, without requiring a comparison directory that doesn't exist in this scenario.
+   - Either way, once evaluated, add `skills-cli` to `categoriesEverActivated` so subsequent runs skip the diff/mtime check and untrack directly.
 
 ---
 
@@ -80,15 +95,16 @@ Since this repo *is* the plugin's own source (dogfooding), all changes land dire
 
 | File | Change |
 | --- | --- |
-| `skills/project/reference/tools-setup.md` | Rewrite GitHub MCP section: remote HTTP as default, Docker kept as documented fallback. Split "Secrets Handling" into MCP-secrets (settings.local.json) vs app-secrets (.env) subsections. |
-| `skills/project/reference/doc-templates.md` | Update `.mcp.json` GitHub template to the HTTP form. Remove `GITHUB_TOKEN` from the `.env.example` template. |
-| `skills/project/reference/init-flow.md` | Extend the existing "MCP" health-check category with the connectivity check and settings.local.json presence check (both report-only, not auto-fixable). |
-| `agents/init-agent.md` | Health-check mode: execute the two new checks, format findings per the reporting rules (never echo secret values, only variable names and file paths). |
-| `skills/gitignore/reference/gitignore-catalog.md` | Add `skills-cli` category (detect: `skills-lock.json` at repo root; patterns: `.claude/skills/`, `.agents/skills/`). Add `.claude/settings.local.json` to the always-active `secrets` category. |
-| `skills/gitignore/reference/gitignore-flow.md` | Add `skills-lock.json → skills-cli` to Section 4 detection heuristics. Add `skills-cli` to the category sort order (after `mcp-tooling`, before `deployment`). Add the first-activation mirror-diff warning rule to Section 7 (Cleanup Logic). |
-| `.mcp.json` (this repo) | Regenerate the `github` entry via `/project --init` health-check once the doc changes land. |
+| `skills/project/reference/tools-setup.md` | Rewrite GitHub MCP section: remote HTTP as default, Docker kept as documented fallback. Update the second, separate stale example in "Secrets Handling → Example". Split "Secrets Handling" into MCP-secrets (settings.local.json) vs app-secrets (.env) subsections. Add a project-level `.claude/settings.local.json` row to the "Project-Level Safety → Summary" table. |
+| `skills/project/reference/doc-templates.md` | Update `.mcp.json` GitHub template to the HTTP form. Remove `GITHUB_TOKEN` from **both** the `.env.example` template code block and the "Rules" bullet list. |
+| `skills/project/reference/init-flow.md` | Extend the existing "MCP" health-check category with three checks: the extended config-shape check (flags deprecated `github` stdio shape), the connectivity check, and the settings.local.json presence check. |
+| `agents/init-agent.md` | Health-check mode: execute the three checks, format findings per the reporting rules (never echo secret values, only variable names and file paths). Add the one named exception to the `.mcp.json` merge rule (deprecated `github` stdio shape only). |
+| `skills/gitignore/reference/gitignore-catalog.md` | Add `skills-cli` category (detect: `skills-lock.json` at workspace root only; patterns: `.claude/skills/`, `.agents/skills/`; no file-detection fallback, by design). Add `.claude/settings.local.json` to the always-active `secrets` category. |
+| `skills/gitignore/reference/gitignore-flow.md` | Add `skills-lock.json → skills-cli` (workspace-root-only) to Section 4 detection heuristics. Add `skills-cli` to the category sort order (after `mcp-tooling`, before `deployment`). Add the first-activation mirror-diff/mtime warning rule (self-hosting vs general-target-project branches) to Section 7 (Cleanup Logic). |
+| `skills/project/reference/doc-templates.md` (config.json schema) | Add `gitIgnore.categoriesEverActivated: []` to the `config.json` template — a persistent array distinct from the live-redetected `activeCategories`, used to determine true first-activation for the mirror-diff/mtime check. |
+| `.mcp.json` (this repo) | Regenerate the `github` entry via `/project --init` health-check once the doc changes land — the one case where an existing `.mcp.json` entry is intentionally replaced, per the named merge-rule exception. |
 | `.env.example` / `.env` (this repo) | Remove the stale `GITHUB_TOKEN` line from `.env.example`; move the real value out of `.env` into `.claude/settings.local.json` manually (per the never-auto-write decision). |
-| `.gitignore` / `.fullstack-dev/config.json` (this repo) | Regenerate via `/gitignore rebuild` once the `skills-cli` category exists — adds the two new patterns, updates `activeCategories`. |
+| `.gitignore` / `.fullstack-dev/config.json` (this repo) | Regenerate via `/gitignore rebuild` once the `skills-cli` category exists — adds the two new patterns, updates `activeCategories` and `categoriesEverActivated`. |
 
 **Note:** `.claude/skills/` and `.agents/skills/` mirrors already tracked in this repo's git history won't disappear from history — `/gitignore cleanup` stops tracking them going forward, it doesn't purge past commits.
 
@@ -100,9 +116,10 @@ Since this repo *is* the plugin's own source (dogfooding), all changes land dire
 | --- | --- |
 | `claude mcp list` isn't invokable from within the agent's execution context (nested CLI call, sandboxing) | Catch the failure, skip the connectivity check, report: "Could not run connectivity check in this session — run `claude mcp list` manually to verify." Never treat this as a hard error that blocks the rest of health-check. |
 | `skills-lock.json` exists but `.claude/`/`.agents/` don't exist yet (fresh project, plugin not yet installed via `npx skills add`) | `skills-cli` category still activates — patterns just have nothing to match yet. No error; a no-op until skills are actually installed. |
-| `.claude/skills/` content differs from root `skills/` (possible manual edit to a mirror instead of the source) | On first-time category activation, warn explicitly before untracking rather than silently dropping the file from git — surfaces possible in-progress work instead of hiding it. |
+| `.claude/skills/` content differs from root `skills/` (self-hosting repo, possible manual edit to a mirror instead of the source) | On first-time category activation (per `categoriesEverActivated`), warn explicitly before untracking rather than silently dropping the file from git — surfaces possible in-progress work instead of hiding it. |
+| A file under `.claude/skills/` has an mtime newer than `skills-lock.json` (general target-project case, no root `skills/` to diff against) | Same warn-before-untrack behavior, using the mtime signal instead of a content diff since there's no source-of-truth directory to compare in a normal target project. |
 | Remote HTTP GitHub MCP endpoint (`api.githubcopilot.com`) unreachable — corporate proxy, offline dev, restrictive egress policy | Documented as a known trust-boundary/network requirement in `tools-setup.md`. The Docker fallback stays fully documented as the answer for this case; init-agent doesn't attempt to auto-detect network reachability — that's a user call. |
-| `.claude/settings.local.json` already exists with unrelated content (other env vars, other local settings) | Instructions describe a merge into the existing `env` block, not an overwrite — consistent with the marker-block/merge convention used elsewhere in this plugin. |
+| `.claude/settings.local.json` already exists with unrelated content (other env vars, other local settings) | This is a **user-performed** edit, not an agent file operation — init-agent never writes to this file at all (per "No Agent-Authored Secret Writes"). The instructions it prints describe merging into the existing `env` block by hand; this is conceptually similar to, but not an instance of, the marker-block/merge convention used for agent-written files elsewhere in this plugin. |
 | Health-check finds `GITHUB_TOKEN` in `.env` instead of `.claude/settings.local.json` (exactly this repo's current state) | Reported as a specific, named finding — "GITHUB_TOKEN found in .env; MCP servers don't read .env, move it to .claude/settings.local.json" — not lumped into a generic warning. |
 | `git rm --cached` on `.claude/skills/`/`.agents/skills/` hits staged changes | Falls through to the existing cleanup error handling already defined in `gitignore-flow.md` Section 7 — skip, warn, continue. No new behavior needed. |
 
@@ -117,7 +134,9 @@ No automated test suite exists for this plugin — it's a prompt/markdown plugin
 3. **End-to-end connectivity** — manually add `GITHUB_TOKEN` to `.claude/settings.local.json` in this repo, restart the session, run `claude mcp list`, confirm `github` shows connected (not "Missing environment variables" / "Pending approval").
 4. **Gitignore category** — run `/gitignore rebuild` on this repo after the catalog change; confirm `.gitignore` gains `.claude/skills/` and `.agents/skills/` under a new `# Skills CLI` header, and `config.json`'s `activeCategories` includes `skills-cli`.
 5. **Cleanup dry-run** — run `/gitignore cleanup --dry-run`; confirm it lists `.claude/skills/` and `.agents/skills/` as would-untrack, and explicitly does not list `.claude/settings.json`.
-6. **Cleanup live + mirror-diff warning** — run `/gitignore cleanup` for real; confirm the two mirror dirs are untracked, `.claude/settings.json` remains tracked, and (as a negative test) hand-edit one file inside `.claude/skills/` before a hypothetical second activation to confirm the diff-warning path fires rather than silently untracking.
+6. **Cleanup live + mirror-diff warning (self-hosting branch)** — run `/gitignore cleanup` for real on this repo (which has a root `skills/` to compare against); confirm the two mirror dirs are untracked, `.claude/settings.json` remains tracked, `categoriesEverActivated` gains `skills-cli`, and (as a negative test on a scratch copy) hand-edit one file inside `.claude/skills/` before first activation to confirm the content-diff warning path fires rather than silently untracking.
+7. **Mirror-diff warning (general target-project branch)** — in a scratch project with no root `skills/` directory, confirm cleanup uses the mtime-vs-`skills-lock.json` check instead of a content diff, and that a second `cleanup` run (with `skills-cli` already in `categoriesEverActivated`) skips the check entirely and untracks directly.
+8. **Deprecated-shape migration** — restore a scratch `.mcp.json` to the old stdio `github` shape, run health-check, confirm it's flagged as a named FAIL and replaced with the HTTP form with the change reported explicitly (not silent) — the one intentional exception to the "never modify existing entries" merge rule.
 
 ---
 
@@ -142,6 +161,10 @@ The remote HTTP GitHub MCP option sends `Authorization: Bearer ${GITHUB_TOKEN}` 
 ### Gitignore Category Precision
 
 `skills-cli` matches only `.claude/skills/` and `.agents/skills/` — directory-anchored literal patterns, never a wildcard on `.claude/*`. This is a hard requirement, not just a convention: an over-broad pattern could silently stop tracking `.claude/settings.json` (hand-authored hook config) or a future `.claude/settings.local.json`, which would be a silent, hard-to-notice regression rather than a loud error.
+
+### Scoped Merge-Rule Exception
+
+The `.mcp.json` merge rule ("never remove or modify existing server entries") gets exactly one named exception: a `github` entry matching the deprecated shape byte-for-byte (`command: "github-mcp-server"`, `args: ["stdio"]`). This exception is intentionally narrow — it does not open the door to modifying arbitrary existing entries, and every other server (`context7`, any user-added server) remains fully protected by the unmodified general rule. The replacement is always reported to the user explicitly; it is never a silent rewrite.
 
 ---
 
