@@ -196,6 +196,10 @@ Follow `reference/tools-setup.md`:
 - Add git platform MCP server based on detection results.
 - If `.mcp.json` already exists, MERGE new servers into the existing `mcpServers` object. Never remove existing servers.
 
+#### 5.11a `.claude/settings.local.json` (MCP secrets)
+
+If any MCP server just configured in 5.11 requires an environment variable (per `reference/tools-setup.md`, e.g. `GITHUB_TOKEN` for `github`), follow the Secret Prompt & Write Flow in `reference/tools-setup.md` § Secrets Handling for each required variable: auto-create the skeleton, ask the user directly for the value, attempt the write, fall back to printing the snippet only if the write is rejected.
+
 #### 5.12 `.claude/settings.json`
 
 Create the `.claude/` directory if needed. Write the PostToolUse hook configuration:
@@ -295,7 +299,7 @@ Run every check from the table in `reference/init-flow.md` Section 10.2:
 | **Docs** | CONTEXT.md exists; docs/project/architecture.md exists; docs/project/tech-stack.md exists; docs/project/brand.md exists (if frontend); per-repo ARCHITECTURE.md for each sub-repo; docs/specs/ directory exists; docs/plans/ directory exists |
 | **Git** | Root has git initialized; .gitignore has fullstack-dev:gitignore markers; all sub-repos listed in .gitignore; no new .git/ directories missing from config; local-dev branch exists in each repo; targetBranch set in each repo config entry; pre-commit hook has fullstack-dev:gitignore block; gitIgnore config field exists |
 | **Claude Config** | .claude/settings.json exists; PostToolUse hooks configured; skills installed; commands installed |
-| **MCP** | .mcp.json exists; context7 configured; git platform MCP configured; github entry is not deprecated stdio shape (auto-fix: replace via named merge exception); claude mcp list reports no connectivity warnings (report only); required MCP env vars present in settings.local.json (report only) |
+| **MCP** | .mcp.json exists; context7 configured; git platform MCP configured; github entry is not deprecated stdio shape (auto-fix: replace via named merge exception); claude mcp list reports no connectivity warnings (report only); required MCP env vars present in settings.local.json (auto: create skeleton + prompt for value, see Secret Prompt & Write Flow) |
 | **Optional Tools** | code-review-graph: `.mcp.json` entry exists, `.claude/settings.json` has PostToolUse hook with `code-review-graph update` command; Agentation: `.mcp.json` entry exists (only check if `projectType` is `fullstack` or `frontend`). Status: Configured / Not configured. Auto-fix: offer to configure if not present, following `reference/tools-setup.md` |
 | **Workspace** | .code-workspace file exists (if multi-repo); all repos listed in workspace folders |
 
@@ -306,8 +310,8 @@ Report each check as PASS or FAIL.
 For each configured MCP server, attempt `claude mcp list` and parse its output:
 
 - **CLI call fails or isn't invokable in this execution context** (e.g. sandboxing prevents a nested CLI call) — skip this check gracefully. Report: "Could not verify connectivity in this session — run `claude mcp list` manually."
-- **`Missing environment variables: <VAR>`** reported for a server — check whether `<VAR>` is already present in `.claude/settings.local.json`'s `env` block (read-only check, per the Merge Rules table — this agent never writes to that file):
-  - Not present at all — report the exact variable name and the snippet to add it (from `tools-setup.md` § Secrets Handling), with **no value filled in**.
+- **`Missing environment variables: <VAR>`** reported for a server — check whether `<VAR>` is already present in `.claude/settings.local.json`'s `env` block:
+  - Not present at all — follow the Secret Prompt & Write Flow in `tools-setup.md` § Secrets Handling: auto-create the skeleton, ask the user directly for the value, attempt the write, fall back to printing the snippet only if the write is rejected.
   - Present but still reported missing — report: "Found in settings.local.json but Claude Code hasn't picked it up yet — restart your session."
 - **`Pending approval`** reported for a server — report: "Run `claude` interactively once to approve the `<server>` server."
 - **Any other/unrecognized warning text** — report it verbatim with a pointer to `claude mcp list` for full detail, rather than dropping it silently.
@@ -341,6 +345,7 @@ These rules apply to every file the init-agent touches:
 | File | Merge Strategy |
 |------|---------------|
 | `.claude/settings.json` | Parse existing JSON. Add plugin hooks alongside existing hooks in the `PostToolUse` array. Never remove or modify existing hook entries. |
+| `.claude/settings.local.json` | Create if missing (empty `env` skeleton) or merge new keys in if it exists. Follow the Secret Prompt & Write Flow in `tools-setup.md` for the value: only ever write a value the user explicitly provided in this session, never one the agent invents. Never overwrite an existing non-empty value for a key without asking first. |
 | `.mcp.json` | Parse existing JSON. Add new server entries to `mcpServers` only if not already present. Never remove or modify existing server entries — **with exactly one named exception:** a `github` entry matching the deprecated shape byte-for-byte (`command: "github-mcp-server"`, `args: ["stdio"]`) is replaced with the remote HTTP form from `tools-setup.md`, and the replacement is always reported to the user explicitly, never applied silently. No other server or shape is ever modified. |
 | `CLAUDE.md` | If file exists, find `<!-- fullstack-dev:start -->` and `<!-- fullstack-dev:end -->` markers. Replace content between markers. If markers do not exist, append the marker block at the end. NEVER modify content outside markers. If file does not exist, generate the full file. |
 | `.gitignore` | Uses `fullstack-dev:gitignore` markers (distinct from the old generic `fullstack-dev` markers). If current markers exist, replace within markers. If old markers detected, migrate per `gitignore-flow.md` Section 5. If no markers, prepend block and preserve existing entries. Never remove entries outside the marker block. |
@@ -390,6 +395,6 @@ This agent relies on these reference docs. Read them before executing any flow:
 
 - Never modify user-level Claude Code configuration (`~/.claude/settings.json`, `~/.claude/.mcp.json`). Only write to project-level files.
 - Never include actual secrets or tokens in any tracked file. Use `${VAR_NAME}` references in `.mcp.json` and empty values in `.env.example`.
-- Never write a literal secret value into any file, in any mode (first-run or health-check) — including `.claude/settings.local.json`. Only print variable names, file paths, and copy-pasteable snippets/commands with empty placeholders for the user to fill in themselves. Health-check output and chat-facing summaries report presence/absence and variable names only — never the value, even partially.
+- For MCP-server secrets, follow the Secret Prompt & Write Flow in `reference/tools-setup.md`: always safe to auto-create the `.claude/settings.local.json` skeleton; ask the user directly for the value in a wizard-style prompt; attempt to write it; fall back to printing the snippet if the write is rejected. Never invent, guess, or hardcode a secret value yourself — only ever use the value the user just typed in this session. Never echo a secret value back in any report, commit message, or chat-facing summary, regardless of which path was taken.
 - Never push to a remote repository. Only commit locally and inform the user.
 - Always use the AskUserQuestion pattern for wizard questions — present the question, wait for the answer, validate, then proceed.
