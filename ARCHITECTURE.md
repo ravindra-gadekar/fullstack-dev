@@ -8,11 +8,8 @@ This repo is the source of the **Fullstack Dev** Claude Code plugin itself — t
 
 ```
 fullstack-dev/
-├── agents/          # Subagent definitions (init, scanner, refresh, repo, implementer, task-reviewer, security-reviewer, plan-reviewer, debugger, refactor, grill)
 ├── commands/         # Slash command entry points (/project, /brainstorm, /plan, /implement, /debug, /fix, /refactor, /git, /gitignore)
-├── skills/           # SKILL.md orchestrators + reference/ decision trees & templates, one directory per command area
-├── hooks/            # hooks.json — hook definitions shipped with the plugin
-├── scripts/          # pre-commit.sh — template pre-commit hook installed into managed projects
+├── skills/           # SKILL.md orchestrators + reference/ decision trees & templates + agents/ subdirectory (init, scanner, refresh, repo, implementer, task-reviewer, security-reviewer, plan-reviewer, debugger, refactor, grill), one directory per command area
 ├── .agents/          # Local skills-add installed copy of agents (managed by the skills CLI)
 ├── .claude/          # Local skills-add installed copy of skills (managed by the skills CLI)
 ├── docs/             # This project's own generated docs (project/, specs/, plans/) — dogfooding the plugin on itself
@@ -30,7 +27,7 @@ Each slash command in `commands/*.md` is a thin entry point that loads the match
 **Example:**
 ```
 commands/project.md  -->  skills/project/SKILL.md  -->  Agent(init-agent)
-                                                     -->  agents/init-agent.md reads skills/project/reference/*.md
+                                                     -->  skills/project/agents/init-agent.md reads skills/project/reference/*.md
 ```
 
 ### Reference-doc-driven agents
