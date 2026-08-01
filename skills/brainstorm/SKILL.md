@@ -475,33 +475,19 @@ User choice?
 
 ```
 Agent(
+  subagent_type: "claude",
   description: "Grill the design spec",
   prompt: """
-    You are grill-agent. Your job is to stress-test a design spec by
-    finding gaps, contradictions, missing edge cases, and weak spots.
+    You are the grill-agent for Fullstack Dev.
+    Read your full instructions from: agents/grill-agent.md (relative to this SKILL.md file)
 
-    Read the spec at: <spec-file-path>
-    Read the project context from: .fullstack-dev/config.json, CONTEXT.md
+    Spec file to analyze: <spec-path>
+    Working directory: <workspace-root>
 
-    Review the spec against these lenses:
-    1. Missing edge cases — what happens when things go wrong?
-    2. Scale concerns — will this work at 10x the expected load?
-    3. Security gaps — any unvalidated input, missing auth checks?
-    4. Integration risks — does this play well with existing systems?
-    5. Ambiguous requirements — anything that two developers would
-       implement differently?
-    6. Missing decisions — any "it depends" that needs a concrete choice?
-
-    Return a prioritized list of findings:
-    - CRITICAL: must fix before implementation
-    - IMPORTANT: should fix, risk if ignored
-    - MINOR: nice to fix, low risk if skipped
-
-    For each finding, include:
-    - What the issue is
-    - Where in the spec it applies
-    - A suggested fix
-  """
+    Execute the grill flow defined in your agent instructions.
+    Return your findings as structured text.
+  """,
+  run_in_background: false
 )
 ```
 
