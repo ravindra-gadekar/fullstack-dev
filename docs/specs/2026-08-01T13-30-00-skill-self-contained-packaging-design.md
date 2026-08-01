@@ -46,11 +46,19 @@ Every agent file moves from the top-level `agents/` directory into the `agents/`
 
 Two dispatch idioms exist today — both broken post-install:
 
-1. **Path-read dispatch** (`project`, `plan`, `brainstorm`): `<plugin-path>/agents/X.md` → change to `<skill-base-dir>/agents/X.md` using the skill's own base directory (already provided by the runtime at load time).
+1. **Path-read dispatch** (`project`, `plan`, `brainstorm`, `implement`): The SKILL.md instructs the LLM to read agent instructions from a file path (e.g., `<plugin-path>/agents/init-agent.md`) and dispatch with `subagent_type: "claude"`. Change the path to be relative to the SKILL.md's own directory (e.g., "Read `agents/init-agent.md` relative to this SKILL.md file").
 
-2. **Named subagent dispatch** (`debug`, `refactor`, `implement`): `subagent_type: "debugger-agent"` etc. relies on Claude Code agent auto-discovery from a directory that doesn't exist post-install → convert to path-read + `subagent_type: "claude"` pattern.
+2. **Named subagent dispatch** (`debug`, `refactor`): `subagent_type: "debugger-agent"` etc. relies on Claude Code agent auto-discovery from a directory that doesn't exist post-install → convert to the same path-read pattern as idiom 1.
 
-Post-fix, all 6 affected skills use one idiom: read agent instructions from `<skill-base-dir>/agents/<name>.md`, dispatch with `subagent_type: "claude"`.
+Post-fix, all 6 affected skills use one idiom: the SKILL.md instructs the LLM to read agent instructions from `agents/<name>.md` relative to the SKILL.md file, then dispatch with `subagent_type: "claude"`.
+
+### Path resolution convention
+
+`<skill-base-dir>` is a prompt convention (not a runtime variable). The LLM resolves it from the SKILL.md file path it was loaded from — the runtime already provides this (e.g., "Base directory for this skill: .../.claude/skills/brainstorm"). Dispatch blocks should use concrete relative language: "Read `agents/<name>.md` relative to this SKILL.md file" rather than an abstract placeholder.
+
+### Brainstorm grill-agent reconciliation
+
+The brainstorm SKILL.md currently embeds grill-agent instructions inline (not reading from a file), while `brainstorm-flow.md` (the authoritative reference) dispatches via file-read. After the fix, both use file-read from `agents/grill-agent.md` relative to the skill directory — the SKILL.md inline prompt is replaced with the file-read pattern to match the reference doc.
 
 ## Data Flow
 
@@ -69,15 +77,12 @@ User invokes /project --init
 ```
 User invokes /project --init
   → Claude Code loads .claude/skills/project/SKILL.md
-    → SKILL.md resolves its own base directory (provided by runtime)
-    → Reads <skill-base-dir>/agents/init-agent.md (co-located, always present)
+    → SKILL.md says: "Read agents/init-agent.md relative to this SKILL.md file"
+    → LLM resolves path from its known base directory
+    → Reads .claude/skills/project/agents/init-agent.md (co-located, always present)
     → Dispatches agent with subagent_type: "claude" + full instructions inline
       → ✅ Agent executes, reads reference/ docs from same skill dir
 ```
-
-### Path resolution
-
-Skills already receive their base directory at load time. SKILL.md prompt templates use `<skill-base-dir>` instead of `<plugin-path>` to construct agent file paths. No new resolution mechanism needed.
 
 ### Agent-to-agent dispatch (scanner-agent)
 
@@ -99,21 +104,23 @@ All `agents/*.md` → `skills/<owning-skill>/agents/*.md` per the relocation map
 
 | File | Change |
 |---|---|
-| `skills/project/SKILL.md` | 3 dispatch blocks: replace `<plugin-path>/agents/{init,repo,refresh}-agent.md` with `<skill-base-dir>/agents/` relative paths |
+| `skills/project/SKILL.md` | 3 dispatch blocks: replace `<plugin-path>/agents/{init,repo,refresh}-agent.md` with "Read `agents/<name>.md` relative to this SKILL.md file" |
 | `skills/plan/SKILL.md` | 1 dispatch block: replace `<plugin-path>/agents/plan-reviewer-agent.md` with skill-relative path |
 | `skills/plan/reference/plan-flow.md` | Mirror the same path change for the plan-reviewer dispatch example |
+| `skills/brainstorm/SKILL.md` | Replace inline grill-agent prompt with file-read pattern (matching the authoritative reference doc) |
 | `skills/brainstorm/reference/brainstorm-flow.md` | 1 dispatch block: replace `<plugin-path>/agents/grill-agent.md` with skill-relative path |
 | `skills/debug/reference/debug-flow.md` | Convert `subagent_type: "debugger-agent"` to path-read + `subagent_type: "claude"` pattern |
 | `skills/refactor/SKILL.md` | Convert `subagent_type: "refactor-agent"` to path-read + `subagent_type: "claude"` pattern |
-| `skills/implement/SKILL.md` | Convert `subagent_type: "implementer-agent"` / `"task-reviewer-agent"` / `"security-reviewer-agent"` to path-read + `subagent_type: "claude"` pattern |
-| `skills/implement/reference/implement-flow.md` | Mirror the same dispatch conversion + update the agent path table |
+| `skills/implement/SKILL.md` | Update prose dispatch to use skill-relative agent paths; update Reference Documents table (`../../agents/*.md` → `agents/*.md`) |
+| `skills/implement/reference/implement-flow.md` | Update dispatch instructions to use skill-relative agent paths |
 
 ### Files edited — doc/reference updates
 
 | File | Change |
 |---|---|
 | `skills/project/reference/refresh-flow.md` | Line 52: remove claim that `scripts/pre-commit.sh` is "copied to .git/hooks" — the hook is generated inline by the init-agent per `init-flow.md` §9.8 |
-| `skills/project/agents/init-agent.md` | Health-check table: change "commands installed" to "skills installed" |
+| `skills/project/agents/init-agent.md` | Health-check table: remove "; commands installed" from the Claude Config row (it already says "skills installed") |
+| `skills/project/reference/context7-usage.md` | Update agent name references to include their skill location (e.g., "the debugger-agent in `skills/debug/agents/`") |
 | `CLAUDE.md` | Update repo structure: remove `agents/`, `hooks/`, `scripts/` as top-level dirs; note agents live under `skills/<name>/agents/` |
 | `CONTEXT.md` | Update domain model, naming conventions, relationships |
 | `ARCHITECTURE.md` | Update directory tree and module table |
@@ -124,7 +131,6 @@ All `agents/*.md` → `skills/<owning-skill>/agents/*.md` per the relocation map
 
 - `skills-lock.json` — auto-generated by external CLI; regenerated after structural change
 - `commands/*.md` — unaffected; invoke skills via the Skill tool
-- `skills/*/reference/*.md` (except those listed above) — no agent path references
 - `.fullstack-dev/config.json` — no structural fields affected
 
 ## Error Handling
@@ -141,7 +147,17 @@ After moving files, existing `skills-lock.json` hashes will be stale. Running `n
 
 ### Existing target project installations
 
-Users who already installed the plugin need to re-run `npx skills add` to pick up the new structure. This is the normal upgrade path — no migration script needed, just a note in the PR description.
+Users who already installed the plugin need to re-run `npx skills add` to pick up the new structure. This is the normal upgrade path. The PR description must include a prominent migration note: "If you previously installed this plugin, re-run `npx skills add https://github.com/ravindra-gadekar/fullstack-dev-plugin.git --skill '*'` to pick up the restructured agent files."
+
+## Known Limitations
+
+### Agent frontmatter not applied at dispatch time
+
+Agent `.md` files have YAML frontmatter declaring `tools`, `model`, `maxTurns`, `effort`, and `mcpServers`. When dispatched via `subagent_type: "claude"` (the path-read pattern), Claude Code ignores this frontmatter — the agent inherits the parent session's tools, model, and settings.
+
+This is a **pre-existing limitation**, not introduced by this fix. The path-read agents (`project`, `plan`, `brainstorm`, `implement`) already dispatch as `subagent_type: "claude"` today, so their frontmatter was never applied either. Converting `debug` and `refactor` from named subagent dispatch to path-read does extend this limitation to those two agents (their `tools` restrictions — e.g., debugger-agent is intended as read-only — will no longer be enforced by the runtime).
+
+**Decision:** Preserve frontmatter as documentation of intended constraints. Converting frontmatter to Agent() call parameters (which does support `model`) or to prose-level tool restrictions in the agent prompt is a separate enhancement — out of scope for this packaging fix, which focuses on making skills installable, not on changing agent behavior.
 
 ## Testing Strategy
 
@@ -151,15 +167,17 @@ Users who already installed the plugin need to re-run `npx skills add` to pick u
 
 2. **Command dispatch test:** Run `/project --init` in the test project and confirm the init-agent executes without file-not-found errors.
 
-3. **Dogfood test:** Re-run `npx skills add` on this repo itself. Confirm `.agents/skills/` and `.claude/skills/` mirrors include agent files.
+3. **Dogfood test:** Re-run `npx skills add` on this repo itself. Confirm `.claude/skills/<name>/agents/*.md` files exist in the installed mirror.
 
 ### Static checks (pre-push)
 
-4. **Dangling reference scan:** `grep -r "agents/" skills/ --include="*.md"` — every match resolves within `skills/<name>/agents/`.
+1. **Dangling reference scan:** `grep -r "agents/" skills/ --include="*.md"` — every match resolves within `skills/<name>/agents/`.
 
-5. **Orphan check:** No files in top-level `agents/`, `scripts/`, or `hooks/`.
+2. **Old relative path scan:** `grep -r "../../agents/" skills/` returns zero matches (no relative paths to the old top-level agents directory).
 
-6. **Health-check table:** `skills/project/agents/init-agent.md` says "skills installed" not "commands installed".
+3. **Orphan check:** No files in top-level `agents/`, `scripts/`, or `hooks/`.
+
+4. **Health-check table:** `skills/project/agents/init-agent.md` Claude Config row says "skills installed" without "; commands installed".
 
 ### Not tested
 
@@ -169,13 +187,18 @@ No unit/integration tests or CI — this is a markdown/JSON plugin. Verification
 
 - [ ] All 11 agent files relocated from top-level `agents/` to `skills/<owning-skill>/agents/<name>.md` per the relocation map
 - [ ] Top-level `agents/`, `scripts/`, and `hooks/` directories deleted (no files remain)
-- [ ] All SKILL.md and reference doc dispatch blocks use `<skill-base-dir>/agents/` paths instead of `<plugin-path>/agents/`
-- [ ] All named `subagent_type` dispatches (`debugger-agent`, `refactor-agent`, `implementer-agent`, `task-reviewer-agent`, `security-reviewer-agent`) converted to path-read + `subagent_type: "claude"` pattern
+- [ ] All SKILL.md and reference doc dispatch blocks use skill-relative agent paths (e.g., "Read `agents/<name>.md` relative to this SKILL.md file") instead of `<plugin-path>/agents/`
+- [ ] Named `subagent_type` dispatches in `debug` and `refactor` converted to path-read + `subagent_type: "claude"` pattern
+- [ ] Brainstorm SKILL.md grill-agent dispatch converted from inline prompt to file-read pattern (matching the authoritative reference doc)
 - [ ] `grep -r "<plugin-path>/agents/" skills/` returns zero matches
+- [ ] `grep -r "../../agents/" skills/` returns zero matches
 - [ ] `grep -r "subagent_type.*-agent" skills/` returns zero matches (no named agent dispatch remaining)
 - [ ] `skills/project/reference/refresh-flow.md` no longer claims `scripts/pre-commit.sh` is copied to `.git/hooks`
-- [ ] Health-check table in init-agent (now at `skills/project/agents/init-agent.md`) says "skills installed" instead of "commands installed"
-- [ ] `CLAUDE.md`, `CONTEXT.md`, `ARCHITECTURE.md`, `docs/project/architecture.md`, `docs/project/tech-stack.md` updated to reflect new structure (no references to top-level `agents/`, `scripts/`, or `hooks/` directories)
+- [ ] Health-check table in init-agent (now at `skills/project/agents/init-agent.md`) has "; commands installed" removed from the Claude Config row
+- [ ] `skills/project/reference/context7-usage.md` updated with skill-relative agent locations
+- [ ] `skills/implement/SKILL.md` Reference Documents table paths updated from `../../agents/*.md` to `agents/*.md`
+- [ ] `CLAUDE.md`, `CONTEXT.md`, `ARCHITECTURE.md`, `docs/project/architecture.md`, `docs/project/tech-stack.md` updated to reflect new structure
 - [ ] `skills-lock.json` regenerated with correct hashes after structural change
 - [ ] Fresh `npx skills add --skill '*'` install in a test project includes agent files under `.claude/skills/<name>/agents/`
 - [ ] `/project --init` executes successfully in a freshly installed test project (no file-not-found or "no such subagent type" errors)
+- [ ] PR description includes migration note for existing users to re-run `npx skills add`
