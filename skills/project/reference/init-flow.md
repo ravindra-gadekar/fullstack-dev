@@ -365,7 +365,7 @@ Install a gitignore enforcement hook at `.git/hooks/pre-commit`. This hook catch
    - **File exists** — check for existing `fullstack-dev:gitignore` marker block:
      - Found → replace content within markers
      - Not found → append marker block (preserves existing hook content, including the `fullstack-dev` doc-staging block from Section 9.8)
-   - **File does not exist** — create file with `#!/bin/bash` shebang + marker block
+   - **File does not exist** — create file with `#!/bin/sh` shebang + marker block
 3. Ensure file is executable (`chmod +x` on Unix, warn on Windows).
 4. Store `gitIgnore.hookInstalled: true` in `config.json`.
 

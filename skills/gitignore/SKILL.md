@@ -200,7 +200,7 @@ Regenerate the `.gitignore` marker block and pre-commit hook.
 6. Regenerate pre-commit hook script:
    a. Read reference/gitignore-flow.md Section 3 for hook template
    b. Check .git/hooks/pre-commit:
-      +-- File does not exist → Create with #!/bin/bash shebang + script block
+      +-- File does not exist → Create with #!/bin/sh shebang + script block
       +-- File exists, has gitignore marker block → Replace block in place
       +-- File exists, no gitignore marker block → Append script block
    c. Ensure hook file is executable (chmod +x on Unix, skip on Windows)

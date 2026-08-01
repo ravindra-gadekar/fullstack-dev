@@ -122,47 +122,27 @@ For each pattern that would go into the new marker block:
 
 ## 3. Pre-commit Hook Script Template
 
-This bash script is installed into `.git/hooks/pre-commit`. It catches accidentally staged files that match essential ignore patterns before they enter the repository.
+This POSIX sh script is installed into `.git/hooks/pre-commit`. It catches accidentally staged files that match essential ignore patterns before they enter the repository. It intentionally avoids bash-only syntax (arrays, `[[ ]]`, `<<<` herestrings) because `/bin/sh` is dash or busybox ash (not bash) on many Linux distros and minimal containers — bash-only syntax there causes the hook to fail to parse, silently disabling both this block and the doc-staging block that precedes it.
 
 ### Hook Marker Block
 
 The script is wrapped in its own marker block inside the pre-commit hook file so it can coexist with other hook content (e.g., the doc-staging hook from refresh-flow):
 
-```bash
+```sh
 # >>> fullstack-dev:gitignore (do not edit this block) >>>
 # ... script body ...
 # <<< fullstack-dev:gitignore <<<
 ```
 
-If the pre-commit hook file already exists, the script block is appended (or its existing block is replaced). If no hook file exists, a new one is created with the `#!/bin/bash` shebang.
+If the pre-commit hook file already exists, the script block is appended (or its existing block is replaced). If no hook file exists, a new one is created with the `#!/bin/sh` shebang.
 
 ### Script Template
 
-```bash
+```sh
 # >>> fullstack-dev:gitignore (do not edit this block) >>>
 # Fullstack Dev — pre-commit gitignore guard
 # Prevents committing files that should be ignored.
-
-ESSENTIAL_PATTERNS=(
-  "node_modules/"
-  ".env"
-  ".env.local"
-  ".env.*.local"
-  "*.log"
-  ".DS_Store"
-  "Thumbs.db"
-  "__pycache__/"
-  ".next/"
-  "dist/"
-  "build/"
-  ".idea/"
-  "*.tsbuildinfo"
-  ".turbo/"
-  "coverage/"
-  "*.pem"
-  ".code-review-graph/"
-  ".motia/"
-)
+# POSIX sh only — no arrays, [[ ]], or <<< (must run under dash/ash, not just bash).
 
 STAGED_FILES=$(git diff --cached --name-only 2>/dev/null)
 if [ -z "$STAGED_FILES" ]; then
@@ -170,20 +150,42 @@ if [ -z "$STAGED_FILES" ]; then
 fi
 
 VIOLATIONS=0
+TMPFILE=$(mktemp 2>/dev/null || echo "/tmp/fullstack-dev-precommit.$$")
 
-for pattern in "${ESSENTIAL_PATTERNS[@]}"; do
+for pattern in \
+  "node_modules/" \
+  ".env" \
+  ".env.local" \
+  ".env.*.local" \
+  "*.log" \
+  ".DS_Store" \
+  "Thumbs.db" \
+  "__pycache__/" \
+  ".next/" \
+  "dist/" \
+  "build/" \
+  ".idea/" \
+  "*.tsbuildinfo" \
+  ".turbo/" \
+  "coverage/" \
+  "*.pem" \
+  ".code-review-graph/" \
+  ".motia/"; do
   # Convert gitignore glob to a grep-compatible regex
   regex=$(echo "$pattern" | sed 's/\./\\./g; s/\*/.*/g; s|/$|/|')
 
   # Check if pattern ends with / (directory pattern)
-  if [[ "$pattern" == */ ]]; then
-    dir_name="${pattern%/}"
-    matched_files=$(echo "$STAGED_FILES" | grep -E "^${dir_name}/" || true)
-  else
-    matched_files=$(echo "$STAGED_FILES" | grep -E "(^|/)${regex}$" || true)
-  fi
+  case "$pattern" in
+    */)
+      dir_name=${pattern%/}
+      echo "$STAGED_FILES" | grep -E "^${dir_name}/" > "$TMPFILE"
+      ;;
+    *)
+      echo "$STAGED_FILES" | grep -E "(^|/)${regex}$" > "$TMPFILE"
+      ;;
+  esac
 
-  if [ -z "$matched_files" ]; then
+  if [ ! -s "$TMPFILE" ]; then
     continue
   fi
 
@@ -201,18 +203,21 @@ for pattern in "${ESSENTIAL_PATTERNS[@]}"; do
   fi
 
   # Violation: pattern missing from .gitignore and file is staged
+  # Read from a temp file (not a pipe) so VIOLATIONS survives outside a subshell.
   while IFS= read -r file; do
     [ -z "$file" ] && continue
     echo "Auto-ignored: $file ($pattern)"
     git rm --cached "$file" > /dev/null 2>&1 || true
     VIOLATIONS=$((VIOLATIONS + 1))
-  done <<< "$matched_files"
+  done < "$TMPFILE"
 
   # Append the missing pattern to .gitignore
   echo "" >> .gitignore
   echo "$pattern" >> .gitignore
   git add .gitignore
 done
+
+rm -f "$TMPFILE"
 
 if [ "$VIOLATIONS" -gt 0 ]; then
   echo ""
