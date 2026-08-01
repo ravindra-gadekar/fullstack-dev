@@ -300,14 +300,18 @@ Test results:
 ## 11. Parallel Agent Dispatch (`--parallel`)
 
 Dispatch 5 debugger-agent instances in a single message for parallel
-execution:
+execution. Each instance reads its role, tool grants, and constraints from
+`agents/debugger-agent.md` (relative to this SKILL.md file) and dispatches
+with `subagent_type: "claude"` — the runtime does not enforce the file's
+frontmatter `tools` restriction under this pattern (see spec's Known
+Limitations):
 
 ```
-Agent(description="Stack Trace Agent", prompt="...", subagent_type="debugger-agent")
-Agent(description="Git Blame Agent", prompt="...", subagent_type="debugger-agent")
-Agent(description="Test Agent", prompt="...", subagent_type="debugger-agent")
-Agent(description="Pattern Agent", prompt="...", subagent_type="debugger-agent")
-Agent(description="Dependency Agent", prompt="...", subagent_type="debugger-agent")
+Agent(description="Stack Trace Agent", prompt="Read your full instructions from agents/debugger-agent.md (relative to this SKILL.md file). Investigation dimension: stack-trace. ...", subagent_type="claude")
+Agent(description="Git Blame Agent", prompt="Read your full instructions from agents/debugger-agent.md (relative to this SKILL.md file). Investigation dimension: git-blame. ...", subagent_type="claude")
+Agent(description="Test Agent", prompt="Read your full instructions from agents/debugger-agent.md (relative to this SKILL.md file). Investigation dimension: tests. ...", subagent_type="claude")
+Agent(description="Pattern Agent", prompt="Read your full instructions from agents/debugger-agent.md (relative to this SKILL.md file). Investigation dimension: patterns. ...", subagent_type="claude")
+Agent(description="Dependency Agent", prompt="Read your full instructions from agents/debugger-agent.md (relative to this SKILL.md file). Investigation dimension: dependencies. ...", subagent_type="claude")
 ```
 
 Each agent receives:

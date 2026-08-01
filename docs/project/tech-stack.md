@@ -4,9 +4,9 @@
 
 | Technology | Version | Used In | Purpose |
 |---|---|---|---|
-| Markdown | — | `agents/`, `commands/`, `skills/` | Agent prompts, command definitions, skill instructions/reference docs |
-| Bash / POSIX sh | — | `scripts/pre-commit.sh`, `.git/hooks/pre-commit` | Pre-commit hooks (doc staging, gitignore enforcement) |
-| JSON | — | `hooks/hooks.json`, `.claude/settings.json`, `.mcp.json`, `.fullstack-dev/config.json` | Hook configuration, MCP server configuration, plugin state |
+| Markdown | — | `commands/`, `skills/` (including `skills/*/agents/`) | Agent prompts, command definitions, skill instructions/reference docs |
+| Bash / POSIX sh | — | `.git/hooks/pre-commit` | Pre-commit hooks (doc staging, gitignore enforcement), generated inline by the init-agent |
+| JSON | — | `.claude/settings.json`, `.mcp.json`, `.fullstack-dev/config.json` | Hook configuration, MCP server configuration, plugin state |
 | Node.js (via `npx`) | — | Installation (`npx skills add ...`), MCP servers (`context7`, git platform servers) | Package runner used to install the plugin and launch MCP servers |
 
 ## Databases
@@ -29,7 +29,7 @@ _None — this is a prompt/documentation-based Claude Code plugin with no runtim
 | context7 (MCP) | Up-to-date library/framework documentation lookups, wired into all 11 agents via `skills/project/reference/context7-usage.md` |
 | code-review-graph (MCP) | Structural codebase understanding for `/plan`, `/refactor`, `/implement` in managed target projects |
 
-`scanner-agent`'s stack-detection tables cover Django, Flask, Rails, Spring/Spring Boot, Laravel, and ASP.NET/.NET at the same depth as the JS/TS ecosystems (Next.js, Nuxt, Prisma) it already detected — see `agents/scanner-agent.md`.
+`scanner-agent`'s stack-detection tables cover Django, Flask, Rails, Spring/Spring Boot, Laravel, and ASP.NET/.NET at the same depth as the JS/TS ecosystems (Next.js, Nuxt, Prisma) it already detected — see `skills/project/agents/scanner-agent.md`.
 
 ## Key Libraries
 

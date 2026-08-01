@@ -422,6 +422,6 @@ If blocked tasks: list with reasons and phase/task numbers.
 | File | Purpose |
 |------|---------|
 | `reference/implement-flow.md` | Detailed flow with decision trees, detection logic, prompt templates, error recovery |
-| `../../agents/implementer-agent.md` | Task implementer agent (TDD, normal + fix mode) |
-| `../../agents/task-reviewer-agent.md` | Task reviewer agent (spec compliance, code quality) |
-| `../../agents/security-reviewer-agent.md` | Security reviewer agent (9 OWASP categories) |
+| `agents/implementer-agent.md` | Task implementer agent (TDD, normal + fix mode) |
+| `agents/task-reviewer-agent.md` | Task reviewer agent (spec compliance, code quality) |
+| `agents/security-reviewer-agent.md` | Security reviewer agent (9 OWASP categories) |

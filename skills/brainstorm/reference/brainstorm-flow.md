@@ -902,7 +902,7 @@ Agent(
   description: "Grill the design spec",
   prompt: """
     You are the grill-agent for Fullstack Dev.
-    Read your full instructions from: <plugin-path>/agents/grill-agent.md
+    Read your full instructions from: agents/grill-agent.md (relative to this SKILL.md file)
 
     Spec file to analyze: <spec-path>
     Working directory: <workspace-root>

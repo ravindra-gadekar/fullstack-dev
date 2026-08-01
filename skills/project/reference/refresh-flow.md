@@ -49,7 +49,7 @@ This coexistence is a documentation note for the refresh mechanism. Health check
 
 ## Layer 2: Pre-commit Hook (Staging)
 
-`scripts/pre-commit.sh` is copied to `.git/hooks/pre-commit` during project init. Its only job is to stage already-refreshed doc files into the current commit.
+The pre-commit hook is generated inline by the init-agent (see `init-flow.md` §9.8) and written directly to `.git/hooks/pre-commit` during project init. Its only job is to stage already-refreshed doc files into the current commit.
 
 ### What it stages
 

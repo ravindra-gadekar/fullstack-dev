@@ -13,11 +13,8 @@ This is a mono-repo — there are no sub-repos. It is itself the source of the F
 ### Repos
 
 This is a mono-repo. Key directories:
-- **`agents/`** -- Subagent definitions dispatched by skills/commands
 - **`commands/`** -- Slash command entry points
-- **`skills/`** -- SKILL.md orchestrators + reference docs, one directory per command area
-- **`hooks/`** -- Hook definitions shipped with the plugin
-- **`scripts/`** -- Template scripts (e.g. pre-commit hook) installed into managed projects
+- **`skills/`** -- SKILL.md orchestrators + reference docs + `agents/` subdirectory (subagent definitions dispatched by that skill), one directory per command area
 - **`docs/`** -- This project's own generated docs (project/, specs/, plans/)
 
 ### Tech Stack

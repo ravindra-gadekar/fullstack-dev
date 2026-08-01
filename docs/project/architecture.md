@@ -10,9 +10,7 @@ Fullstack Dev is a Claude Code plugin, not a running application. It ships as a 
 |---|---|---|---|
 | Commands | `commands/` | Markdown | Slash-command entry points (`/project`, `/brainstorm`, `/plan`, `/implement`, `/debug`, `/fix`, `/refactor`, `/git`, `/gitignore`) |
 | Skills | `skills/` | Markdown (`SKILL.md` + `reference/`) | Orchestration layer + authoritative decision trees/templates per command |
-| Agents | `agents/` | Markdown | Specialized subagents dispatched by skills/commands (init, scanner, refresh, repo, implementer, task-reviewer, security-reviewer, plan-reviewer, debugger, refactor, grill) |
-| Hooks | `hooks/hooks.json`, `.claude/settings.json` | JSON | PostToolUse/SessionStart hooks installed into managed projects |
-| Scripts | `scripts/pre-commit.sh` | Bash | Template for the doc-staging pre-commit hook installed into managed projects |
+| Agents | `skills/*/agents/` | Markdown | Specialized subagents dispatched by their owning skill (init, scanner, refresh, repo, implementer, task-reviewer, security-reviewer, plan-reviewer, debugger, refactor, grill) |
 
 ## Services
 
@@ -30,9 +28,9 @@ Fullstack Dev is a Claude Code plugin, not a running application. It ships as a 
 - **Tech:** Markdown
 - **Communication:** Loaded by the `Skill` tool when a command invokes it; references are read directly by agents via the `Read` tool
 
-### Agents (`agents/`)
+### Agents (`skills/*/agents/`)
 
-- **Repo:** `agents/*.md`
+- **Repo:** `skills/<owning-skill>/agents/*.md`
 - **Purpose:** Specialized, tool-scoped subagents (e.g. `init-agent`, `scanner-agent`, `refresh-agent`, `debugger-agent`, `implementer-agent`) that execute a flow end-to-end inside a target project's working directory. All 11 agents hold the `context7` MCP grant for version-accurate library/framework lookups — see `skills/project/reference/context7-usage.md`.
 - **Tech:** Markdown with YAML frontmatter (`tools`, `model`, `maxTurns`, `effort`, `mcpServers`)
 - **Communication:** Dispatched via the `Agent` tool by a skill or command; reads reference docs, then reads/writes files in the target project

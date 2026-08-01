@@ -770,7 +770,7 @@ Agent(
   description: "Grill the implementation plan",
   prompt: """
     You are plan-reviewer-agent. Read your full instructions from:
-    <plugin-path>/agents/plan-reviewer-agent.md
+    agents/plan-reviewer-agent.md (relative to this SKILL.md file)
 
     Plan to review: <plan-README-path>
     Working directory: <workspace-root>
@@ -780,9 +780,8 @@ Agent(
 )
 ```
 
-Replace `<plugin-path>`, `<plan-README-path>`, and `<workspace-root>`
-with the actual fullstack-dev plugin root, plan README path, and
-project working directory respectively.
+Replace `<plan-README-path>` and `<workspace-root>`
+with the actual plan README path and project working directory respectively.
 
 ### Processing Findings
 

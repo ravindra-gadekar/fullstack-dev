@@ -379,12 +379,17 @@ simultaneously with that context:
 3. Test Agent — find related test files, check coverage gaps, run existing tests
 4. Pattern Agent — search for similar patterns, working examples elsewhere
 
-Dispatch all 4 agents in a single message for parallel execution:
+Dispatch all 4 agents in a single message for parallel execution. Each
+instance reads its role, tool grants, and constraints from
+`agents/refactor-agent.md` (relative to this SKILL.md file) and dispatches
+with `subagent_type: "claude"` — the runtime does not enforce the file's
+frontmatter `tools` restriction under this pattern (see spec's Known
+Limitations):
 
-Agent(description="Metrics Agent", prompt="...", subagent_type="refactor-agent")
-Agent(description="Dependency Agent", prompt="...", subagent_type="refactor-agent")
-Agent(description="Test Agent", prompt="...", subagent_type="refactor-agent")
-Agent(description="Pattern Agent", prompt="...", subagent_type="refactor-agent")
+Agent(description="Metrics Agent", prompt="Read your full instructions from agents/refactor-agent.md (relative to this SKILL.md file). Investigation dimension: metrics. ...", subagent_type="claude")
+Agent(description="Dependency Agent", prompt="Read your full instructions from agents/refactor-agent.md (relative to this SKILL.md file). Investigation dimension: dependencies. ...", subagent_type="claude")
+Agent(description="Test Agent", prompt="Read your full instructions from agents/refactor-agent.md (relative to this SKILL.md file). Investigation dimension: tests. ...", subagent_type="claude")
+Agent(description="Pattern Agent", prompt="Read your full instructions from agents/refactor-agent.md (relative to this SKILL.md file). Investigation dimension: patterns. ...", subagent_type="claude")
 
 All agents return raw data. The orchestrator synthesizes findings into
 the assessment report.

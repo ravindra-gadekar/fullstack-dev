@@ -65,18 +65,19 @@ retrying:
 
 ### Per-Instance Budgets for Parallel Dispatch
 
-`debugger-agent` and `refactor-agent` are dispatched once per investigation
+`debugger-agent` (in `skills/debug/agents/`) and `refactor-agent` (in
+`skills/refactor/agents/`) are dispatched once per investigation
 dimension (up to 5 and 4 parallel instances respectively) as part of
 `/debug` and `/refactor`'s normal parallel-evidence-gathering flow. A single
 user question can therefore fan out to several times the per-instance
 budget in aggregate. To avoid this:
 
-- `debugger-agent` reserves context7 calls for the `dependencies` dimension
-  only. Do not query context7 when investigating `stack-trace`,
-  `git-blame`, `tests`, or `patterns`.
-- `refactor-agent` reserves context7 calls for the `dependencies` and
-  `patterns` dimensions only. Do not query context7 when investigating
-  `metrics` or `tests`.
+- `debugger-agent` (in `skills/debug/agents/`) reserves context7 calls for
+  the `dependencies` dimension only. Do not query context7 when
+  investigating `stack-trace`, `git-blame`, `tests`, or `patterns`.
+- `refactor-agent` (in `skills/refactor/agents/`) reserves context7 calls
+  for the `dependencies` and `patterns` dimensions only. Do not query
+  context7 when investigating `metrics` or `tests`.
 
 ---
 
@@ -86,9 +87,9 @@ budget in aggregate. To avoid this:
   unreachable, or the user opted out during `/project --init`): proceed on
   best-effort existing knowledge and flag the gap with a note in your
   output. Never block the task on a missing MCP tool. No agent has a
-  `WebSearch` grant to fall back to (only `grill-agent` has `WebFetch`,
-  scoped to a specific known URL) -- do not suggest general web search as
-  a substitute.
+  `WebSearch` grant to fall back to (only `grill-agent`, in
+  `skills/brainstorm/agents/`, has `WebFetch`, scoped to a specific known
+  URL) -- do not suggest general web search as a substitute.
 - **Library not resolvable via `resolve-library-id`**: proceed on
   best-effort existing knowledge for that library. Note the fallback as a
   known limitation in your output rather than silently guessing.
