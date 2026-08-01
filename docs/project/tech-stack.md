@@ -17,7 +17,7 @@ _None — this is a prompt/documentation-based Claude Code plugin with no runtim
 
 | Tool | Purpose |
 |---|---|
-| GitHub | Source hosting for `ravindra-gadekar/fullstack-dev` |
+| GitHub | Source hosting for `ravindra-gadekar/fullstack-dev-plugin` |
 | `npx skills add` | Installation/distribution mechanism for the plugin's skills |
 | Git hooks (`pre-commit`) | Auto-stage refreshed docs; enforce essential `.gitignore` patterns |
 

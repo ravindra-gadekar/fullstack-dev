@@ -528,7 +528,7 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 ```json
 {
   "version": "1.1.0",
-  "plugin": "https://github.com/ravindra-gadekar/fullstack-dev.git",
+  "plugin": "https://github.com/ravindra-gadekar/fullstack-dev-plugin.git",
   "projectName": "",
   "description": "",
   "projectType": "full-stack",
@@ -573,7 +573,7 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `version` | string | yes | Config schema version. Currently `"1.1.0"`. |
-| `plugin` | string | yes | Git URL of the plugin repo. Always `"https://github.com/ravindra-gadekar/fullstack-dev.git"`. |
+| `plugin` | string | yes | Git URL of the plugin repo. Always `"https://github.com/ravindra-gadekar/fullstack-dev-plugin.git"`. |
 | `projectName` | string | yes | Human-readable project name (e.g., `"My Project"`). |
 | `description` | string | yes | One-line project description. |
 | `projectType` | enum | yes | One of: `"full-stack"`, `"api"`, `"frontend"`, `"cli"`, `"microservices"`. |

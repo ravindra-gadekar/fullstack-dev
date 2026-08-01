@@ -66,4 +66,4 @@ Not applicable to this repo directly — this plugin has no auth surface of its 
 
 ## Deployment
 
-Distributed via `npx skills add https://github.com/ravindra-gadekar/fullstack-dev.git --skill '*'`. There is no build or deploy pipeline — the repo's markdown/JSON content is consumed directly by Claude Code at install/session time.
+Distributed via `npx skills add https://github.com/ravindra-gadekar/fullstack-dev-plugin.git --skill '*'`. There is no build or deploy pipeline — the repo's markdown/JSON content is consumed directly by Claude Code at install/session time.

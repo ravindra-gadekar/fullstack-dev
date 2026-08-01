@@ -74,7 +74,7 @@ Fullstack Dev manages project structure, documentation, and tooling configuratio
 ## Installation
 
 ```bash
-npx skills add https://github.com/ravindra-gadekar/fullstack-dev.git --skill '*'
+npx skills add https://github.com/ravindra-gadekar/fullstack-dev-plugin.git --skill '*'
 ```
 
 ### Naming Collision Warning
@@ -97,7 +97,7 @@ npx skills update -y
 ## Remove
 
 ```bash
-npx skills remove fullstack-dev --skill '*'
+npx skills remove fullstack-dev-plugin --skill '*'
 ```
 
 ## Quick Start
