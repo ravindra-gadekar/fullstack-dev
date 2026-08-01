@@ -2,55 +2,55 @@
   "version": 1,
   "skills": {
     "brainstorm": {
-      "source": "ravindra-gadekar/fullstack-dev",
+      "source": "ravindra-gadekar/fullstack-dev-plugin",
       "sourceType": "github",
       "skillPath": "skills/brainstorm/SKILL.md",
       "computedHash": "8bb9ea0d74bd6d8b496fb4d9dbdf7b31a084bcd5f967c64708ab87c70d87ba97"
     },
     "debug": {
-      "source": "ravindra-gadekar/fullstack-dev",
+      "source": "ravindra-gadekar/fullstack-dev-plugin",
       "sourceType": "github",
       "skillPath": "skills/debug/SKILL.md",
       "computedHash": "4611a22af386ffc8a270f8b33cb6d294aee43decbf320057028ab10c4a9e9ce0"
     },
     "fix": {
-      "source": "ravindra-gadekar/fullstack-dev",
+      "source": "ravindra-gadekar/fullstack-dev-plugin",
       "sourceType": "github",
       "skillPath": "skills/fix/SKILL.md",
       "computedHash": "5c2c4433a1ce93c44fc1efa8233d48f72e2b126e71ca0764d5e866843f04300c"
     },
     "git": {
-      "source": "ravindra-gadekar/fullstack-dev",
+      "source": "ravindra-gadekar/fullstack-dev-plugin",
       "sourceType": "github",
       "skillPath": "skills/git/SKILL.md",
       "computedHash": "1e93cbf0c90e4e9113c70564496348e769760844f200e24b8e2891b95bc357c2"
     },
     "gitignore": {
-      "source": "ravindra-gadekar/fullstack-dev",
+      "source": "ravindra-gadekar/fullstack-dev-plugin",
       "sourceType": "github",
       "skillPath": "skills/gitignore/SKILL.md",
       "computedHash": "6c02cea02f0520cb5c3af566f77cee312006753cffeacd4868fbe1d8616b7e6f"
     },
     "implement": {
-      "source": "ravindra-gadekar/fullstack-dev",
+      "source": "ravindra-gadekar/fullstack-dev-plugin",
       "sourceType": "github",
       "skillPath": "skills/implement/SKILL.md",
       "computedHash": "efd1177ce04a86216e07796c4ec0632f4d89083ef12c18c7da04127f749dcc68"
     },
     "plan": {
-      "source": "ravindra-gadekar/fullstack-dev",
+      "source": "ravindra-gadekar/fullstack-dev-plugin",
       "sourceType": "github",
       "skillPath": "skills/plan/SKILL.md",
       "computedHash": "24af954361b4415df6b778c6939b3c5f74cbaefa4625370d0c390ada9a2e0982"
     },
     "project": {
-      "source": "ravindra-gadekar/fullstack-dev",
+      "source": "ravindra-gadekar/fullstack-dev-plugin",
       "sourceType": "github",
       "skillPath": "skills/project/SKILL.md",
       "computedHash": "9f5479cd4c264ce83d9976c51700b43b2030f64856a6f8582d3f2d3788495d8d"
     },
     "refactor": {
-      "source": "ravindra-gadekar/fullstack-dev",
+      "source": "ravindra-gadekar/fullstack-dev-plugin",
       "sourceType": "github",
       "skillPath": "skills/refactor/SKILL.md",
       "computedHash": "2d182d8c5142d12be5c8446eb3e9db6d0b561131816d6de8386221ea8b851706"
