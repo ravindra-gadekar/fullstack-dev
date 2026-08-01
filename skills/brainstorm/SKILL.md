@@ -336,14 +336,19 @@ requests changes, revise and re-present the section.
 5. **Testing Strategy** — what to test and at which level (unit,
    integration, e2e). Do NOT prescribe TDD — that is the concern of
    `/implement`, not `/brainstorm`.
+6. **Acceptance Criteria** — a `- [ ]` checkbox list of concrete,
+   testable statements that define "done" for this feature. Derive each
+   item from the approved approach, Data Flow, Error Handling, and
+   Testing Strategy sections above. Required by `/plan`'s minimum-viable
+   -spec gate (Step 3) — never omit this section, even for small specs.
 
 ### Conditional Sections
 
-6. **Visual Design** (if UI detected) — color palette, typography
+7. **Visual Design** (if UI detected) — color palette, typography
    choices, component patterns, interaction states (hover, focus, active,
    disabled, loading, error, empty), accessibility requirements,
    responsive breakpoints, animation/transition specs.
-7. **Security Requirements** (if security detected) — authentication
+8. **Security Requirements** (if security detected) — authentication
    approach, authorization model, input validation rules, data
    protection (encryption at rest/in transit), trust boundaries, rate
    limiting strategy, audit logging, compliance notes.
@@ -393,7 +398,7 @@ See `reference/brainstorm-flow.md` for the full spec template.
 ## Step 9: Spec Self-Review
 
 Immediately after writing, review the spec with fresh eyes. Run these
-four checks:
+five checks:
 
 1. **Placeholder scan** — search for TBD, TODO, FIXME, "to be
    determined", placeholder, `___`, `...` (as content, not syntax).
@@ -410,6 +415,13 @@ four checks:
 4. **Ambiguity check** — could any requirement be interpreted two
    different ways? If so, pick the interpretation that best fits the
    project context and make it explicit.
+
+5. **Acceptance criteria presence** — does the spec contain an
+   "Acceptance Criteria" section with at least one `- [ ]` checkbox
+   item, none of which are placeholders? This is required by `/plan`'s
+   minimum-viable-spec gate. If missing or empty, synthesize concrete
+   items from the approved approach and other sections before
+   proceeding.
 
 Fix all issues inline in the spec file. Do not re-run the review after
 fixing — one pass is sufficient.
