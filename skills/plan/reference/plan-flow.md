@@ -704,7 +704,7 @@ Offer grill gate to user?
 |       description: "Grill the implementation plan",
 |       prompt: """
 |         You are plan-reviewer-agent. Read your full instructions from:
-|         <plugin-path>/agents/plan-reviewer-agent.md
+|         agents/plan-reviewer-agent.md (relative to this SKILL.md file)
 |
 |         Plan to review: <plan-README-path>
 |         Working directory: <workspace-root>
