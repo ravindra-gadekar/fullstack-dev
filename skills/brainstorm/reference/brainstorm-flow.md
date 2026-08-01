@@ -618,6 +618,18 @@ error messages (exact copy). Logging and monitoring approach.]
 
 [What to test — unit, integration, e2e. Key scenarios to cover. Edge cases.
 NOT TDD methodology — just what needs testing and why.]
+
+## Acceptance Criteria
+
+[A checklist of concrete, testable, verifiable statements that define
+"done" for this feature. Each item uses `- [ ]` syntax. Derive items from
+the approved approach, the happy/error paths in Data Flow, the failure
+modes in Error Handling, and the key scenarios in Testing Strategy. Every
+criterion must be independently verifiable — avoid vague statements like
+"works correctly"; state the observable outcome instead.
+
+- [ ] [Concrete, testable outcome]
+- [ ] [Concrete, testable outcome]]
 ```
 
 ### Conditional Sections
@@ -735,19 +747,26 @@ key decisions made during brainstorming.]
 
 ---
 
-## N+2. Visual Design
+## N+2. Acceptance Criteria
+
+[from Step 7 standard sections — required, never omitted. Checklist of
+`- [ ]` items satisfying /plan's minimum-viable-spec gate.]
+
+---
+
+## N+3. Visual Design
 
 [from Step 7 conditional sections — only if UI detected]
 
 ---
 
-## N+3. Security Requirements
+## N+4. Security Requirements
 
 [from Step 7 conditional sections — only if Security detected]
 
 ---
 
-## N+4. Out of Scope
+## N+5. Out of Scope
 
 [Explicitly state what this spec does NOT cover, to prevent scope creep
 during implementation. Be specific — vague exclusions invite ambiguity.]
@@ -840,6 +859,24 @@ Ambiguous?
 
 **Action:** Rewrite ambiguous statements to be unambiguous. Prefer concrete
 examples over abstract descriptions.
+
+### 5. Acceptance Criteria Presence
+
+Verify the spec contains an "Acceptance Criteria" section with at least
+one `- [ ]` checkbox item, and that none of the items are placeholder
+text.
+
+```
+Section present with >=1 concrete `- [ ]` item?
++-- Yes --> Pass
++-- No  --> Synthesize items from the approved approach, Data Flow,
+            Error Handling, and Testing Strategy sections. Add the
+            section if entirely missing.
+```
+
+**Action:** Add or fill in the Acceptance Criteria section before
+presenting the spec to the user. This section is required by `/plan`'s
+minimum-viable-spec gate.
 
 ---
 
