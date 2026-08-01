@@ -29,7 +29,8 @@ Markdown (agent/command/skill definitions), Bash (pre-commit hooks), JSON (hook/
 # No install/build/test step — this is a markdown + JSON plugin.
 # Verify changes by exercising the relevant command/skill in a
 # Claude Code session (dogfooding) rather than a build pipeline.
-npx skills add https://github.com/ravindra-gadekar/fullstack-dev-plugin.git --skill '*'   # install into a target project
+npx skills add https://github.com/ravindra-gadekar/fullstack-dev-plugin.git --skill '*'              # install into a target project
+npx skills add https://github.com/ravindra-gadekar/fullstack-dev-plugin.git --skill '*' -a claude-code  # dogfood install into THIS repo (never use --agent '*' here — it corrupts skills/)
 ```
 
 ### Git Workflow
