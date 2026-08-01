@@ -306,6 +306,8 @@ The implementer agent is dispatched with:
 
 ### Implementer Dispatch
 
+Agent role, tool grants, and constraints are documented in `agents/implementer-agent.md` (relative to this skill's SKILL.md); the prompt sent to the agent is the template in Section 15.1 (or 15.2 for fix mode).
+
 ```
 Record pre-task commit: git rev-parse HEAD → $PRE_TASK_COMMIT
 
@@ -544,6 +546,8 @@ implementer-agent re-dispatch remain the default behavior.
 
 ### Decision Tree
 
+Agent role, tool grants, and constraints are documented in `agents/task-reviewer-agent.md` (relative to this skill's SKILL.md); the prompt sent to the agent is the template in Section 15.3.
+
 ```
 Dispatch task-reviewer-agent with:
   - Task brief (same text the implementer received)
@@ -646,6 +650,8 @@ Keyword patterns:
 ```
 
 ### Decision Tree
+
+Agent role, tool grants, and constraints are documented in `agents/security-reviewer-agent.md` (relative to this skill's SKILL.md); the prompt sent to the agent is the template in Section 15.4.
 
 ```
 Check task's modified files against trigger patterns:
