@@ -10,8 +10,8 @@ This repo is the source of the **Fullstack Dev** Claude Code plugin itself — t
 fullstack-dev/
 ├── commands/         # Slash command entry points (/project, /brainstorm, /plan, /implement, /debug, /fix, /refactor, /git, /gitignore)
 ├── skills/           # SKILL.md orchestrators + reference/ decision trees & templates + agents/ subdirectory (init, scanner, refresh, repo, implementer, task-reviewer, security-reviewer, plan-reviewer, debugger, refactor, grill), one directory per command area
-├── .agents/          # Local skills-add installed copy of agents (managed by the skills CLI)
-├── .claude/          # Local skills-add installed copy of skills (managed by the skills CLI)
+├── .agents/          # Generated skills mirror for generic/other agent-platform targets (managed by the skills CLI, absent unless installed with -a other-than-claude-code or --agent '*')
+├── .claude/skills/   # Generated skills mirror for the claude-code target (managed by the skills CLI; installed via `npx skills add ... -a claude-code`) — mirrors skills/ 1:1, agents co-located under each skill's agents/
 ├── docs/             # This project's own generated docs (project/, specs/, plans/) — dogfooding the plugin on itself
 ├── LICENSE
 ├── README.md
