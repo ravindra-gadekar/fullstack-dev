@@ -113,7 +113,7 @@ Agent(
   description: "Run project init wizard",
   prompt: """
     You are the init-agent for Fullstack Dev.
-    Read your full instructions from: <plugin-path>/agents/init-agent.md
+    Read your full instructions from: agents/init-agent.md (relative to this SKILL.md file)
 
     Working directory: <workspace-root>
     Mode: <first-run | health-check>
@@ -132,7 +132,7 @@ Agent(
   description: "Add repo to project",
   prompt: """
     You are the repo-agent for Fullstack Dev.
-    Read your full instructions from: <plugin-path>/agents/repo-agent.md
+    Read your full instructions from: agents/repo-agent.md (relative to this SKILL.md file)
 
     Working directory: <workspace-root>
     Config: <config.json contents>
@@ -150,7 +150,7 @@ Agent(
   description: "Refresh project documentation",
   prompt: """
     You are the refresh-agent for Fullstack Dev.
-    Read your full instructions from: <plugin-path>/agents/refresh-agent.md
+    Read your full instructions from: agents/refresh-agent.md (relative to this SKILL.md file)
 
     Working directory: <workspace-root>
     Config: <config.json contents>
