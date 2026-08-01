@@ -6,7 +6,7 @@
 
 | Entity | Description | Source |
 |---|---|---|
-| Agent | A specialized Claude Code subagent (e.g. `init-agent`, `debugger-agent`) with its own tools, model, and prompt | `agents/*.md` |
+| Agent | A specialized Claude Code subagent (e.g. `init-agent`, `debugger-agent`) with its own tools, model, and prompt | `skills/<owning-skill>/agents/*.md` |
 | Command | A slash command (`/project`, `/brainstorm`, `/plan`, `/implement`, `/debug`, `/fix`, `/refactor`, `/git`, `/gitignore`) exposed to the user | `commands/*.md` |
 | Skill | A packaged workflow (`SKILL.md` + `reference/*.md`) that a command or agent loads for detailed instructions | `skills/*/SKILL.md` |
 | Config | The target project's `.fullstack-dev/config.json` — drives all generation decisions for a given project this plugin manages | `skills/project/reference/doc-templates.md` Section 7 |
@@ -49,7 +49,7 @@ This is a documentation/prompt-based Claude Code plugin — there is no runtime 
 
 | Context | Convention | Example |
 |---|---|---|
-| Agent files | `<role>-agent.md` in `agents/` | `init-agent.md`, `debugger-agent.md` |
+| Agent files | `<role>-agent.md` in `skills/<owning-skill>/agents/` | `skills/project/agents/init-agent.md`, `skills/debug/agents/debugger-agent.md` |
 | Command files | `<verb>.md` in `commands/`, matches the skill name | `project.md` -> `skills/project/` |
 | Skill directories | kebab-case matching the command name | `skills/gitignore/` |
 | Reference docs | descriptive kebab-case under `skills/<skill>/reference/` | `init-flow.md`, `doc-templates.md` |
