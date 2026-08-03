@@ -53,18 +53,22 @@ The pre-commit hook is generated inline by the init-agent (see `init-flow.md` §
 
 ### What it stages
 
-Only these 4 root-level docs:
+These 3 root-level docs:
 
 - `CONTEXT.md`
 - `docs/project/architecture.md`
 - `docs/project/tech-stack.md`
-- `docs/project/brand.md`
 
-Per-repo `ARCHITECTURE.md` files are committed in their own repos, not staged by this hook.
+Plus, per repo:
+
+- `*/ARCHITECTURE.md`
+- `*/BRAND.md` (only present in repos whose `type` is `frontend`/`fullstack`)
+
+Per-repo `ARCHITECTURE.md` and `BRAND.md` files are committed in their own repos, not staged by this hook.
 
 ### Behavior
 
-- Checks if any of the 4 files above have been modified (`git diff` check).
+- Checks if any of the files above have been modified (`git diff` check).
 - If modified, runs `git add` on them so they are included in the current commit.
 - Runs silently — no output on success.
 - Does **NOT** perform any refresh logic. It only stages what was already updated by Layer 1 or a manual refresh.
@@ -78,8 +82,8 @@ When a file changes, only the relevant docs are refreshed. The refresh-agent use
 ```
 File changed                    -> Docs refreshed
 --------------------------------------------------------------------------------
-*.css, *.scss, *.tsx,           -> docs/project/brand.md
-  tailwind.config.*
+*.css, *.scss, *.tsx,           -> <repo>/BRAND.md (the BRAND.md inside the
+  tailwind.config.*                same repo the change happened in)
 
 *.ts, *.js (routes,             -> docs/project/architecture.md
   controllers, steps)              + per-repo ARCHITECTURE.md

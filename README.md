@@ -111,9 +111,9 @@ After installation, run `/project --init` in your workspace root and follow the 
 | `CONTEXT.md` | Workspace root | Domain model, glossary, data flow, conventions |
 | `docs/project/architecture.md` | Workspace root | Unified system architecture |
 | `docs/project/tech-stack.md` | Workspace root | Languages, frameworks, databases |
-| `docs/project/brand.md` | Workspace root | Design tokens, colors, fonts (if frontend) |
 | `CLAUDE.md` | Workspace root | Top-level instructions for Claude Code |
 | `ARCHITECTURE.md` | Each repo | Repo-specific structure, catalogs, patterns |
+| `BRAND.md` | Each frontend/fullstack repo | Design tokens, colors, fonts |
 | `.gitignore` | Workspace root | Plugin marker block + user entries |
 | `.mcp.json` | Workspace root | MCP server configuration (context7, git platform) |
 | `.claude/settings.json` | Workspace root | Claude Code hooks (PostToolUse refresh reminder) |

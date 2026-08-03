@@ -52,7 +52,8 @@ Read in order:
 2. `CONTEXT.md` — domain model, glossary, conventions
 3. `docs/project/architecture.md` — unified system architecture
 4. `docs/project/tech-stack.md` — languages, frameworks, databases
-5. `docs/project/brand.md` — design tokens (relevant if UI work)
+5. Per-repo `BRAND.md` — design tokens (relevant if UI work; only present
+   in repos whose `type` is `frontend`/`fullstack`)
 6. Per-repo `ARCHITECTURE.md` — repo-specific structure (one per repo
    listed in `config.json → repos[]`)
 

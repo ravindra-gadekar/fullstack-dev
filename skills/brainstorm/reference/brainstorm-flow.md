@@ -646,7 +646,7 @@ criterion must be independently verifiable — avoid vague statements like
 [default, hover, active, disabled, loading, error, empty states]
 
 ### Color and Typography
-[which tokens from brand.md to use, or new tokens to add]
+[which tokens from the repo's BRAND.md to use, or new tokens to add]
 
 ### Responsive Behavior
 [how the UI adapts across breakpoints — mobile, tablet, desktop]

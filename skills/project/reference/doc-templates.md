@@ -212,12 +212,12 @@ Placeholder text in angle brackets (`<...>`) is replaced with real content. Sect
 
 ---
 
-## 4. docs/project/brand.md
+## 4. Per-repo BRAND.md
 
-**Location:** `docs/project/brand.md`
-**Purpose:** Design tokens extracted from the codebase. Only generated when the project has a frontend.
-**Created by:** init-agent + scanner-agent (conditional: `hasFrontend: true`)
-**Updated by:** refresh-agent (incremental, on CSS/Tailwind/theme file changes)
+**Location:** `<repo-name>/BRAND.md` (inside each repo root)
+**Purpose:** Design tokens extracted from the codebase. Only generated for repos whose `type` is `frontend` or `fullstack`.
+**Created by:** init-agent + scanner-agent (conditional: repo's `type` is `frontend` or `fullstack`)
+**Updated by:** refresh-agent (incremental, on CSS/Tailwind/theme file changes within that repo)
 
 ### Template
 
@@ -467,7 +467,7 @@ When you need to understand the codebase:
 1. **Read CONTEXT.md** -- cross-repo domain model, data flow, decisions, conventions
 2. **Read docs/project/architecture.md** -- unified system architecture
 3. **Read the relevant ARCHITECTURE.md** -- repo-specific structure, catalogs, patterns
-4. **Read docs/project/brand.md** -- design tokens (for UI work)
+4. **Read the repo's BRAND.md** (if it has one) -- design tokens (for UI work)
 5. **Read source files** -- only when the above don't have what you need
 
 ### Documentation Structure
@@ -505,7 +505,7 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 - **Build commands** are detected from `package.json` scripts or framework conventions. Use placeholder comments when commands cannot be detected.
 - **Git Workflow** uses `repos[i].targetBranch` from `config.json`. Multi-repo table is included when config has multiple repos. Regenerated on `/project --init`, `/git setup`, or config change.
 - **Git Platform** section adapts to `config.json` `gitPlatform.provider`. The MCP tool prefix changes per platform (`mcp__github__*`, `mcp__bitbucket__*`, etc.).
-- **Architecture Reference** always includes all 5 levels. Level 4 (brand.md) is omitted when `hasFrontend: false`.
+- **Architecture Reference** always includes all 5 levels. Level 4 (BRAND.md) is only listed for repos that actually have one (`type` is `frontend` or `fullstack`).
 
 ### Marker Block Rules
 
@@ -585,7 +585,7 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 | `repos[].name` | string | yes | Directory name of the repo (e.g., `"frontend-app"`). |
 | `repos[].type` | enum | yes | One of: `"frontend"`, `"backend"`, `"service"`, `"library"`. |
 | `repos[].stack` | string[] | yes | Technologies used (e.g., `["next.js", "typescript", "tailwind"]`). |
-| `hasFrontend` | boolean | yes | Whether any repo has type `"frontend"`. Controls brand.md generation. |
+| `hasFrontend` | boolean | yes | Whether any repo has type `"frontend"`. Controls whether the Agentation optional tool is offered. |
 | `databases` | string[] | yes | Database technologies (e.g., `["mongodb"]`). Empty array if none. |
 | `aiIntegration` | string[] | yes | AI/LLM tools used (e.g., `["openai", "anthropic"]`). Empty array if none. |
 | `teamSize` | enum | yes | One of: `"solo"`, `"small"`, `"larger"`. Affects workflow recommendations. |
@@ -716,7 +716,7 @@ During `/project --init`, files are created in this order:
 6. `CONTEXT.md` -- domain model (populated later by scanner)
 7. `docs/project/tech-stack.md` -- technology inventory
 8. `docs/project/architecture.md` -- system architecture
-9. `docs/project/brand.md` -- design tokens (only if `hasFrontend: true`)
+9. Per-repo `BRAND.md` -- design tokens (only in repos whose `type` is `frontend` or `fullstack`)
 10. Per-repo `ARCHITECTURE.md` -- one per repo
 11. `CLAUDE.md` -- last, because it references other docs
 
