@@ -171,9 +171,9 @@ Generate using the template from `reference/doc-templates.md` Section 3. Populat
 
 Generate using the template from `reference/doc-templates.md` Section 2. Populate from scanner-agent findings or use placeholder structure.
 
-#### 5.8 `docs/project/brand.md` (conditional)
+#### 5.8 Per-repo `BRAND.md` (conditional)
 
-Only generate when `projectType` is `fullstack` or `frontend` (i.e., `hasFrontend: true`). Use the template from `reference/doc-templates.md` Section 4.
+For each repo whose `type` is `frontend` (or, for mono-repo projects, when `projectType` is `fullstack` or `frontend`), generate a `BRAND.md` inside that repo's directory using the template from `reference/doc-templates.md` Section 4. Skip repos that are backend-only or API-only. Same per-repo placement pattern as `ARCHITECTURE.md` (5.9) — in a mono-repo, this lands at `./BRAND.md`.
 
 #### 5.9 Per-repo `ARCHITECTURE.md`
 
@@ -308,7 +308,7 @@ Run every check from the table in `reference/init-flow.md` Section 10.2:
 | Category | Checks |
 |----------|--------|
 | **Config** | config.json exists and valid; version matches plugin version |
-| **Docs** | CONTEXT.md exists; docs/project/architecture.md exists; docs/project/tech-stack.md exists; docs/project/brand.md exists (if frontend); per-repo ARCHITECTURE.md for each sub-repo; docs/specs/ directory exists; docs/plans/ directory exists |
+| **Docs** | CONTEXT.md exists; docs/project/architecture.md exists; docs/project/tech-stack.md exists; per-repo BRAND.md for each frontend/fullstack repo; per-repo ARCHITECTURE.md for each sub-repo; docs/specs/ directory exists; docs/plans/ directory exists |
 | **Git** | Root has git initialized; .gitignore has fullstack-dev:gitignore markers; all sub-repos listed in .gitignore; no new .git/ directories missing from config; local-dev branch exists in each repo; targetBranch set in each repo config entry; pre-commit hook has fullstack-dev:gitignore block; gitIgnore config field exists |
 | **Claude Config** | .claude/settings.json exists; PostToolUse hooks configured; skills installed |
 | **MCP** | .mcp.json exists; context7 configured; git platform MCP configured; github entry is not deprecated stdio shape (auto-fix: replace via named merge exception); claude mcp list reports no connectivity warnings (report only); required MCP env vars present in settings.local.json (agent auto-creates skeleton, reports missing var name; orchestrator asks user and writes — see Secret Prompt & Write Flow); code-review-graph entry in `.mcp.json`; code-review-graph PostToolUse hook in `settings.json`; code-review-graph SessionStart hook in `settings.json`; `.code-review-graphignore` exists with marker block; `.code-review-graphignore` patterns match current tech stack |
@@ -385,7 +385,7 @@ This agent relies on these reference docs. Read them before executing any flow:
 | Document | Path | Purpose |
 |----------|------|---------|
 | Init Flow | `skills/project/reference/init-flow.md` | Complete wizard decision tree, questions, configuration phase steps, health check table, version migration, team onboarding |
-| Document Templates | `skills/project/reference/doc-templates.md` | Templates for all generated files (CONTEXT.md, architecture.md, tech-stack.md, brand.md, ARCHITECTURE.md, CLAUDE.md, config.json, .env.example), population rules, creation order, mono/multi-repo differences |
+| Document Templates | `skills/project/reference/doc-templates.md` | Templates for all generated files (CONTEXT.md, architecture.md, tech-stack.md, BRAND.md, ARCHITECTURE.md, CLAUDE.md, config.json, .env.example), population rules, creation order, mono/multi-repo differences |
 | Gitignore Rules | `skills/project/reference/gitignore-rules.md` | Routing doc — points to `skills/gitignore/reference/gitignore-catalog.md` (pattern database) and `skills/gitignore/reference/gitignore-flow.md` (marker format, merge rules, hook template, detection heuristics) |
 | Tools Setup | `skills/project/reference/tools-setup.md` | MCP tools configuration (context7, git platform, code-review-graph, Agentation), merge rules for .mcp.json, hooks merge rules, secrets handling, project-level safety |
 | Git Workflow Flow | `skills/git/reference/git-flow.md` | CI/CD target branch detection (Section 1), local-dev branch setup (Section 5), used by Phases 3b and 3c |

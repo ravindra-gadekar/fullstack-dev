@@ -31,7 +31,7 @@ Use this mapping table to determine which docs need updating based on which file
 
 | File changed | Docs to update |
 |---|---|
-| `*.css`, `*.scss`, `*.tsx`, `tailwind.config.*` | `docs/project/brand.md` |
+| `*.css`, `*.scss`, `*.tsx`, `tailwind.config.*` | `<repo>/BRAND.md` (the repo the changed file lives in) |
 | `*.ts`, `*.js` in routes, controllers, or steps | `docs/project/architecture.md` + per-repo `ARCHITECTURE.md` |
 | `package.json`, `*config.*` | `docs/project/tech-stack.md` |
 | `schema/models`, `*.model.*` | `CONTEXT.md` (domain model section) |
@@ -60,7 +60,7 @@ This is the default mode, triggered automatically after file edits during a Clau
 - Touch only the sections within a doc that are directly affected.
 - Preserve all existing content, structure, and manual edits that are unrelated to the change.
 - If a change adds a new route, add it to the route catalog in architecture.md -- do not regenerate the entire catalog.
-- If a change modifies a Tailwind config value, update that specific value in brand.md -- do not rewrite the color palette section.
+- If a change modifies a Tailwind config value, update that specific value in the repo's BRAND.md -- do not rewrite the color palette section.
 - If a change adds a new dependency in package.json, add it to the relevant section in tech-stack.md -- do not regenerate the full dependency list.
 
 ---
@@ -99,7 +99,7 @@ These are the files you may create or update:
 |---|---|---|
 | Architecture (cross-repo) | `docs/project/architecture.md` | Workspace-wide structure, repo roles, data flow |
 | Architecture (per-repo) | `<repo>/ARCHITECTURE.md` | Repo-specific routes, steps, components, catalogs |
-| Brand | `docs/project/brand.md` | Colors, fonts, spacing, component patterns |
+| Brand (per-repo) | `<repo>/BRAND.md` | Colors, fonts, spacing, component patterns (only in repos whose `type` is `frontend`/`fullstack`) |
 | Tech Stack | `docs/project/tech-stack.md` | Dependencies, build tools, configs |
 | Context | `CONTEXT.md` | Domain model, entities, relationships, conventions |
 

@@ -381,7 +381,7 @@ found in the repos:
 | `CONTEXT.md` | Workspace root | Always |
 | `docs/project/architecture.md` | Workspace root | Always |
 | `docs/project/tech-stack.md` | Workspace root | Always |
-| `docs/project/brand.md` | Workspace root | If `projectType` includes frontend (`fullstack` or `frontend`) |
+| `BRAND.md` | Each sub-repo root that has a frontend | Per repo — generated when that repo's `type` is `frontend`, or (mono-repo) when `projectType` is `full-stack` or `frontend` |
 | `ARCHITECTURE.md` | Each sub-repo root | For each repo that exists locally |
 
 Also ensure these directories exist (create if missing):
@@ -543,7 +543,7 @@ modified, so they ship with the code commit:
 ```bash
 #!/bin/sh
 # fullstack-dev: auto-stage refreshed docs
-for f in CONTEXT.md CLAUDE.md docs/project/architecture.md docs/project/tech-stack.md docs/project/brand.md; do
+for f in CONTEXT.md CLAUDE.md docs/project/architecture.md docs/project/tech-stack.md; do
   if [ -f "$f" ] && git diff --name-only | grep -qx "$f"; then
     git add "$f"
   fi
@@ -552,6 +552,12 @@ done
 for repo_arch in */ARCHITECTURE.md; do
   if [ -f "$repo_arch" ] && git diff --name-only | grep -qx "$repo_arch"; then
     git add "$repo_arch"
+  fi
+done
+# auto-stage per-repo BRAND.md
+for repo_brand in */BRAND.md; do
+  if [ -f "$repo_brand" ] && git diff --name-only | grep -qx "$repo_brand"; then
+    git add "$repo_brand"
   fi
 done
 ```
@@ -633,7 +639,7 @@ Files created:
   CLAUDE.md
   docs/project/architecture.md
   docs/project/tech-stack.md
-  [docs/project/brand.md]          (if frontend)
+  [<repo>/BRAND.md]                (per frontend repo)
   [<repo>/ARCHITECTURE.md]         (per repo)
   .mcp.json
   .claude/settings.json
@@ -675,7 +681,7 @@ Config            | .fullstack-dev/config.json exists and valid      | No
 Docs              | CONTEXT.md exists at root                        | Yes (regenerate)
                   | docs/project/architecture.md exists              | Yes (regenerate)
                   | docs/project/tech-stack.md exists                | Yes (regenerate)
-                  | docs/project/brand.md exists (if frontend)       | Yes (regenerate)
+                  | Per-repo BRAND.md for each frontend/fullstack repo | Yes (regenerate)
                   | Per-repo ARCHITECTURE.md for each sub-repo       | Yes (regenerate)
                   | docs/specs/ directory exists                     | Yes (create)
                   | docs/plans/ directory exists                     | Yes (create)

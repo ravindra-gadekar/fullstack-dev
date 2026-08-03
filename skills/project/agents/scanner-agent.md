@@ -124,7 +124,7 @@ For each model/schema found, extract: entity name, fields (name + type), relatio
 
 ### CSS & Design Files
 
-Extract brand tokens for brand.md. Only scan when the project config has `hasFrontend: true`.
+Extract brand tokens for that repo's `BRAND.md`. Only scan a repo's CSS/design files when that repo's `type` is `frontend` (or, for mono-repo, when `projectType` is `fullstack`/`frontend`). Scan and extract independently per frontend repo — do not merge tokens across repos.
 
 | Glob Pattern | What It Reveals |
 |---|---|
@@ -176,7 +176,7 @@ After scanning, write documentation files using the templates from `skills/proje
 | `CONTEXT.md` | Always | Section 1 |
 | `docs/project/architecture.md` | Always | Section 2 |
 | `docs/project/tech-stack.md` | Always | Section 3 |
-| `docs/project/brand.md` | Only when `hasFrontend: true` in config | Section 4 |
+| `<repo-name>/BRAND.md` | Per repo, only when that repo's `type` is `frontend` (or, for mono-repo, `projectType` is `fullstack`/`frontend`) | Section 4 |
 | `<repo-name>/ARCHITECTURE.md` | One per repo in `config.json` repos array | Section 5 |
 
 ### Writing Rules
