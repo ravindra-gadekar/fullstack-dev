@@ -83,6 +83,7 @@ $RECYCLE.BIN/
 # Skills CLI
 .claude/skills/
 .agents/
+skills-lock.json
 
 # <<< fullstack-dev:gitignore <<<
 
