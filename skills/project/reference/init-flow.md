@@ -477,6 +477,24 @@ no longer an opt-in prompt. Follow `reference/tools-setup.md` Section
      requiring a session restart
    - The SessionStart hook will rebuild it on subsequent sessions;
      the PostToolUse hook will keep it current during sessions
+5. **Per-repo setup (multi-repo only):** each sub-repo has its own
+   `.code-review-graph/` directory and its own graph, so each needs the
+   same three steps individually. Skip this entirely for mono-repo
+   projects — the root file/build above is already sufficient. For
+   each repo in `config.json` `repos[]`:
+   - **Generate `<repo>/.code-review-graphignore`** per
+     `reference/tools-setup.md` Section "Per-Repo `.code-review-graphignore`
+     (multi-repo only)": always include `node_modules/` and `dist/` as
+     baseline, then add stack-derived entries from that repo's
+     `repos[].stack`. Same managed-block pattern as the root file, with
+     a `# --- User entries below ---` footer.
+   - **Verify/add `.code-review-graph/` to that repo's own `.gitignore`**
+     (not the root workspace `.gitignore`) — append the line if missing.
+   - **Run a full graph build for that repo** using the MCP tool
+     `build_or_update_graph_tool` with `full_rebuild: true` (not the CLI
+     command), scoped to that repo's path. This runs last for that repo
+     — after its `.code-review-graphignore` is written, so the build
+     respects the exclusions from the first pass.
 
 > **Note:** the code-review-graph PostToolUse hook (matcher
 > `Edit|Write|Bash|PowerShell`) coexists alongside the fullstack-dev
@@ -645,7 +663,12 @@ Files created:
   .claude/settings.json
   .gitignore
   .code-review-graphignore
+  [<repo>/.code-review-graphignore]  (per repo, if multi-repo)
   [<project>.code-workspace]       (if multi-repo)
+
+Graph indexed:
+  root:      <files> files, <nodes> nodes, <edges> edges
+  [<repo>:   <files> files, <nodes> nodes, <edges> edges]   (per repo, if multi-repo)
 
 Next steps:
   - Restart Claude Code to activate MCP servers and hooks
@@ -710,6 +733,9 @@ MCP               | .mcp.json exists                                 | Yes (crea
                   | code-review-graph SessionStart hook in settings.json | Yes (merge hook)
                   | .code-review-graphignore exists with marker block  | Yes (generate)
                   | .code-review-graphignore patterns match current tech stack | Yes (regenerate marker block)
+                  | Each repo has a .code-review-graphignore (multi-repo only) | Yes (regenerate missing/stale)
+                  | Each repo's .gitignore contains .code-review-graph/ (multi-repo only) | Yes (add missing entry)
+                  | Each repo's graph has > 0 indexed files (multi-repo only) | Yes (trigger full rebuild)
 Developer Tools   | Agentation in .mcp.json (if frontend)            | Yes (add entry)
 Workspace         | .code-workspace file exists (if multi-repo)      | Yes (create)
                   | All repos listed in workspace folders            | Yes (add missing)
