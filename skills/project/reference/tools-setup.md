@@ -331,6 +331,74 @@ Generation runs AFTER `.gitignore` generation (§9.2) because it reads `gitIgnor
 
 ---
 
+## Per-Repo `.code-review-graphignore` (multi-repo only)
+
+Each sub-repo has its own `.code-review-graph/` directory and its own independently-built graph. The root `.code-review-graphignore` above does not cover a sub-repo's graph — each sub-repo needs its own ignore file, or its graph indexes `node_modules/`, `dist/`, and other build artifacts, making it bloated and slow.
+
+This section only applies when `repoStructure` is `"multi-repo"`. For mono-repo projects, the single root `.code-review-graphignore` documented above is already sufficient — skip per-repo generation entirely.
+
+### Baseline (always included, regardless of stack)
+
+```gitignore
+node_modules/
+dist/
+```
+
+These are universal for Node.js projects and are always included in every per-repo `.code-review-graphignore`, independent of stack detection.
+
+### Stack-Derived Extras (per repo)
+
+Stack detection reads that specific repo's `repos[].stack` entry from `config.json` — never filesystem scanning.
+
+| Stack signal | Signal source | Extra patterns |
+| --- | --- | --- |
+| Node/TypeScript | repo's `stack` contains `"node"` or `"typescript"` | `coverage/`, `.nyc_output/` |
+| Next.js / frontend | repo's `stack` contains `"next.js"`, or repo's `type` is `"frontend"` | `.next/`, `out/`, `storybook-static/`, `.storybook/` |
+| Motia / iii.dev | repo's `stack` contains `"motia"` or `"iii.dev"` | `.motia/`, `data/` |
+
+### Marker Block Format (per repo)
+
+Same managed-block pattern as the root file, written to `<repo-name>/.code-review-graphignore`:
+
+```gitignore
+# >>> fullstack-dev:code-review-graph (do not edit this block) >>>
+
+node_modules/
+dist/
+
+# Node/TypeScript (stack-derived)
+coverage/
+.nyc_output/
+
+# <<< fullstack-dev:code-review-graph <<<
+
+# --- User entries below ---
+```
+
+Only include the stack-derived section(s) that apply to that repo's `stack`/`type` — omit sections with no matching signal.
+
+### Merge Rules (per repo, identical semantics to the root file)
+
+- No `<repo>/.code-review-graphignore` exists → create with full marker block
+- File exists without marker block → prepend marker block, preserve existing content below
+- Marker block exists → replace content between markers only, preserve user content outside
+
+### Per-Repo `.gitignore` Entry
+
+Each sub-repo's own `.gitignore` (not the root workspace `.gitignore`) must contain `.code-review-graph/` — it is a per-repo directory that should never be committed. During init and health check, verify each repo's `.gitignore` contains this line; add it if missing (append, do not touch other content).
+
+### Per-Repo Graph Build
+
+After a repo's `.code-review-graphignore` and `.gitignore` entry are both in place, run a full build for that repo so its graph is immediately usable — not left at 0 files/nodes/edges. Use the MCP tool `build_or_update_graph_tool` with `full_rebuild: true` (scoped to that repo's path), not the CLI command — the CLI form is reserved for the root build in §"code-review-graph MCP Configuration" above.
+
+This must run AFTER the repo's `.code-review-graphignore` is written, so the build respects its exclusions, and it is the last step for that repo — after all of that repo's docs, configs, and ignore files exist.
+
+### Per-Repo Data Dependency
+
+Per-repo generation (ignore file → gitignore entry → build) runs entirely after the root `.gitignore` and root `.code-review-graphignore` generation.
+
+---
+
 ## Agentation
 
 Agentation provides agent orchestration and monitoring capabilities. It integrates via an MCP server and an optional frontend component for development-time visibility.

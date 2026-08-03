@@ -66,6 +66,8 @@ Plus, per repo:
 
 Per-repo `ARCHITECTURE.md` and `BRAND.md` files are committed in their own repos, not staged by this hook.
 
+`.code-review-graphignore` is a managed config file (root, plus one per repo in multi-repo projects) and should be auto-staged on commit the same way — if the init-agent health check regenerates it (e.g. stack drift), the refreshed file should be staged alongside the other managed docs so it ships with the commit that triggered the regeneration, not left dangling as an unstaged change.
+
 ### Behavior
 
 - Checks if any of the files above have been modified (`git diff` check).

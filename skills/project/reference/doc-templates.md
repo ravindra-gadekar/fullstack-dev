@@ -516,6 +516,43 @@ When `CLAUDE.md` already exists, append only the marker block at the end:
 
 ---
 
+## 6a. Per-repo `.code-review-graphignore` (multi-repo only)
+
+**Location:** `<repo-name>/.code-review-graphignore` (inside each sub-repo root)
+**Purpose:** Excludes build artifacts from that repo's own code-review-graph index. Each sub-repo has its own `.code-review-graph/` directory and its own graph, so each needs its own ignore file — the root `.code-review-graphignore` does not cover it.
+**Created by:** init-agent, per repo
+**Updated by:** init-agent health check (regenerates if patterns are stale for that repo's stack)
+**Condition:** Only generated when `repoStructure` is `"multi-repo"`. Mono-repo projects use the single root `.code-review-graphignore` instead — skip this file entirely.
+
+### Template
+
+```gitignore
+# >>> fullstack-dev:code-review-graph (do not edit this block) >>>
+
+node_modules/
+dist/
+
+# Node/TypeScript (stack-derived)
+coverage/
+.nyc_output/
+
+# <<< fullstack-dev:code-review-graph <<<
+
+# --- User entries below ---
+```
+
+### Population Rules
+
+- `node_modules/` and `dist/` are always included, regardless of stack — universal for Node.js projects.
+- Stack-derived sections are added based on that specific repo's `repos[].stack` entry in `config.json` — never filesystem scanning:
+  - Node/TypeScript (`stack` contains `"node"` or `"typescript"`) → `coverage/`, `.nyc_output/`
+  - Next.js / frontend (`stack` contains `"next.js"`, or repo `type` is `"frontend"`) → `.next/`, `out/`, `storybook-static/`, `.storybook/`
+  - Motia / iii.dev (`stack` contains `"motia"` or `"iii.dev"`) → `.motia/`, `data/`
+- Omit stack-derived sections that don't apply to that repo.
+- See `reference/tools-setup.md` § "Per-Repo `.code-review-graphignore` (multi-repo only)" for the full merge rules and build-ordering requirements.
+
+---
+
 ## 7. .fullstack-dev/config.json
 
 **Location:** `.fullstack-dev/config.json`
@@ -719,5 +756,8 @@ During `/project --init`, files are created in this order:
 9. Per-repo `BRAND.md` -- design tokens (only in repos whose `type` is `frontend` or `fullstack`)
 10. Per-repo `ARCHITECTURE.md` -- one per repo
 11. `CLAUDE.md` -- last, because it references other docs
+12. Per-repo `.code-review-graphignore` -- one per repo, after that repo's docs/configs exist (multi-repo only)
+13. Per-repo `.gitignore` `.code-review-graph/` entry -- verify/add per repo (multi-repo only)
+14. Per-repo full graph build -- last step overall for that repo, after its `.code-review-graphignore` is in place (multi-repo only)
 
 This order ensures that each file can reference files created before it. The scanner-agent populates placeholder content after all files exist.
