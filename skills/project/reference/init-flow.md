@@ -540,7 +540,7 @@ Create at workspace root:
         "hooks": [
           {
             "type": "command",
-            "command": "echo '>> Docs may be stale. If you changed exports, schemas, or domain concepts, update the relevant CONTEXT.md, docs/project/architecture.md, docs/project/tech-stack.md, ARCHITECTURE.md, and BRAND.md (if applicable) now. See skills/project/agents/refresh-agent.md for the file-to-doc mapping.'"
+            "command": "sh .fullstack-dev/refresh-hint.sh"
           }
         ]
       }
@@ -549,10 +549,74 @@ Create at workspace root:
 }
 ```
 
+The hook runs the targeted refresh-hint script (§9.7a) instead of a
+generic echo. The script reads the changed file path from PostToolUse
+JSON on stdin, matches it against the smart refresh rules from
+`agents/refresh-agent.md`, and outputs a targeted reminder naming the
+specific doc to update — or nothing if the file doesn't match any rule.
+
 If the file already exists, merge the hooks — do not overwrite existing
 user-configured hooks.
 
-### 9.8 Pre-commit hook
+### 9.7a `.fullstack-dev/refresh-hint.sh`
+
+Generate the targeted doc-refresh hint script. This script is the
+executable behind the PostToolUse hook from §9.7. It replaces the old
+bare `echo` approach with file-specific reminders.
+
+```bash
+#!/bin/sh
+# fullstack-dev: targeted doc-refresh hint
+# Reads PostToolUse JSON from stdin, matches the changed file against
+# smart refresh rules (see skills/project/agents/refresh-agent.md),
+# outputs a specific reminder or nothing.
+INPUT=$(cat)
+FILE=$(echo "$INPUT" | grep -o '"file_path" *: *"[^"]*"' | head -1 | sed 's/"file_path" *: *"//;s/"$//')
+[ -z "$FILE" ] && exit 0
+
+# Strip absolute prefix to get repo-relative path
+CWD=$(pwd)
+case "$FILE" in "$CWD"/*) FILE="${FILE#$CWD/}" ;; esac
+
+# Detect repo context (multi-repo: first path component with its own .git/)
+REPO=""
+case "$FILE" in
+  */*)
+    DIR=$(echo "$FILE" | cut -d/ -f1)
+    [ -d "$DIR/.git" ] && REPO="$DIR"
+    ;;
+esac
+if [ -n "$REPO" ]; then
+  BRAND="$REPO/BRAND.md"
+  ARCH="$REPO/ARCHITECTURE.md"
+else
+  BRAND="BRAND.md"
+  ARCH="ARCHITECTURE.md"
+fi
+
+case "$FILE" in
+  *.css|*.scss|*.tsx|*/tailwind.config.*)
+    echo ">> You modified $FILE. Update $BRAND (colors/tokens section) if design tokens changed." ;;
+  *.ts|*.js)
+    echo ">> You modified $FILE. Update docs/project/architecture.md and $ARCH if routes/controllers/structure changed." ;;
+  */package.json|*config.*)
+    echo ">> You modified $FILE. Update docs/project/tech-stack.md if dependencies/tooling changed." ;;
+  */schema/*|*.model.*)
+    echo ">> You modified $FILE. Update CONTEXT.md (domain model section) if entities/relationships changed." ;;
+esac
+# No match = no output (silent, no noise for non-doc-affecting changes)
+```
+
+Write to `.fullstack-dev/refresh-hint.sh`. Ensure it is executable
+(`chmod +x` on Unix; on Windows, Git tracks the execute bit via
+`git update-index --chmod=+x`).
+
+This script is layout-agnostic: in mono-repo `REPO` stays empty so
+paths resolve to root (`BRAND.md`, `ARCHITECTURE.md`); in multi-repo
+the first path component with its own `.git/` is detected as the repo
+name (`<repo>/BRAND.md`, `<repo>/ARCHITECTURE.md`).
+
+### 9.8 Pre-commit hook (root repo)
 
 Install a git pre-commit hook at `.git/hooks/pre-commit` (in the root
 repo). The hook auto-stages documentation files that were already
@@ -561,7 +625,7 @@ modified, so they ship with the code commit:
 ```bash
 #!/bin/sh
 # fullstack-dev: auto-stage refreshed docs
-for f in CONTEXT.md CLAUDE.md docs/project/architecture.md docs/project/tech-stack.md; do
+for f in CONTEXT.md docs/project/architecture.md docs/project/tech-stack.md .code-review-graphignore; do
   if [ -f "$f" ] && git diff --name-only | grep -qx "$f"; then
     git add "$f"
   fi
@@ -578,10 +642,48 @@ for repo_brand in */BRAND.md; do
     git add "$repo_brand"
   fi
 done
+# auto-stage per-repo .code-review-graphignore
+for repo_crg in */.code-review-graphignore; do
+  if [ -f "$repo_crg" ] && git diff --name-only | grep -qx "$repo_crg"; then
+    git add "$repo_crg"
+  fi
+done
 ```
+
+**Notes:**
+- `CLAUDE.md` is deliberately excluded — it is user-owned and never
+  auto-refreshed (see `reference/doc-templates.md` §6).
+- `.code-review-graphignore` (root and per-repo) is included because
+  it is a managed config file regenerated during health checks.
 
 If a pre-commit hook already exists, append the plugin section inside
 a marker block (same pattern as `.gitignore`).
+
+### 9.8a Pre-commit hook (per sub-repo, multi-repo only)
+
+In multi-repo projects, per-repo docs (`ARCHITECTURE.md`, `BRAND.md`)
+live inside sub-repos with their own `.git/`. The root repo's
+pre-commit hook cannot `git add` files across `.git/` boundaries. Each
+sub-repo needs its own lightweight hook.
+
+For each repo in `config.repos` whose `path` is not `"."`:
+
+```bash
+#!/bin/sh
+# fullstack-dev: auto-stage refreshed per-repo docs
+for f in ARCHITECTURE.md BRAND.md .code-review-graphignore; do
+  if [ -f "$f" ] && git diff --name-only | grep -qx "$f"; then
+    git add "$f"
+  fi
+done
+```
+
+Install at `<repo-path>/.git/hooks/pre-commit` using the same marker
+block pattern as the root hook (`fullstack-dev` markers). The
+`[ -f "$f" ]` check means BRAND.md is silently skipped in repos that
+don't have one (non-frontend repos).
+
+Ensure the hook file is executable (`chmod +x`).
 
 ### 9.9 `*.code-workspace` (multi-repo only)
 
@@ -713,6 +815,8 @@ Git               | Root has git initialized                         | No (warn)
                   | .gitignore has fullstack-dev:gitignore markers    | Yes (regenerate from catalog)
                   | All sub-repos listed in .gitignore marker block   | Yes (add missing to Sub-repositories category)
                   | Pre-commit hook has fullstack-dev:gitignore block  | Yes (append hook script)
+                  | Pre-commit hook has fullstack-dev doc-staging block | Yes (append hook script)
+                  | Per-repo pre-commit hooks installed (multi-repo only) | Yes (install per §9.8a)
                   | gitIgnore field exists in config.json             | Yes (populate from detection)
                   | No tracked files matching active ignore patterns  | Yes (offer /gitignore cleanup)
                   | Old gitignore marker format migrated              | Yes (migrate to fullstack-dev:gitignore)
@@ -720,7 +824,8 @@ Git               | Root has git initialized                         | No (warn)
                   | local-dev branch exists in each repo             | Yes (run /git setup)
                   | targetBranch set in each repo config entry       | Yes (run /git setup)
 Claude Config     | .claude/settings.json exists                     | Yes (create)
-                  | PostToolUse hooks configured                     | Yes (merge hooks)
+                  | PostToolUse doc-staging hook command matches §9.7 | Yes (replace command text)
+                  | .fullstack-dev/refresh-hint.sh exists and matches §9.7a | Yes (regenerate)
                   | Skills installed                                 | Yes (report missing)
                   | Commands installed                               | Yes (report missing)
 MCP               | .mcp.json exists                                 | Yes (create)
@@ -863,10 +968,13 @@ migration before the health check.
 
 2. **Re-merge hooks** in `.claude/settings.json`:
    - Add any new hooks introduced in the newer version.
-   - For plugin-owned hooks (identified by matcher `Edit|Write` and
-     command starting with `echo '>> Docs may be stale`), replace the
-     command text with the current template if it differs. This ensures
-     echo-wording changes propagate to existing installs.
+   - For the plugin-owned doc-staging hook (identified by matcher
+     `Edit|Write` and command containing `Docs may be stale` or
+     `refresh-hint`), replace the command with the current template
+     from §9.7 (`sh .fullstack-dev/refresh-hint.sh`). This migrates
+     old bare-echo installs to the targeted script approach.
+   - Generate `.fullstack-dev/refresh-hint.sh` if it does not exist
+     (per §9.7a).
    - Preserve all existing user-configured hooks.
    - Never remove hooks that already exist.
 

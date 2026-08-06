@@ -41,7 +41,7 @@ This is a documentation/prompt-based Claude Code plugin — there is no runtime 
 
 ### Event Flow (if applicable)
 
-`.claude/settings.json` PostToolUse hooks fire after `Edit`/`Write` tool calls in a managed project, reminding the session to keep all 5 doc types current (`CONTEXT.md`, `docs/project/architecture.md`, `docs/project/tech-stack.md`, per-repo `ARCHITECTURE.md`, and per-repo `BRAND.md` if applicable) and pointing to the refresh-agent's file-to-doc mapping. No other event-driven communication exists — this is a self-contained plugin, not a running service.
+`.claude/settings.json` PostToolUse hooks fire after `Edit`/`Write` tool calls in a managed project, running a targeted refresh-hint script (`.fullstack-dev/refresh-hint.sh`) that matches the changed file against the refresh-agent's mapping table and outputs a specific reminder naming which doc to update — or nothing if the file doesn't match any rule. No other event-driven communication exists — this is a self-contained plugin, not a running service.
 
 ## Conventions
 

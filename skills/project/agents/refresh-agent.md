@@ -43,16 +43,26 @@ If a changed file does not match any row in the table, no docs need refreshing. 
 
 ## Incremental Refresh Mode (PostToolUse Trigger)
 
-This is the default mode, triggered automatically after file edits during a Claude session.
+This mode is **advisory** — it depends on Claude following the targeted
+hint from the PostToolUse hook. The hook script
+(`.fullstack-dev/refresh-hint.sh`) matches the changed file against the
+mapping table above and outputs a one-line reminder naming the specific
+doc to update (e.g. "You modified src/app/globals.css. Update
+app.rankme.top/BRAND.md"). If the file doesn't match any rule, the hook
+outputs nothing.
+
+Claude is not obligated to act on the hint. When focused on a complex
+implementation, it may consciously skip the update. The targeted hint
+makes this a deliberate choice rather than an oversight. For guaranteed
+freshness, use `/project --refresh` (full mode below).
 
 ### Steps
 
-1. Identify which files were just changed from the hook context.
-2. Match each changed file against the mapping table above.
-3. For each matched doc, read the current doc content.
-4. Read the changed source files to understand what actually changed.
-5. Update only the specific sections within each doc that are affected by the change.
-6. Report what was updated.
+1. Read the targeted hint from the PostToolUse hook output.
+2. If the hint names a specific doc, read that doc's current content.
+3. Read the changed source file to understand what actually changed.
+4. Update only the specific sections within that doc that are affected.
+5. Report what was updated.
 
 ### Rules
 
