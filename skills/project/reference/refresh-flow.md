@@ -83,43 +83,77 @@ Health checks for both hooks are defined in `init-flow.md` §10.2
 
 ---
 
-## Layer 2: Pre-commit Hook (Staging)
+## Layer 2: Pre-commit Hook (Auto-stage + Doc-freshness Gate)
 
-The pre-commit hook is generated inline by the init-agent (see `init-flow.md` §9.8) and written directly to `.git/hooks/pre-commit` during project init. Its only job is to stage already-refreshed doc files into the current commit.
+The pre-commit hook (see `init-flow.md` §9.8) is the **primary
+enforcement mechanism** for doc freshness. It does two things at commit
+time:
 
-### What it stages
+### Part 1: Auto-stage already-refreshed docs
+
+If docs were updated during the session (by Claude following a Layer 1
+hint or via `/project --refresh`), the hook auto-stages them so they
+ship with the code commit.
 
 Root-level docs and managed config:
 
 - `CONTEXT.md`
 - `docs/project/architecture.md`
 - `docs/project/tech-stack.md`
+- `ARCHITECTURE.md`, `BRAND.md` (mono-repo)
 - `.code-review-graphignore`
 
-Plus, per repo (via glob):
+Plus, per directory (mono-repo only — sub-repo paths are skipped):
 
 - `*/ARCHITECTURE.md`
-- `*/BRAND.md` (only present in repos whose `type` is `frontend`/`fullstack`)
+- `*/BRAND.md`
 - `*/.code-review-graphignore`
 
-**Not staged:** `CLAUDE.md` — it is user-owned and never auto-refreshed
-(see `doc-templates.md` §6). Staging a file that never changes is
-misleading.
+**Not staged:** `CLAUDE.md` — it is user-owned and never auto-refreshed.
+
+### Part 2: Doc-freshness gate
+
+After auto-staging, the hook checks if staged code changes affect docs
+that were **not** updated. If so, it blocks the commit with a targeted
+message listing exactly which docs need refreshing.
+
+| Staged code pattern | Doc that must also be staged |
+|---|---|
+| `*.css`, `*.scss`, `*.tsx`, `tailwind.config.*` | `BRAND.md` |
+| New/deleted `*.ts`, `*.js` files | `docs/project/architecture.md`, `ARCHITECTURE.md` |
+| `package.json`, `*.config.(ts\|js\|mjs\|cjs)` | `docs/project/tech-stack.md` |
+| `schema/*`, `*.model.*` | `CONTEXT.md` |
+
+**How it works in a Claude session:**
+
+1. Claude commits code changes.
+2. Pre-commit hook auto-stages any already-refreshed docs (Part 1).
+3. Hook checks remaining staged code against the rules above (Part 2).
+4. If docs are missing → hook exits 1 with a targeted message.
+5. Claude reads the message, refreshes the listed docs, stages them.
+6. Claude retries the commit → hook passes → commit succeeds with
+   fresh docs.
+
+**Outside Claude sessions:**
+
+The developer sees the failure message and updates docs manually or
+runs `/project --refresh` before committing again.
 
 ### Multi-repo: per-repo hooks (§9.8a)
 
 In multi-repo projects, per-repo docs live inside sub-repos with their
-own `.git/`. The root hook cannot `git add` across `.git/` boundaries.
-Each sub-repo gets its own lightweight pre-commit hook (installed during
-init, verified during health checks) that stages only that repo's own
+own `.git/`. The root hook skips sub-repo paths (detected by checking
+for `<dir>/.git/`). Each sub-repo gets its own hook with the same
+two-part logic (auto-stage + gate) for that repo's own
 `ARCHITECTURE.md`, `BRAND.md`, and `.code-review-graphignore`.
 
-### Behavior
+### JS/TS false-positive mitigation
 
-- Checks if any of the files above have been modified (`git diff` check).
-- If modified, runs `git add` on them so they are included in the current commit.
-- Runs silently — no output on success.
-- Does **NOT** perform any refresh logic. It only stages what was already updated by Layer 1 or a manual refresh.
+The gate only triggers for **new or deleted** `.ts`/`.js` files
+(`git diff --diff-filter=AD`), not modifications. A simple bugfix in a
+`.ts` file does not require an architecture doc update. CSS/design,
+dependency, and schema changes trigger on all modifications since those
+are more likely to affect their corresponding docs.
 
 ---
 

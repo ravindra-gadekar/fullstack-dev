@@ -619,42 +619,98 @@ name (`<repo>/BRAND.md`, `<repo>/ARCHITECTURE.md`).
 ### 9.8 Pre-commit hook (root repo)
 
 Install a git pre-commit hook at `.git/hooks/pre-commit` (in the root
-repo). The hook auto-stages documentation files that were already
-modified, so they ship with the code commit:
+repo). The hook does two things:
+
+1. **Auto-stage** docs that were already refreshed during the session
+2. **Gate** the commit if staged code changes affect docs that weren't
+   updated — blocks with a targeted message so Claude refreshes them
+   and retries
 
 ```bash
 #!/bin/sh
-# fullstack-dev: auto-stage refreshed docs
-for f in CONTEXT.md docs/project/architecture.md docs/project/tech-stack.md .code-review-graphignore; do
+# fullstack-dev: auto-stage refreshed docs + doc-freshness gate
+
+# Helper: skip files inside sub-repos (they have their own hooks)
+in_subrepo() {
+  case "$1" in
+    */*) DIR=$(echo "$1" | cut -d/ -f1); [ -d "$DIR/.git" ] && return 0 ;;
+  esac
+  return 1
+}
+
+# --- Part 1: Auto-stage already-refreshed docs ---
+# Root-level docs (always safe to stage from root repo)
+for f in CONTEXT.md docs/project/architecture.md docs/project/tech-stack.md .code-review-graphignore ARCHITECTURE.md BRAND.md; do
   if [ -f "$f" ] && git diff --name-only | grep -qx "$f"; then
     git add "$f"
   fi
 done
-# auto-stage per-repo ARCHITECTURE.md
-for repo_arch in */ARCHITECTURE.md; do
-  if [ -f "$repo_arch" ] && git diff --name-only | grep -qx "$repo_arch"; then
-    git add "$repo_arch"
-  fi
+# Per-directory docs (mono-repo only — skip sub-repos with own .git/)
+for g in */ARCHITECTURE.md */BRAND.md */.code-review-graphignore; do
+  [ -f "$g" ] && ! in_subrepo "$g" && git diff --name-only | grep -qx "$g" && git add "$g"
 done
-# auto-stage per-repo BRAND.md
-for repo_brand in */BRAND.md; do
-  if [ -f "$repo_brand" ] && git diff --name-only | grep -qx "$repo_brand"; then
-    git add "$repo_brand"
+
+# --- Part 2: Doc-freshness gate ---
+# After auto-staging, check if staged code changes still need doc updates.
+STAGED=$(git diff --cached --name-only)
+[ -z "$STAGED" ] && exit 0
+
+STALE=""
+check_doc() {
+  # Skip sub-repo files — handled by per-repo hooks (§9.8a)
+  in_subrepo "$1" && return 0
+  if [ -f "$1" ] && ! echo "$STAGED" | grep -qxF "$1"; then
+    STALE="$STALE $1"
   fi
-done
-# auto-stage per-repo .code-review-graphignore
-for repo_crg in */.code-review-graphignore; do
-  if [ -f "$repo_crg" ] && git diff --name-only | grep -qx "$repo_crg"; then
-    git add "$repo_crg"
-  fi
-done
+}
+
+# CSS/design changes → BRAND.md
+if echo "$STAGED" | grep -qE '\.(css|scss|tsx)$|tailwind\.config\.'; then
+  check_doc "BRAND.md"
+  for b in */BRAND.md; do [ -f "$b" ] && check_doc "$b"; done
+fi
+
+# New/deleted JS/TS files → architecture docs (modifications skipped
+# to avoid false positives — not every .ts edit is structural)
+if git diff --cached --diff-filter=AD --name-only | grep -qE '\.(ts|js)$'; then
+  check_doc "docs/project/architecture.md"
+  check_doc "ARCHITECTURE.md"
+  for a in */ARCHITECTURE.md; do [ -f "$a" ] && check_doc "$a"; done
+fi
+
+# Dependency/config changes → tech-stack
+if echo "$STAGED" | grep -qE 'package\.json$|\.config\.(ts|js|mjs|cjs)$'; then
+  check_doc "docs/project/tech-stack.md"
+fi
+
+# Schema/model changes → CONTEXT.md
+if echo "$STAGED" | grep -qE 'schema/|\.model\.'; then
+  check_doc "CONTEXT.md"
+fi
+
+if [ -n "$STALE" ]; then
+  echo ""
+  echo "fullstack-dev: Staged code changes affect these docs, but they were not updated:"
+  for doc in $STALE; do echo "  - $doc"; done
+  echo ""
+  echo "Refresh the listed docs, then 'git add' them and commit again."
+  exit 1
+fi
 ```
 
 **Notes:**
 - `CLAUDE.md` is deliberately excluded — it is user-owned and never
   auto-refreshed (see `reference/doc-templates.md` §6).
-- `.code-review-graphignore` (root and per-repo) is included because
-  it is a managed config file regenerated during health checks.
+- Part 1 (auto-staging) runs first so docs refreshed during the session
+  are picked up before the gate checks.
+- Part 2 (gate) only triggers for file patterns likely to affect docs.
+  JS/TS uses `--diff-filter=AD` (new/deleted files only) to avoid
+  false positives on simple modifications.
+- In a Claude session, Claude handles the retry automatically — it
+  reads the failure message, refreshes the listed docs, stages them,
+  and re-commits.
+- Outside Claude sessions, the developer sees the message and updates
+  docs manually or runs `/project --refresh`.
 
 If a pre-commit hook already exists, append the plugin section inside
 a marker block (same pattern as `.gitignore`).
@@ -664,18 +720,41 @@ a marker block (same pattern as `.gitignore`).
 In multi-repo projects, per-repo docs (`ARCHITECTURE.md`, `BRAND.md`)
 live inside sub-repos with their own `.git/`. The root repo's
 pre-commit hook cannot `git add` files across `.git/` boundaries. Each
-sub-repo needs its own lightweight hook.
+sub-repo needs its own hook with the same two-part logic.
 
 For each repo in `config.repos` whose `path` is not `"."`:
 
 ```bash
 #!/bin/sh
-# fullstack-dev: auto-stage refreshed per-repo docs
+# fullstack-dev: auto-stage + doc-freshness gate (per-repo)
+
+# --- Part 1: Auto-stage already-refreshed per-repo docs ---
 for f in ARCHITECTURE.md BRAND.md .code-review-graphignore; do
   if [ -f "$f" ] && git diff --name-only | grep -qx "$f"; then
     git add "$f"
   fi
 done
+
+# --- Part 2: Doc-freshness gate ---
+STAGED=$(git diff --cached --name-only)
+[ -z "$STAGED" ] && exit 0
+
+STALE=""
+if echo "$STAGED" | grep -qE '\.(css|scss|tsx)$|tailwind\.config\.'; then
+  [ -f "BRAND.md" ] && ! echo "$STAGED" | grep -qxF "BRAND.md" && STALE="$STALE BRAND.md"
+fi
+if git diff --cached --diff-filter=AD --name-only | grep -qE '\.(ts|js)$'; then
+  [ -f "ARCHITECTURE.md" ] && ! echo "$STAGED" | grep -qxF "ARCHITECTURE.md" && STALE="$STALE ARCHITECTURE.md"
+fi
+
+if [ -n "$STALE" ]; then
+  echo ""
+  echo "fullstack-dev: Staged code changes affect these docs, but they were not updated:"
+  for doc in $STALE; do echo "  - $doc"; done
+  echo ""
+  echo "Refresh the listed docs, then 'git add' them and commit again."
+  exit 1
+fi
 ```
 
 Install at `<repo-path>/.git/hooks/pre-commit` using the same marker
