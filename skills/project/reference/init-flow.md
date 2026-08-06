@@ -540,7 +540,7 @@ Create at workspace root:
         "hooks": [
           {
             "type": "command",
-            "command": "echo '>> Docs may be stale. If you changed exports, schemas, or domain concepts, update the relevant ARCHITECTURE.md and CONTEXT.md sections now.'"
+            "command": "echo '>> Docs may be stale. If you changed exports, schemas, or domain concepts, update the relevant CONTEXT.md, docs/project/architecture.md, docs/project/tech-stack.md, ARCHITECTURE.md, and BRAND.md (if applicable) now. See skills/project/agents/refresh-agent.md for the file-to-doc mapping.'"
           }
         ]
       }
@@ -708,6 +708,7 @@ Docs              | CONTEXT.md exists at root                        | Yes (rege
                   | Per-repo ARCHITECTURE.md for each sub-repo       | Yes (regenerate)
                   | docs/specs/ directory exists                     | Yes (create)
                   | docs/plans/ directory exists                     | Yes (create)
+                  | Doc staleness (per refresh-agent mapping)        | No (report only — see §10.2a)
 Git               | Root has git initialized                         | No (warn)
                   | .gitignore has fullstack-dev:gitignore markers    | Yes (regenerate from catalog)
                   | All sub-repos listed in .gitignore marker block   | Yes (add missing to Sub-repositories category)
@@ -740,6 +741,34 @@ Developer Tools   | Agentation in .mcp.json (if frontend)            | Yes (add 
 Workspace         | .code-workspace file exists (if multi-repo)      | Yes (create)
                   | All repos listed in workspace folders            | Yes (add missing)
 ```
+
+### 10.2a Doc staleness heuristic
+
+For each doc file that exists, compare its last-commit timestamp against
+the newest commit timestamp among its mapped source files (per the Smart
+Refresh Rules table in `skills/project/agents/refresh-agent.md`):
+
+```bash
+doc_ts=$(git log -1 --format=%ct -- <doc-path>)
+src_ts=$(git log -1 --format=%ct -- <source-glob-1> <source-glob-2> ...)
+```
+
+If `src_ts > doc_ts`, report the doc as `POSSIBLY STALE` alongside PASS/FAIL
+results. This is **report-only** — never auto-fix, never auto-regenerate.
+The user decides whether to run `/project --refresh` or update manually.
+
+Source globs per doc (derived from refresh-agent.md's mapping table):
+
+| Doc | Source globs |
+|-----|-------------|
+| `CONTEXT.md` | `**/schema/**`, `**/*.model.*` |
+| `docs/project/architecture.md` | `**/*.ts`, `**/*.js` (routes, controllers, steps) |
+| `docs/project/tech-stack.md` | `**/package.json`, `**/*config.*` |
+| Per-repo `ARCHITECTURE.md` | `<repo>/**/*.ts`, `<repo>/**/*.js` |
+| Per-repo `BRAND.md` | `<repo>/**/*.css`, `<repo>/**/*.scss`, `<repo>/**/*.tsx`, `<repo>/tailwind.config.*` |
+
+For mono-repo, per-repo globs use `.` as `<repo>`. BRAND.md is only
+checked for repos whose `type` is `frontend`/`fullstack`.
 
 ### 10.3 Results
 
@@ -834,6 +863,10 @@ migration before the health check.
 
 2. **Re-merge hooks** in `.claude/settings.json`:
    - Add any new hooks introduced in the newer version.
+   - For plugin-owned hooks (identified by matcher `Edit|Write` and
+     command starting with `echo '>> Docs may be stale`), replace the
+     command text with the current template if it differs. This ensures
+     echo-wording changes propagate to existing installs.
    - Preserve all existing user-configured hooks.
    - Never remove hooks that already exist.
 

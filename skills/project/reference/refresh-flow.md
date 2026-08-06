@@ -22,7 +22,7 @@ Neither layer alone is sufficient. Layer 1 keeps docs fresh; Layer 2 ensures the
 After every `Edit` or `Write` operation, a PostToolUse hook fires:
 
 ```
-echo 'FULLSTACK_DEV: Files changed. Update relevant docs (architecture, brand, tech-stack) if needed.'
+echo '>> Docs may be stale. If you changed exports, schemas, or domain concepts, update the relevant CONTEXT.md, docs/project/architecture.md, docs/project/tech-stack.md, ARCHITECTURE.md, and BRAND.md (if applicable) now. See skills/project/agents/refresh-agent.md for the file-to-doc mapping.'
 ```
 
 This is a **simple echo reminder** — it does not run a script or programmatically regenerate anything. The actual analysis and doc-writing is performed by Claude using the refresh-agent logic:

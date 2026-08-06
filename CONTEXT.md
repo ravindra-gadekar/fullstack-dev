@@ -41,7 +41,7 @@ This is a documentation/prompt-based Claude Code plugin — there is no runtime 
 
 ### Event Flow (if applicable)
 
-`.claude/settings.json` PostToolUse hooks fire after `Edit`/`Write` tool calls in a managed project, reminding the session to keep `ARCHITECTURE.md`/`CONTEXT.md` current. No other event-driven communication exists — this is a self-contained plugin, not a running service.
+`.claude/settings.json` PostToolUse hooks fire after `Edit`/`Write` tool calls in a managed project, reminding the session to keep all 5 doc types current (`CONTEXT.md`, `docs/project/architecture.md`, `docs/project/tech-stack.md`, per-repo `ARCHITECTURE.md`, and per-repo `BRAND.md` if applicable) and pointing to the refresh-agent's file-to-doc mapping. No other event-driven communication exists — this is a self-contained plugin, not a running service.
 
 ## Conventions
 
