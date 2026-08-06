@@ -17,33 +17,69 @@ Neither layer alone is sufficient. Layer 1 keeps docs fresh; Layer 2 ensures the
 
 ---
 
-## Layer 1: PostToolUse Hook (Primary Refresh)
+## Layer 1: PostToolUse Hook (Targeted Refresh Hint)
 
-After every `Edit` or `Write` operation, a PostToolUse hook fires:
+After every `Edit` or `Write` operation, a PostToolUse hook runs the
+targeted refresh-hint script (`.fullstack-dev/refresh-hint.sh`, defined
+in `init-flow.md` §9.7a):
 
 ```
-echo '>> Docs may be stale. If you changed exports, schemas, or domain concepts, update the relevant CONTEXT.md, docs/project/architecture.md, docs/project/tech-stack.md, ARCHITECTURE.md, and BRAND.md (if applicable) now. See skills/project/agents/refresh-agent.md for the file-to-doc mapping.'
+sh .fullstack-dev/refresh-hint.sh
 ```
 
-This is a **simple echo reminder** — it does not run a script or programmatically regenerate anything. The actual analysis and doc-writing is performed by Claude using the refresh-agent logic:
+The script reads the changed file path from PostToolUse JSON on stdin,
+matches it against the Smart Refresh Rules (§ below), and outputs a
+**targeted reminder** naming the specific doc to update — or nothing if
+the file doesn't match any rule. Example output:
 
-1. Hook echoes the reminder after a file write/edit.
-2. Claude (as the refresh-agent) reads the reminder.
-3. Claude analyzes which files changed and determines which docs are affected.
-4. Claude updates the relevant docs surgically — only the sections that need it.
+```
+>> You modified src/app/globals.css. Update app.rankme.top/BRAND.md (colors/tokens section) if design tokens changed.
+```
 
-This is the primary mechanism that keeps docs current during active development sessions.
+This replaces the old bare `echo` approach that listed all 5 doc types
+generically regardless of what changed. The targeted approach reduces
+noise (no output for non-doc-affecting changes) and gives Claude a
+specific, actionable prompt.
+
+**Important:** the script is advisory — Claude reads the hint but is not
+obligated to act on it. When Claude is focused on a complex
+implementation, it may skip the update. The hint makes skipping a
+conscious choice (Claude sees exactly which doc is affected) rather than
+an oversight (generic reminder is easy to ignore). For guaranteed
+freshness, use `/project --refresh`.
+
+### How it works
+
+1. Hook fires after every `Edit`/`Write` tool call.
+2. Script parses `tool_input.file_path` from stdin JSON.
+3. Script matches the file against extension/path patterns (see Smart
+   Refresh Rules below).
+4. If matched: outputs a one-line reminder naming the specific doc.
+5. If no match: outputs nothing (silent — no noise).
+6. Claude reads the hint and decides whether to update the doc now.
+
+### Layout awareness
+
+The script is layout-agnostic. In mono-repo, per-repo docs resolve to
+root (`BRAND.md`, `ARCHITECTURE.md`). In multi-repo, the script detects
+the repo from the first path component that has its own `.git/` and
+resolves to `<repo>/BRAND.md`, `<repo>/ARCHITECTURE.md`.
 
 ### Hook Coexistence
 
 Two PostToolUse hooks fire during Claude sessions in managed projects:
 
-1. **Fullstack-dev doc-staging hook** — matcher `Edit|Write`, echoes a reminder to update docs (instant, ~1s timeout)
-2. **code-review-graph update hook** — matcher `Edit|Write|Bash|PowerShell`, runs `uvx code-review-graph update --skip-flows --repo .` to keep the graph current (30s timeout)
+1. **Fullstack-dev doc-refresh hook** — matcher `Edit|Write`, runs the
+   targeted refresh-hint script (instant, ~1s)
+2. **code-review-graph update hook** — matcher `Edit|Write|Bash|PowerShell`,
+   runs `uvx code-review-graph update --skip-flows --repo .` (30s timeout)
 
-The code-review-graph hook has a broader matcher (includes `Bash` and `PowerShell`). Both fire on `Edit`/`Write` operations — this is intentional. The echo hook is instant, and the graph update runs in parallel. Neither hook depends on or interferes with the other.
+Both fire on `Edit`/`Write` operations — this is intentional. The
+refresh-hint script is instant, and the graph update runs in parallel.
+Neither hook depends on or interferes with the other.
 
-This coexistence is a documentation note for the refresh mechanism. Health checks for both hooks are defined in `init-flow.md` §10.2 (doc-staging under Claude Config, code-review-graph under MCP).
+Health checks for both hooks are defined in `init-flow.md` §10.2
+(doc-refresh under Claude Config, code-review-graph under MCP).
 
 ---
 
@@ -53,20 +89,30 @@ The pre-commit hook is generated inline by the init-agent (see `init-flow.md` §
 
 ### What it stages
 
-These 3 root-level docs:
+Root-level docs and managed config:
 
 - `CONTEXT.md`
 - `docs/project/architecture.md`
 - `docs/project/tech-stack.md`
+- `.code-review-graphignore`
 
-Plus, per repo:
+Plus, per repo (via glob):
 
 - `*/ARCHITECTURE.md`
 - `*/BRAND.md` (only present in repos whose `type` is `frontend`/`fullstack`)
+- `*/.code-review-graphignore`
 
-Per-repo `ARCHITECTURE.md` and `BRAND.md` files are committed in their own repos, not staged by this hook.
+**Not staged:** `CLAUDE.md` — it is user-owned and never auto-refreshed
+(see `doc-templates.md` §6). Staging a file that never changes is
+misleading.
 
-`.code-review-graphignore` is a managed config file (root, plus one per repo in multi-repo projects) and should be auto-staged on commit the same way — if the init-agent health check regenerates it (e.g. stack drift), the refreshed file should be staged alongside the other managed docs so it ships with the commit that triggered the regeneration, not left dangling as an unstaged change.
+### Multi-repo: per-repo hooks (§9.8a)
+
+In multi-repo projects, per-repo docs live inside sub-repos with their
+own `.git/`. The root hook cannot `git add` across `.git/` boundaries.
+Each sub-repo gets its own lightweight pre-commit hook (installed during
+init, verified during health checks) that stages only that repo's own
+`ARCHITECTURE.md`, `BRAND.md`, and `.code-review-graphignore`.
 
 ### Behavior
 

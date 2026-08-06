@@ -217,9 +217,10 @@ code-review-graph is configured for every project — not an opt-in prompt:
   3. Run a full graph build for that repo using the MCP tool `build_or_update_graph_tool` with `full_rebuild: true` (not the CLI command), scoped to that repo's path. This is the last step for that repo — it must run after that repo's `.code-review-graphignore` is in place so the build respects the exclusions, and after all of that repo's other docs/configs/ignore files exist.
   4. Record the per-repo result (files indexed, nodes, edges) for the completion report (Phase 6).
 
-#### 5.12 `.claude/settings.json`
+#### 5.12 `.claude/settings.json` and `.fullstack-dev/refresh-hint.sh`
 
-Create the `.claude/` directory if needed. Write the PostToolUse hook configuration:
+Create the `.claude/` directory if needed. Write the PostToolUse hook
+configuration per `reference/init-flow.md` Section 9.7:
 
 ```json
 {
@@ -230,7 +231,7 @@ Create the `.claude/` directory if needed. Write the PostToolUse hook configurat
         "hooks": [
           {
             "type": "command",
-            "command": "echo '>> Docs may be stale. If you changed exports, schemas, or domain concepts, update the relevant CONTEXT.md, docs/project/architecture.md, docs/project/tech-stack.md, ARCHITECTURE.md, and BRAND.md (if applicable) now. See skills/project/agents/refresh-agent.md for the file-to-doc mapping.'"
+            "command": "sh .fullstack-dev/refresh-hint.sh"
           }
         ]
       }
@@ -239,13 +240,24 @@ Create the `.claude/` directory if needed. Write the PostToolUse hook configurat
 }
 ```
 
-If the file already exists, merge hooks alongside existing hooks. Never remove or overwrite user-configured hooks.
+Then generate the targeted refresh-hint script per
+`reference/init-flow.md` Section 9.7a. Write to
+`.fullstack-dev/refresh-hint.sh` and ensure it is executable.
+
+If `.claude/settings.json` already exists, merge hooks alongside
+existing hooks. Never remove or overwrite user-configured hooks. If an
+old-style bare `echo` doc-staging hook exists (command containing
+`Docs may be stale`), replace its command with
+`sh .fullstack-dev/refresh-hint.sh`.
 
 #### 5.13 Pre-commit Hook
 
-Install the pre-commit hook at `.git/hooks/pre-commit` using the script from `reference/init-flow.md` Section 9.7. The hook auto-stages documentation files that were already modified.
+Install the root-repo pre-commit hook at `.git/hooks/pre-commit` using
+the script from `reference/init-flow.md` Section 9.8. The hook
+auto-stages documentation files that were already modified.
 
-If a pre-commit hook already exists, append the plugin section inside a marker block:
+If a pre-commit hook already exists, append the plugin section inside a
+marker block:
 
 ```bash
 # >>> fullstack-dev (do not edit this block) >>>
@@ -254,6 +266,20 @@ If a pre-commit hook already exists, append the plugin section inside a marker b
 ```
 
 Ensure the hook file is executable (`chmod +x`).
+
+#### 5.13a Per-Repo Pre-commit Hooks (multi-repo only)
+
+For multi-repo projects, install a lightweight pre-commit hook in each
+sub-repo per `reference/init-flow.md` Section 9.8a. The per-repo hook
+stages only that repo's own `ARCHITECTURE.md`, `BRAND.md`, and
+`.code-review-graphignore`.
+
+For each repo in `config.repos` whose `path` is not `"."`:
+1. Install the hook at `<repo-path>/.git/hooks/pre-commit` using the
+   same `fullstack-dev` marker block pattern.
+2. Ensure the hook file is executable.
+
+Skip this step entirely for mono-repo projects.
 
 #### 5.14 Clone Repos (multi-repo, if URLs provided)
 
@@ -314,8 +340,8 @@ Run every check from the table in `reference/init-flow.md` Section 10.2:
 |----------|--------|
 | **Config** | config.json exists and valid; version matches plugin version |
 | **Docs** | CONTEXT.md exists; docs/project/architecture.md exists; docs/project/tech-stack.md exists; per-repo BRAND.md for each frontend/fullstack repo; per-repo ARCHITECTURE.md for each sub-repo; docs/specs/ directory exists; docs/plans/ directory exists |
-| **Git** | Root has git initialized; .gitignore has fullstack-dev:gitignore markers; all sub-repos listed in .gitignore; no new .git/ directories missing from config; local-dev branch exists in each repo; targetBranch set in each repo config entry; pre-commit hook has fullstack-dev:gitignore block; gitIgnore config field exists |
-| **Claude Config** | .claude/settings.json exists; PostToolUse hooks configured; skills installed |
+| **Git** | Root has git initialized; .gitignore has fullstack-dev:gitignore markers; all sub-repos listed in .gitignore; no new .git/ directories missing from config; local-dev branch exists in each repo; targetBranch set in each repo config entry; pre-commit hook has fullstack-dev:gitignore block; pre-commit hook has fullstack-dev doc-staging block; per-repo pre-commit hooks installed (multi-repo only); gitIgnore config field exists |
+| **Claude Config** | .claude/settings.json exists; PostToolUse doc-staging hook command matches §9.7 (`sh .fullstack-dev/refresh-hint.sh`); .fullstack-dev/refresh-hint.sh exists and matches §9.7a; skills installed |
 | **MCP** | .mcp.json exists; context7 configured; git platform MCP configured; github entry is not deprecated stdio shape (auto-fix: replace via named merge exception); claude mcp list reports no connectivity warnings (report only); required MCP env vars present in settings.local.json (agent auto-creates skeleton, reports missing var name; orchestrator asks user and writes — see Secret Prompt & Write Flow); code-review-graph entry in `.mcp.json`; code-review-graph PostToolUse hook in `settings.json`; code-review-graph SessionStart hook in `settings.json`; `.code-review-graphignore` exists with marker block; `.code-review-graphignore` patterns match current tech stack; each repo has a `.code-review-graphignore` (multi-repo only, auto-fix: regenerate); each repo's `.gitignore` contains `.code-review-graph/` (multi-repo only, auto-fix: add missing entry); each repo's graph has > 0 indexed files (multi-repo only, auto-fix: run `build_or_update_graph_tool` with `full_rebuild: true`) |
 | **Developer Tools** | Agentation: `.mcp.json` entry exists (only check if `projectType` is `fullstack` or `frontend`). Auto-fix: offer to configure if not present |
 | **Workspace** | .code-workspace file exists (if multi-repo); all repos listed in workspace folders |

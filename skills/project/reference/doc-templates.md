@@ -690,7 +690,8 @@ Several generated files change shape based on the `repoStructure` setting in `co
 | Marker block | `fullstack-dev:gitignore` markers with tech-stack patterns | `fullstack-dev:gitignore` markers with tech-stack patterns + sub-repo directories |
 | Sub-repo entries | N/A | Listed as `# Sub-repositories` category inside marker block |
 | Pattern source | `skills/gitignore/reference/gitignore-catalog.md` | `skills/gitignore/reference/gitignore-catalog.md` |
-| Pre-commit hook | Installed with `fullstack-dev:gitignore` marker in `.git/hooks/pre-commit` | Installed per-repo |
+| Pre-commit hook (gitignore) | Installed with `fullstack-dev:gitignore` marker in `.git/hooks/pre-commit` | Installed per-repo |
+| Pre-commit hook (doc-staging) | Installed with `fullstack-dev` marker in `.git/hooks/pre-commit` (root only) | Installed in root repo AND each sub-repo (see `init-flow.md` §9.8 and §9.8a) |
 
 See [gitignore-catalog.md](../../gitignore/reference/gitignore-catalog.md) for the full pattern catalog and [gitignore-flow.md](../../gitignore/reference/gitignore-flow.md) for marker block format and merge rules.
 
